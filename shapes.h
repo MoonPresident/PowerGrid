@@ -14,6 +14,7 @@
 
 void hardCodedTriangle(); 
 
+
 template<std::size_t ArraySize> 
 class Shape2D final {
     static const std::size_t verticeNum = ArraySize;

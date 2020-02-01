@@ -57,6 +57,12 @@ void setCallbacks(GLFWwindow** frame) {
 //    return buffer;
 //}
 
+GLuint getShader(int type, static const char** shader_source) {
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, shader_source, NULL);
+    glCompileShader(shader);
+}
+
 
 void startup(GLFWwindow** window);
 
@@ -76,32 +82,17 @@ int main(int argc, char **argv) {
         -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
     };
     static const GLushort elements[] = { 0, 1, 2, 3 };
-    
 
-
+    //Shaders are stored in the shader.h file.
+    program = glCreateProgram();
     
-    std::ofstream extension_file;
-    extension_file.open("gl_extensions.txt");
-    extension_file << glGetString(GL_EXTENSIONS);
-    extension_file.close();
-    
-    
-    // Create and compile vertex shader
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
-    glCompileShader(vertex_shader);
-    
-    // Create and compile fragment shader
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
-    glCompileShader(fragment_shader);
+    // Create and compile vertex and fragment shadet
+    glAttachShader(program, getShader(GL_VERTEX_SHADER, vertex_shader_source));
+    glAttachShader(program, getShader(GL_FRAGMENT_SHADER, fragment_shader_source));
     
     glPointSize(40.0f);
     
     // Create program, attach shaders to it, and link it
-    program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
     glLinkProgram(program);
     
     // Delete the shaders as the program has them now

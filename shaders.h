@@ -5,6 +5,12 @@
 #ifndef SHADERS_H
 #define SHADERS_H
 
+#include "main.h"
+
+struct Shader {
+    GLuint shader;
+    static const char** shader_source;
+};
 
 // Source code for vertex shader
 static const char* vertex_shader_source[] = {
