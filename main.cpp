@@ -57,10 +57,11 @@ void setCallbacks(GLFWwindow** frame) {
 //    return buffer;
 //}
 
-GLuint getShader(int type, static const char** shader_source) {
+GLuint getShader(int type, const char** shader_source) {
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, shader_source, NULL);
     glCompileShader(shader);
+    return shader;
 }
 
 
@@ -87,17 +88,17 @@ int main(int argc, char **argv) {
     program = glCreateProgram();
     
     // Create and compile vertex and fragment shadet
-    glAttachShader(program, getShader(GL_VERTEX_SHADER, vertex_shader_source));
+//    glAttachShader(program, getShader(GL_VERTEX_SHADER, vertex_shader_source));
+    glAttachShader(program, getShader(GL_VERTEX_SHADER, offset_shader_source));
     glAttachShader(program, getShader(GL_FRAGMENT_SHADER, fragment_shader_source));
-    
-    glPointSize(40.0f);
     
     // Create program, attach shaders to it, and link it
     glLinkProgram(program);
     
     // Delete the shaders as the program has them now
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
+//    glDeleteShader(vertex_shader);
+//    glDeleteShader(offset_shader);
+//    glDeleteShader(fragment_shader);
     
 //    glGenBuffers(1, &vbo);
 //    glBindBuffers(GL_ARRAY_BUFFER, VBO);
@@ -122,7 +123,15 @@ int main(int argc, char **argv) {
                 (float)cos(glfwGetTime()) * 0.5f + 0.5f, 0.0f, 1.0f
         };
         glClearBufferfv(GL_COLOR, 0, color);
+        
+        
+        GLfloat attrib[] = { (float)sin(glfwGetTime()) * 0.5f, 
+                (float)cos(glfwGetTime()) * 0.6f, 0.0f, 0.0f
+        };
+        
         glUseProgram(program);
+
+        glVertexAttrib4fv(0, attrib);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         
         glfwPollEvents();

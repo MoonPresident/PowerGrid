@@ -4,7 +4,7 @@
  * 
  * Stores callbacks for GLFW functions.
  */
- #include "main.h"
+#include "main.h"
 
 void basic_error_callback(int error, const char* description){
     fputs(description, stderr);
