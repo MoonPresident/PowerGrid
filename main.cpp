@@ -1,6 +1,6 @@
 /**
  * Author: MoonPresident
- * Date: May 4th 2020
+ * Date: January 4th 2020
  * 
  * 
  * 
@@ -14,10 +14,13 @@
 #include "main.h"
 
 
+
 #define DEV
 
 #define ARRAY_2D 2
 #define ARRAY_COLOR 3
+
+#define debug1
 
 
 //NEXT STEP:
@@ -26,8 +29,10 @@
 
 
 namespace Frame {
-    int width {1280};
-    int height = 960;
+    int width  {1280};
+    int height  {960};
+    int x_off   {100};
+    int y_off     {0};
     const char* title = "PowerGrid";
 }
 
@@ -44,90 +49,100 @@ void setCallbacks(GLFWwindow** frame) {
 }
 
 
-
+//static GLuint create_buffer(GLenum target, const void* data, GLsizei buffer_size) {
+//    GLuint buffer;
+//    glGenBuffer(1, &buffer);
+//    glBindBuffer(target, buffer);
+//    glBufferData(target, buffer_size, buffer_data, GL_STATIC_DRAW);
+//    return buffer;
+//}
 
 
 void startup(GLFWwindow** window);
 
 int main(int argc, char **argv) {
-    srand(time(NULL));
-    
-    setMousebuttonFlag(0);
-    //The way startup is currently included is janky as hell.
-    //TODO: Fix implementation of startup sequence.
-    
-    
-    //Run code
-    
-    
-    #ifdef DEV
+    //Init variables
     GLFWwindow* window;
+    GLuint vertex_shader, fragment_shader, program, vao, vbo;
+    //Startup sequence
+    srand(time(NULL));
+    setMousebuttonFlag(0);
     startup(&window);
-    
-    GLfloat vertices[3][2];
-    for(int i = 0; i < 3; i++) {
-        vertices[i][0] = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX/2)) - 1;
-        vertices[i][1] = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX/2)) - 1;
-    }
-    
-    Shape2D<3> triangle = Shape2D<3>(vertices);
-    
     setCallbacks(&window);
     
-    float radius = 0.4f;
-    Shape2D<4> square = equilateralShape<4>(radius);
+    std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
+    
+    static const GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
+    };
+    static const GLushort elements[] = { 0, 1, 2, 3 };
+    
+
+
+    
+    std::ofstream extension_file;
+    extension_file.open("gl_extensions.txt");
+    extension_file << glGetString(GL_EXTENSIONS);
+    extension_file.close();
     
     
+    // Create and compile vertex shader
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+    glCompileShader(vertex_shader);
+    
+    // Create and compile fragment shader
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+    glCompileShader(fragment_shader);
+    
+    glPointSize(40.0f);
+    
+    // Create program, attach shaders to it, and link it
+    program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+    
+    // Delete the shaders as the program has them now
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+    
+//    glGenBuffers(1, &vbo);
+//    glBindBuffers(GL_ARRAY_BUFFER, VBO);
+//    glBindBuffers(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    glCreateVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+
     while(!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-        
-        
-        
-        float ratio;
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float) height + 1;
         
         //Sets the viewport, first 2 car's specify the bottom right hand corner
         glViewport(0, 0, width, height);
-        glClearColor(0.f, 0.f, 0.f, 0.f);
+        glClearColor(0.f, 0.f, 1.f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
         
-        glBegin(GL_QUADS);
+        //Draw here
         
-        square.drawShape();
+        const GLfloat color[] = { (float)sin(glfwGetTime()) * 0.5f + 0.5f, 
+                (float)cos(glfwGetTime()) * 0.5f + 0.5f, 0.0f, 1.0f
+        };
+        glClearBufferfv(GL_COLOR, 0, color);
+        glUseProgram(program);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         
-        glEnd();
-        
+        glfwPollEvents();
         glfwSwapBuffers(window);
-        
-//        if(getMousebuttonFlag()) {
-//            setMousebuttonFlag(0);
-//            
-//            for(int i = 0; i < 3; i++) {
-//                vertices[i][0] = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX/2)) - 1;
-//                vertices[i][1] = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX/2)) - 1;
-//            }
-//            
-//            
-//            triangle = Shape2D<3>(vertices);
-//        }
-        
-        
     }
     
-    #else
-    //Triangle Example: basic run sequence
-    triangle_example();
-    #endif
-    
     //Close up shop
+    glDeleteVertexArrays(1, &vao);
+    glDeleteProgram(program);
+    glDeleteVertexArrays(1, &vao);
+    
     glfwTerminate();
 	return 0;
 }
@@ -138,7 +153,20 @@ void startup(GLFWwindow** window) {
     
     if (!glfwInit()) exit(EXIT_FAILURE);
     
+    #ifdef debug
+    std::cout << "glfw init successful" << std::endl;
+    #endif
+    
     glfwSetErrorCallback(basic_error_callback);
+    
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    
+    #ifdef debug
+    std::cout << getch();
+    #endif
     
     *window = glfwCreateWindow(
         Frame::width,
@@ -152,4 +180,16 @@ void startup(GLFWwindow** window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+    
+    glfwMakeContextCurrent(*window);
+    
+    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        std::cout << "Glad crash" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    
+    #ifdef debug
+    std::cout << "glad sorted" << std::endl;
+    #endif
+
 }

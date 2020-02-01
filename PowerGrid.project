@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="PowerGrid" Version="10.0.0" InternalType="Console">
-  <VirtualDirectory Name="zExamples">
-    <File Name="triangle.h"/>
-    <File Name="triangle.cpp"/>
+  <VirtualDirectory Name="Dependencies">
+    <VirtualDirectory Name="GLAD">
+      <VirtualDirectory Name="src">
+        <File Name="Dependencies/GLAD/src/glad.c"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="units">
     <File Name="player.h"/>
     <File Name="player.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="helpers">
+    <File Name="shaders.h"/>
+    <File Name="shaderStore.h"/>
+    <File Name="shaderStore.cpp"/>
     <File Name="shapes.h"/>
     <File Name="shapes.cpp"/>
     <File Name="callbacks.h"/>
@@ -20,6 +26,8 @@
     <File Name="main.h"/>
     <File Name="main.cpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -34,6 +42,7 @@
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="./Dependencies/GLFW/include/GLFW"/>
+        <IncludePath Value="./Dependencies/GLAD/include"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="./Dependencies/GLFW/lib-mingw-w64"/>
@@ -118,6 +127,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

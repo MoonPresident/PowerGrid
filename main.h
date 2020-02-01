@@ -1,6 +1,6 @@
 /**
  * Author: MoonPresident
- * Date: May 4th 2020
+ * Date: January 4th 2020
  * 
  * 
  */
@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <conio.h>
 #include <string>
 
@@ -16,16 +17,11 @@
 
 #include "time.h"
 
+#include "glad/glad.h"
 #include "glfw3.h"
 
 //Abstract functions
 #include "callbacks.h"
 #include "shapes.h"
 
-
-
-
-//openGL Examples
-#include "triangle.h"
-
-
+#include "shaders.h"

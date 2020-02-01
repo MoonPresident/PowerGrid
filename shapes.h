@@ -1,6 +1,6 @@
 /**
  * Author: MoonPresident
- * Date: May 4th 2020
+ * Date: January 4th 2020
  * 
  * This class was made mostly for the purpose of trying out template.
  */
