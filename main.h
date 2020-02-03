@@ -12,6 +12,9 @@
 #include <conio.h>
 #include <string>
 
+#include <algorithm>
+#include <vector>
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -23,5 +26,4 @@
 //Abstract functions
 #include "callbacks.h"
 #include "shapes.h"
-
-#include "shaders.h"
+#include "ShaderStore.h"

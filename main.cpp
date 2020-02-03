@@ -13,12 +13,14 @@
 
 #include "main.h"
 
+//https://thebookofshaders.com/07/
+
 
 
 #define DEV
 
-#define ARRAY_2D 2
-#define ARRAY_COLOR 3
+#define SHADER_PATH         "..\\resources\\shaders\\"
+#define SHADER_INDEX_FILE   "..\\resources\\shaders\\index.txt"
 
 #define debug1
 
@@ -35,6 +37,9 @@ namespace Frame {
     int y_off     {0};
     const char* title = "PowerGrid";
 }
+
+//Global variables
+ShaderStore shaderStore;
 
 /**
  * @brief 
@@ -57,99 +62,51 @@ void setCallbacks(GLFWwindow** frame) {
 //    return buffer;
 //}
 
-GLuint getShader(int type, const char** shader_source) {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, shader_source, NULL);
-    glCompileShader(shader);
-    return shader;
-}
-
-
-void startup(GLFWwindow** window);
-
-int main(int argc, char **argv) {
-    //Init variables
-    GLFWwindow* window;
-    GLuint vertex_shader, fragment_shader, program, vao, vbo;
-    //Startup sequence
-    srand(time(NULL));
-    setMousebuttonFlag(0);
-    startup(&window);
-    setCallbacks(&window);
+void loadShaders() {
+    std::string line, path, index(SHADER_INDEX_FILE);
+    std::ifstream shaderIndex;
+    shaderIndex.open(index);
     
-    std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
-    
-    static const GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
-    };
-    static const GLushort elements[] = { 0, 1, 2, 3 };
-
-    //Shaders are stored in the shader.h file.
-    program = glCreateProgram();
-    
-    // Create and compile vertex and fragment shadet
-//    glAttachShader(program, getShader(GL_VERTEX_SHADER, vertex_shader_source));
-    glAttachShader(program, getShader(GL_VERTEX_SHADER, offset_shader_source));
-    glAttachShader(program, getShader(GL_FRAGMENT_SHADER, fragment_shader_source));
-    
-    // Create program, attach shaders to it, and link it
-    glLinkProgram(program);
-    
-    // Delete the shaders as the program has them now
-//    glDeleteShader(vertex_shader);
-//    glDeleteShader(offset_shader);
-//    glDeleteShader(fragment_shader);
-    
-//    glGenBuffers(1, &vbo);
-//    glBindBuffers(GL_ARRAY_BUFFER, VBO);
-//    glBindBuffers(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    
-    glCreateVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-
-    while(!glfwWindowShouldClose(window)) {
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        
-        //Sets the viewport, first 2 car's specify the bottom right hand corner
-        glViewport(0, 0, width, height);
-        glClearColor(0.f, 0.f, 1.f, 0.f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        //Draw here
-        
-        const GLfloat color[] = { (float)sin(glfwGetTime()) * 0.5f + 0.5f, 
-                (float)cos(glfwGetTime()) * 0.5f + 0.5f, 0.0f, 1.0f
-        };
-        glClearBufferfv(GL_COLOR, 0, color);
-        
-        
-        GLfloat attrib[] = { (float)sin(glfwGetTime()) * 0.5f, 
-                (float)cos(glfwGetTime()) * 0.6f, 0.0f, 0.0f
-        };
-        
-        glUseProgram(program);
-
-        glVertexAttrib4fv(0, attrib);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        
-        glfwPollEvents();
-        glfwSwapBuffers(window);
+    //Debug information to confirm the shaders have loaded correctly.
+    #ifdef debug
+    if(shaderIndex) {
+        std::cout << "Shader index opened: " <<index.c_str() << std::endl;
+    } else {
+        std::cout << "Shader index failed: " << index.c_str() << std::endl;
     }
+    #endif
     
-    //Close up shop
-    glDeleteVertexArrays(1, &vao);
-    glDeleteProgram(program);
-    glDeleteVertexArrays(1, &vao);
-    
-    glfwTerminate();
-	return 0;
+    /* Iterate over the index file. The first characters determines the shader
+     * type, the second character is a semicolon and the rest of the line is 
+     * the files address.
+     */
+    while(std::getline(shaderIndex, line)) {
+        std::cout << "Line in: " << line << std::endl;
+        
+        path.assign(SHADER_PATH).append(line.substr(2));
+        char shaderType = line.at(0);
+        switch(shaderType) {
+            case 'v':
+                shaderStore.addShader(path, GL_VERTEX_SHADER);
+                break;
+            case 'f':
+                shaderStore.addShader(path, GL_FRAGMENT_SHADER);
+                break;
+            case '/':
+                break;
+            default:
+//                #ifdef debug
+                std::cout << "ShaderType not recognised: " << shaderType << std::endl;
+//                #endif
+        }
+    }
 }
-
 
 
 void startup(GLFWwindow** window) {
+    
+    srand(time(NULL));
+    setMousebuttonFlag(0);
     
     if (!glfwInit()) exit(EXIT_FAILURE);
     
@@ -192,4 +149,76 @@ void startup(GLFWwindow** window) {
     std::cout << "glad sorted" << std::endl;
     #endif
 
+}
+
+int main(int argc, char **argv) {
+    //Init variables
+    GLFWwindow* window;
+    GLuint program, vao, vbo;
+    
+    //Startup sequence
+    startup(&window);
+    setCallbacks(&window);
+    
+    #ifdef debug
+    std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
+    #endif
+    
+    //Create program, attach shaders to it, and link it.
+    //Shaders are accessed from the \resources\shaders folder.
+    //Shaders are stored in the a ShaderStore class.
+    program = glCreateProgram();
+    loadShaders();
+    
+    shaderStore.attachAll(program);
+    glLinkProgram(program);
+    
+    // Delete the shaders as the program has them now
+    shaderStore.deleteAll();
+    
+//    glGenBuffers(1, &vbo);
+//    glBindBuffers(GL_ARRAY_BUFFER, VBO);
+//    glBindBuffers(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    glCreateVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+
+    while(!glfwWindowShouldClose(window)) {
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        
+        //Sets the viewport, first 2 car's specify the bottom right hand corner
+        glViewport(0, 0, width, height);
+        glClearColor(0.f, 0.f, 1.f, 0.f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        //Draw here
+        
+        const GLfloat color[] = { (float)sin(glfwGetTime()) * 0.5f + 0.5f, 
+                (float)cos(glfwGetTime()) * 0.5f + 0.5f, 0.0f, 1.0f
+        };
+        glClearBufferfv(GL_COLOR, 0, color);
+        
+        
+        GLfloat attrib[] = { (float)sin(glfwGetTime()) * 0.5f, 
+                (float)cos(glfwGetTime()) * 0.6f, 0.0f, 0.0f
+        };
+        
+        glUseProgram(program);
+
+        glVertexAttrib4fv(0, attrib);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        
+        glfwPollEvents();
+        glfwSwapBuffers(window);
+    }
+    
+    //Close up shop
+    glDeleteVertexArrays(1, &vao);
+    glDeleteProgram(program);
+    glDeleteVertexArrays(1, &vao);
+    
+    glfwTerminate();
+	return 0;
 }

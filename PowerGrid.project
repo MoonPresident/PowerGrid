@@ -12,7 +12,6 @@
     <File Name="player.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="helpers">
-    <File Name="shaders.h"/>
     <File Name="shaderStore.h"/>
     <File Name="shaderStore.cpp"/>
     <File Name="shapes.h"/>
