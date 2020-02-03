@@ -1,2 +1,3 @@
-v;\sb7_basic_input_vertex.txt
-f;\sb7_basic_fragment.txt
+//v;sb7_basic_input_vertex.txt
+v;pc_basic_vertex.txt
+f;sb7_basic_fragment.txt

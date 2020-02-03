@@ -1,0 +1,21 @@
+#version 450 core
+
+//uniform hits every vertex shader
+//uniform mat4 rot;
+
+//layout hits just this one? idk. Google.
+layout (location = 0) in vec4 offset;
+
+void main (void){
+	const vec4 verts[4] = vec4[4](
+		vec4(0.1, 0.1, 0.1, 1),
+		vec4(-0.1, 0.1, 0.1, 1),
+		vec4(-0.1, -0.1, 0.1, 1),
+		vec4(0.1, -0.1, 0.1, 1)
+	);
+	
+	//Rotate and add offset
+	//gl_Position = rot * verts[gl_VertexID] + offset;
+	gl_Position = verts[gl_VertexID] + offset;
+	
+}
