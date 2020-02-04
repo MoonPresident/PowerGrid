@@ -5,23 +5,20 @@
  * 
  */
 
+
 #ifndef PLAYER_H
 #define PLAYER_H
 
-static const char* player = {
-    "#version 450 core                                  \n"
-    "                                                   \n"
-    "void main {                                        \n"
-    "                                                   \n"
-    "                                                   \n"
-    "                                                   \n"
-    "                                                   \n"
-    "                                                   \n"
-    "                                                   \n"
-    "                                                   \n"
-    "}                                                  \n"
-}
+#include "main.h"
 
-class player;
+class Player {
+private:
+    float x_offset;
+    float y_offset;
+public:
+    player();
+    void setPosition(float pos[2]);
+    void getPosition(float pos[2]);
+};
 
 #endif /* PLAYER_H */

@@ -27,3 +27,4 @@
 #include "callbacks.h"
 #include "shapes.h"
 #include "ShaderStore.h"
+#include "player.h"

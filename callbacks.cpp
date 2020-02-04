@@ -17,6 +17,15 @@ void close_on_unfocus(GLFWwindow* window, int focused) {
 }
 
 
+//Keyboard callback
+int lastKey, lastAction;
+void general_keyboard_callback(
+        GLFWwindow* window, int key, int scancode, int action, int mods
+) {
+    std::cout << "Key: " << key << ", Scancode: " << scancode << std::endl;
+    std::cout << "Action: " << action << ", mods: " << mods << std::endl;
+}
+
 
 //Flags
 int mousebuttonFlag;

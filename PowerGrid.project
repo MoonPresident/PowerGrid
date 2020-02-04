@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="PowerGrid" Version="10.0.0" InternalType="Console">
+  <VirtualDirectory Name="resources">
+    <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/sb7_basic_vertex.txt"/>
+      <File Name="resources/shaders/sb7_basic_input_vertex.txt"/>
+      <File Name="resources/shaders/sb7_basic_fragment.txt"/>
+      <File Name="resources/shaders/pc_basic_vertex.txt"/>
+      <File Name="resources/shaders/index.txt"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
   <VirtualDirectory Name="Dependencies">
     <VirtualDirectory Name="GLAD">
       <VirtualDirectory Name="src">

@@ -12,6 +12,8 @@ void basic_error_callback(int error, const char* description);
 
 void close_on_unfocus(GLFWwindow* window, int focused);
 
+void general_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods);
 
 int getMousebuttonFlag();

@@ -51,6 +51,7 @@ void setCallbacks(GLFWwindow** frame) {
     glfwMakeContextCurrent(window);
     glfwSetWindowFocusCallback(window, close_on_unfocus);
     glfwSetMouseButtonCallback(window, mousebutton_flag_callback);
+    glfwSetKeyCallback(window, general_keyboard_callback);
 }
 
 
@@ -94,10 +95,10 @@ void loadShaders() {
                 break;
             case '/':
                 break;
+            #ifdef debug
             default:
-//                #ifdef debug
                 std::cout << "ShaderType not recognised: " << shaderType << std::endl;
-//                #endif
+            #endif
         }
     }
 }
@@ -164,9 +165,10 @@ int main(int argc, char **argv) {
     std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
     #endif
     
-    //Create program, attach shaders to it, and link it.
-    //Shaders are accessed from the \resources\shaders folder.
-    //Shaders are stored in the a ShaderStore class.
+    /* Create program, attach shaders to it, and link it.
+     * Shaders are accessed from the \resources\shaders folder.
+     * Shaders are stored in the a ShaderStore class.
+     */
     program = glCreateProgram();
     loadShaders();
     
@@ -182,8 +184,11 @@ int main(int argc, char **argv) {
     
     glCreateVertexArrays(1, &vao);
     glBindVertexArray(vao);
-
-
+    
+    Player pc;
+    
+//    pc.setPosition();
+    
     while(!glfwWindowShouldClose(window)) {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
@@ -206,7 +211,34 @@ int main(int argc, char **argv) {
         };
         
         glUseProgram(program);
-
+        
+        float pcPos[2];
+        double cursorPos[2];
+        
+        pc.getPosition(pcPos);
+        glfwGetCursorPos(window, cursorPos, cursorPos + 1);
+        cursorPos[1] += pcPos[1] - (float) height/2;
+        cursorPos[0] += pcPos[0] - (float) width/2;
+        if(cursorPos[0] > 0) {
+            cursorPos[0] += tan(1.05 * M_PI/12) * abs(cursorPos[1]);
+        } else {
+            cursorPos[0] -= tan(1.05 * M_PI/12) * abs(cursorPos[1]);
+        }
+        
+        double radians = tanh(cursorPos[1]/(cursorPos[0])) * (M_PI_2);
+        if(cursorPos[0] < 0) radians += M_PI;
+        
+        std::cout << cursorPos[0] << " " << cursorPos[1] << " " << radians << std::endl;
+        
+        const float rotate[] = { 
+            (float) cos(radians), (float) sin(radians), 0.f, 0.f,
+            (float) -sin(radians), (float) cos(radians), 0.f, 0.f,
+            0.f, 0.f, 1.f, 0.f,
+            0.f, 0.f, 0.f, 1.f
+        };
+        
+        glUniformMatrix4fv(1, 1, GL_TRUE, rotate);
+        
         glVertexAttrib4fv(0, attrib);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         
