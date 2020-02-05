@@ -2,6 +2,7 @@
 <CodeLite_Project Name="PowerGrid" Version="10.0.0" InternalType="Console">
   <VirtualDirectory Name="resources">
     <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/forward_facing_line.txt"/>
       <File Name="resources/shaders/sb7_basic_vertex.txt"/>
       <File Name="resources/shaders/sb7_basic_input_vertex.txt"/>
       <File Name="resources/shaders/sb7_basic_fragment.txt"/>

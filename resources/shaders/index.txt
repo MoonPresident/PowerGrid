@@ -1,3 +1,9 @@
+//Lines that start with '/' are ignored.
+//The starting character sets the type of shader (e.g. 'v' for vertex, 'f' for fragment)
+//
 //v;sb7_basic_input_vertex.txt
+pf
 v;pc_basic_vertex.txt
 f;sb7_basic_fragment.txt
+pl
+v;forward_facing_line.txt

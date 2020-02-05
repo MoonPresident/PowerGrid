@@ -49,4 +49,5 @@ void ShaderStore::attachAll(GLuint program) {
 
 void ShaderStore::deleteAll() {
     std::for_each(std::begin(shaders), std::end(shaders), glDeleteShader);
+    shaders.clear();
 }

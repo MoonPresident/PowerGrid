@@ -22,8 +22,18 @@ int lastKey, lastAction;
 void general_keyboard_callback(
         GLFWwindow* window, int key, int scancode, int action, int mods
 ) {
-    std::cout << "Key: " << key << ", Scancode: " << scancode << std::endl;
-    std::cout << "Action: " << action << ", mods: " << mods << std::endl;
+    cout << "Key: " << key << (char) key << ", Scancode: " << scancode << endl;
+    cout << "Action: " << action << ", mods: " << mods << endl;
+    switch(key) {
+        case 'w':
+            
+        case 'a':
+        
+        case 's':
+        
+        case 'd':
+            break;
+    }
 }
 
 
@@ -32,7 +42,7 @@ int mousebuttonFlag;
 
 void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
     if(action) {
-        std::cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << std::endl << std::endl;
+        cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << endl << endl;
         mousebuttonFlag = 1;
     }
 }
@@ -43,4 +53,19 @@ int getMousebuttonFlag() {
 
 void setMousebuttonFlag(int val) {
     mousebuttonFlag = val;
+}
+
+
+
+/**
+ * @brief 
+ * @param frame
+ */
+void setCallbacks(GLFWwindow** frame) {
+    GLFWwindow* window = *frame;
+    
+    glfwMakeContextCurrent(window);
+    glfwSetWindowFocusCallback(window, close_on_unfocus);
+    glfwSetMouseButtonCallback(window, mousebutton_flag_callback);
+    glfwSetKeyCallback(window, general_keyboard_callback);
 }

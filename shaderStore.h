@@ -10,11 +10,6 @@
 
 #include <main.h>
 
-struct Shader {
-    GLuint ID;
-};
-
- 
 class ShaderStore {
 private:
     std::vector<GLuint> shaders;
@@ -24,5 +19,12 @@ public:
     void deleteAll();
     void attachAll(GLuint program);
 };
- 
- #endif /* SHADER_STORE_H */
+
+
+struct Program {
+    GLuint ID;
+    GLuint drawType;
+    ShaderStore shaderStore;
+};
+
+#endif /* SHADER_STORE_H */
