@@ -196,28 +196,47 @@ int main(int argc, char **argv) {
         glClearBufferfv(GL_COLOR, 0, color);
         
         GLfloat attrib[] = { timeSin, timeCos, 0.0f, 0.0f};
-        
+        pc.setPosition(attrib);
         float pcPos[2];
         pc.getPosition(pcPos);
+//        cout << pcPos[0] << " " << pcPos[1] << endl;
+        
+        attrib[0] = pcPos[0];
+        attrib[1] = pcPos[1];
         
         double cursorPos[2];
         glfwGetCursorPos(window, cursorPos, cursorPos + 1);
         
-        //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-        cursorPos[1] = 2 * (cursorPos[1] + pcPos[1]) / (float) height - 1;
-        cursorPos[0] = 2 * (cursorPos[0] + pcPos[0]) / (float) width - 1;
         
+        
+        
+        //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
+        cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + pcPos[1];
+        cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - pcPos[0];
+        cout << cursorPos[0] << " " << cursorPos[1] << " " << pcPos[0] << " " << pcPos[1] << endl;
         double radians = atan(cursorPos[1]/cursorPos[0]);
         if(cursorPos[0] < 0) radians += M_PI;
         
-        cout << (double) cursorPos[0] << " " << (double) cursorPos[1] << " " << radians << endl;
 
+        float cosMag = static_cast<float>(cos(radians));
+        float sinMag = static_cast<float>(sin(radians));
         const float rotate[] = { 
-            (float) cos(radians), (float) -sin(radians), 0.f, 0.f,
-            (float) sin(radians), (float) cos(radians), 0.f, 0.f,
+            cosMag, -sinMag, 0.f, 0.f,
+            sinMag, cosMag, 0.f, 0.f,
             0.f, 0.f, 1.f, 0.f,
             0.f, 0.f, 0.f, 1.f
         };
+        
+
+//        float rads = static_cast<float>(radians);
+//        float cosMag = cos(rads);
+//        float sinMag = sin(rads);
+//        const float rotate[] = { 
+//            cosMag, -sinMag, 0.f, 0.f,
+//            sinMag, cosMag, 0.f, 0.f,
+//            0.f, 0.f, 1.f, 0.f,
+//            0.f, 0.f, 0.f, 1.f
+//        };
         
         for(auto program: programs) {
             glUseProgram(program.ID);
@@ -225,6 +244,7 @@ int main(int argc, char **argv) {
             glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
             
             glVertexAttrib4fv(0, attrib);
+            
             glDrawArrays(program.drawType, 0, 4);
         }
         

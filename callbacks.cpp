@@ -16,6 +16,12 @@ void close_on_unfocus(GLFWwindow* window, int focused) {
     }
 }
 
+//Options for handling inputs:
+//For Maximum scalability, scancodes are ideal, though it may be expediant 
+//to use a combination of keys, characters and scancodes to optimise processing
+//https://www.glfw.org/docs/3.3/input_guide.html#input_keyboard
+int keyboardFlags[256];
+
 
 //Keyboard callback
 int lastKey, lastAction;

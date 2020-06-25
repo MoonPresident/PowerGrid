@@ -4,7 +4,7 @@
 layout (location = 1) uniform mat4 rot;
 
 //layout hits just this one? idk. Google.
-//layout (location = 0) in vec4 offset;
+layout (location = 0) in vec4 offset;
 
 void main (void){
     const vec4 verts[2] = vec4[2](
@@ -13,6 +13,5 @@ void main (void){
     );
 
     //Rotate and add offset
-    gl_Position = rot * verts[gl_VertexID];
-    //gl_Position = verts[gl_VertexID] + offset;
+    gl_Position = rot * verts[gl_VertexID] + offset;
 }
