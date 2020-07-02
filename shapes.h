@@ -9,6 +9,12 @@
 #ifndef SHAPES_H
 #define SHAPES_H
 
+#include <iostream>
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+
 #define ARRAY_2D 2
 #define ARRAY_COLOR 3
 

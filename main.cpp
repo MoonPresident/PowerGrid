@@ -13,6 +13,22 @@
 
 #include "main.h"
 
+//Abstract functions
+#include "callbacks.h"
+#include "shapes.h"
+#include "ShaderStore.h"
+#include "player.h"
+
+//Includes
+#include <fstream>
+#include "time.h"
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+
+
+
 //https://thebookofshaders.com/07/
 #define SHADER_PATH         "..\\resources\\shaders\\"
 #define SHADER_INDEX_FILE   "..\\resources\\shaders\\index.txt"
@@ -45,10 +61,10 @@ ShaderStore shaderStore;
 //    return buffer;
 //}
 
-vector<Program> loadPrograms() {
-    vector<Program> programs;
-    string line, path, index(SHADER_INDEX_FILE);
-    ifstream shaderIndex;
+std::vector<Program> loadPrograms() {
+    std::vector<Program> programs;
+    std::string line, path, index(SHADER_INDEX_FILE);
+    std::ifstream shaderIndex;
     shaderIndex.open(index);
     
     //Debug information to confirm the shaders have loaded correctly.
@@ -64,9 +80,9 @@ vector<Program> loadPrograms() {
      
     while(getline(shaderIndex, line)) {
         #ifdef debug
-        cout << "Line in: " << line << endl;
+        std::cout << "Line in: " << line << std::endl;
         #endif
-        cout << programs.size() << endl;
+        std::cout << programs.size() << std::endl;
         path.assign(SHADER_PATH).append(line.substr(2));
         char shaderType = line.at(0);
         switch(shaderType) {
@@ -152,12 +168,12 @@ void startup(GLFWwindow** window) {
     glfwMakeContextCurrent(*window);
     
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        cout << "Glad crash" << endl;
+        std::cout << "Glad crash" << std::endl;
         exit(EXIT_FAILURE);
     }
     
     #ifdef debug
-    cout << "glad sorted" << endl;
+    std::cout << "glad sorted" << std::endl;
     #endif
 
 }
@@ -168,13 +184,16 @@ int main(int argc, char **argv) {
     GLFWwindow* window;
     GLuint vao, vbo;
     
+    float pcInit[] = { 0.0f, 0.0f};
+    pc.setPosition(pcInit);
+    
     //Startup sequence
     startup(&window);
     setCallbacks(&window);
-    vector<Program> programs = loadPrograms();
+    std::vector<Program> programs = loadPrograms();
     
     #ifdef debug
-    cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << endl;
+    std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
     #endif
     
 //    glGenBuffers(1, &vbo);
@@ -195,10 +214,17 @@ int main(int argc, char **argv) {
         const GLfloat color[] = { timeSin + 0.5f, timeCos + 0.5f, 0.0f, 1.0f};
         glClearBufferfv(GL_COLOR, 0, color);
         
-        GLfloat attrib[] = { timeSin, timeCos, 0.0f, 0.0f};
-        pc.setPosition(attrib);
+        GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
         float pcPos[2];
         pc.getPosition(pcPos);
+        
+        if(glfwGetKey(window, GLFW_KEY_W)) pcPos[1] += 0.01;
+        if(glfwGetKey(window, GLFW_KEY_S)) pcPos[1] -= 0.01;
+        if(glfwGetKey(window, GLFW_KEY_D)) pcPos[0] += 0.01;
+        if(glfwGetKey(window, GLFW_KEY_A)) pcPos[0] -= 0.01;
+        
+        
+        pc.setPosition(pcPos);
 //        cout << pcPos[0] << " " << pcPos[1] << endl;
         
         attrib[0] = pcPos[0];
@@ -213,7 +239,7 @@ int main(int argc, char **argv) {
         //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
         cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + pcPos[1];
         cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - pcPos[0];
-        cout << cursorPos[0] << " " << cursorPos[1] << " " << pcPos[0] << " " << pcPos[1] << endl;
+//        cout << cursorPos[0] << " " << cursorPos[1] << " " << pcPos[0] << " " << pcPos[1] << endl;
         double radians = atan(cursorPos[1]/cursorPos[0]);
         if(cursorPos[0] < 0) radians += M_PI;
         
@@ -226,17 +252,6 @@ int main(int argc, char **argv) {
             0.f, 0.f, 1.f, 0.f,
             0.f, 0.f, 0.f, 1.f
         };
-        
-
-//        float rads = static_cast<float>(radians);
-//        float cosMag = cos(rads);
-//        float sinMag = sin(rads);
-//        const float rotate[] = { 
-//            cosMag, -sinMag, 0.f, 0.f,
-//            sinMag, cosMag, 0.f, 0.f,
-//            0.f, 0.f, 1.f, 0.f,
-//            0.f, 0.f, 0.f, 1.f
-//        };
         
         for(auto program: programs) {
             glUseProgram(program.ID);

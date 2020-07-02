@@ -7,28 +7,38 @@
 
 #include "shaderStore.h"
 
+#include <iostream>
+#include <fstream>
+#include <algorithm>
 
+
+
+//Setup function
 ShaderStore::ShaderStore (){
     std::cout << "ShaderStore activated" << std::endl;//shaders.data();
 }
 
 
+//Add shader to the store.
 void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
+    //Open and read stream
     std::ifstream shaderFile;
     shaderFile.open(shaderPath.c_str());
     
     if(shaderFile) {
+        //Init shader
         GLuint shader;
-        std::string fileContents;
         shader = glCreateShader(shaderType);
         
+        //Read in file contents
+        std::string fileContents;
         fileContents.assign(
             std::istreambuf_iterator<char>(shaderFile), 
             std::istreambuf_iterator<char>()
         );
         
+        
         const char* shaderSource = fileContents.c_str();
-
         glShaderSource(shader, 1, &shaderSource, NULL);
         glCompileShader(shader);
         

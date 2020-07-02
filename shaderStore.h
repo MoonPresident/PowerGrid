@@ -9,6 +9,9 @@
 #define SHADER_STORE_H
 
 #include <main.h>
+#include <vector>
+#include <string>
+
 
 class ShaderStore {
 private:

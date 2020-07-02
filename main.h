@@ -5,28 +5,22 @@
  * 
  */
 
-#include <cstdlib>
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <conio.h>
-#include <string>
+//#include <cstdlib>
+//#include <stdio.h>
+//#include <iostream>
+//#include <fstream>
+//#include <conio.h>
+//#include <string>
 
-#include <algorithm>
-#include <vector>
+//#include <algorithm>
+//#include <vector>
 
-#define _USE_MATH_DEFINES
-#include <cmath>
+//#define _USE_MATH_DEFINES
+//#include <cmath>
 
-using namespace std;
+//using namespace std;
 
-#include "time.h"
-
+//#include "time.h"
+//
 #include "glad/glad.h"
 #include "glfw3.h"
-
-//Abstract functions
-#include "callbacks.h"
-#include "shapes.h"
-#include "ShaderStore.h"
-#include "player.h"

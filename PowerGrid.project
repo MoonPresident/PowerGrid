@@ -5,6 +5,7 @@
       <![CDATA[00010001N0005Debug000000000000]]>
     </Plugin>
   </Plugins>
+  <VirtualDirectory Name="audio"/>
   <VirtualDirectory Name="resources">
     <VirtualDirectory Name="shaders">
       <File Name="resources/shaders/forward_facing_line.txt"/>
