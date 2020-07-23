@@ -11,8 +11,6 @@
  //https://www.glprogramming.com/red/chapter02.html
  //https://nccastaff.bournemouth.ac.uk/jmacey/RobTheBloke/www/opengl_programming.html
 
-#include "main.h"
-
 //Abstract functions
 #include "callbacks.h"
 #include "shapes.h"
@@ -25,6 +23,9 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+
+#include "glad/glad.h"
+#include "glfw3.h"
 
 
 
@@ -178,6 +179,7 @@ void startup(GLFWwindow** window) {
 
 }
 
+
 int main(int argc, char **argv) {
     //Init variables
     Player pc;
@@ -196,7 +198,7 @@ int main(int argc, char **argv) {
     std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
     #endif
     
-//    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &vbo);
 //    glBindBuffers(GL_ARRAY_BUFFER, VBO);
 //    glBindBuffers(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     
@@ -241,8 +243,9 @@ int main(int argc, char **argv) {
         cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - pcPos[0];
 //        cout << cursorPos[0] << " " << cursorPos[1] << " " << pcPos[0] << " " << pcPos[1] << endl;
         double radians = atan(cursorPos[1]/cursorPos[0]);
-        if(cursorPos[0] < 0) radians += M_PI;
-        
+        if(cursorPos[0] < 0) {
+            radians += M_PI;
+        }
 
         float cosMag = static_cast<float>(cos(radians));
         float sinMag = static_cast<float>(sin(radians));

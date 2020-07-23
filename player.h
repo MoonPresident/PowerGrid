@@ -9,8 +9,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "main.h"
-
 class Player {
 private:
     float x_offset;
@@ -19,6 +17,10 @@ public:
     player();
     void setPosition(float pos[2]);
     void getPosition(float pos[2]);
+    void setX(float x);
+    void setY(float y);
+    float getX();
+    float getY();
 };
 
 #endif /* PLAYER_H */

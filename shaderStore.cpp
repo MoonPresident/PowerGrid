@@ -7,12 +7,6 @@
 
 #include "shaderStore.h"
 
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-
-
-
 //Setup function
 ShaderStore::ShaderStore (){
     std::cout << "ShaderStore activated" << std::endl;//shaders.data();

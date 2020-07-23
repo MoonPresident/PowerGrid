@@ -5,7 +5,8 @@
  * These function use openGL primitive. There are plans to add VBO and VAO versions later.
  */
 
-#include "main.h"
+#include "glad/glad.h"
+#include "glfw3.h"
 
 #define ARRAY_2D 2
 #define ARRAY_COLOR 3

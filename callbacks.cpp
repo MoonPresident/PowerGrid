@@ -4,8 +4,9 @@
  * 
  * Stores callbacks for GLFW functions.
  */
-#include "main.h"
-
+ 
+#include "glad/glad.h"
+#include "glfw3.h"
 #include <iostream>
 
 

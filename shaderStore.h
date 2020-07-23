@@ -8,9 +8,14 @@
 #ifndef SHADER_STORE_H
 #define SHADER_STORE_H
 
-#include <main.h>
+
+#include "glad/glad.h"
+#include "glfw3.h"
 #include <vector>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
 
 
 class ShaderStore {

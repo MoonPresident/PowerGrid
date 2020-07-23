@@ -21,3 +21,19 @@ void Player::getPosition(float pos[]) {
     pos[0] = x_offset;
     pos[1] = y_offset;
 }
+
+void Player::setX(float x) {
+    x_offset = x;
+}
+
+void Player::setY(float y) {
+    y_offset = y;
+}
+
+float Player::getX() {
+    return x_offset;
+}
+
+float Player::getY() {
+    return y_offset;
+}
