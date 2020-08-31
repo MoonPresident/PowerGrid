@@ -220,10 +220,18 @@ int main(int argc, char **argv) {
         float pcPos[2];
         pc.getPosition(pcPos);
         
-        if(glfwGetKey(window, GLFW_KEY_W)) pcPos[1] += 0.01;
-        if(glfwGetKey(window, GLFW_KEY_S)) pcPos[1] -= 0.01;
-        if(glfwGetKey(window, GLFW_KEY_D)) pcPos[0] += 0.01;
-        if(glfwGetKey(window, GLFW_KEY_A)) pcPos[0] -= 0.01;
+        if(glfwGetKey(window, GLFW_KEY_W)) {
+            pcPos[1] += 0.01;
+        }
+        if(glfwGetKey(window, GLFW_KEY_S)) {
+            pcPos[1] -= 0.01;
+        }
+        if(glfwGetKey(window, GLFW_KEY_D)) {
+            pcPos[0] += 0.01;
+        }
+        if(glfwGetKey(window, GLFW_KEY_A)) {
+            pcPos[0] -= 0.01;
+        }
         
         
         pc.setPosition(pcPos);
