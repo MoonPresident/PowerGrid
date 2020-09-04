@@ -36,9 +36,12 @@
 
 #define debug1
 
+//GOALS ACHIEVED:
+//  Square drawn and rotating with mouse
+//  Movement with WASD
 
 //NEXT STEP:
-//Move using WASD, shoot something, and get a menu going.
+//Shoot something, and get a menu going.
 //For the Menu: find out what is needed to get characters up and going. May need bitmaps.
 
 
@@ -70,8 +73,7 @@ std::vector<Program> loadPrograms() {
     
     //Debug information to confirm the shaders have loaded correctly.
     #ifdef debug
-    if(shaderIndex) cout << "Shader opened: " <<index.c_str() << endl;
-    else cout << "Shader failed: " << index.c_str() << endl;
+    cout << (shaderIndex ? "Shader opened: " : "Shader failed: ") << index.c_str() << endl;
     #endif
     
     /* Iterate over the index file. The first characters determines the shader
@@ -88,23 +90,9 @@ std::vector<Program> loadPrograms() {
         char shaderType = line.at(0);
         switch(shaderType) {
             case 'p': {
-                if(programs.size() > 0) {
-                    programs.back().shaderStore.attachAll(programs.back().ID);
-                    glLinkProgram(programs.back().ID);
-                    programs.back().shaderStore.deleteAll();
-                }
                 Program program;
                 program.ID = glCreateProgram();
-                char drawTypeRef = line.at(1);
-                
-                switch (drawTypeRef) {
-                    case 'l':
-                        program.drawType = GL_LINES;
-                        break;
-                    case 'f':
-                        program.drawType = GL_TRIANGLE_FAN;
-                        break;
-                }
+                program.drawType = (line.at(1) == 'l') * GL_LINES + (line.at(1) == 'f') * GL_TRIANGLE_FAN;
                 programs.push_back(program);
                 break;
             }
@@ -113,19 +101,20 @@ std::vector<Program> loadPrograms() {
                 break;
             case 'f':
                 programs.back().shaderStore.addShader(path, GL_FRAGMENT_SHADER);
-                break;
             case '/':
                 break;
+            
             #ifdef debug
+
             default:
                 cout << "ShaderType not recognised: " << shaderType << endl;
             #endif
         }
     }
-    if(programs.size() > 0) {
-        programs.back().shaderStore.attachAll(programs.back().ID);
-        glLinkProgram(programs.back().ID);
-        programs.back().shaderStore.deleteAll();
+    for(auto program: programs) {
+        program.shaderStore.attachAll(program.ID);
+        glLinkProgram(program.ID);
+        program.shaderStore.deleteAll();
     }
     return programs;
 }
@@ -180,6 +169,12 @@ void startup(GLFWwindow** window) {
 }
 
 
+/**
+ * @brief Main function for Powergrid program
+ * @param argc
+ * @param argv
+ * @return Error value
+ */
 int main(int argc, char **argv) {
     //Init variables
     Player pc;
@@ -198,6 +193,8 @@ int main(int argc, char **argv) {
     std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
     #endif
     
+    //Arrays:
+    //You can check if arrays are generated or not using gllsVertexArray
     glGenBuffers(1, &vbo);
 //    glBindBuffers(GL_ARRAY_BUFFER, VBO);
 //    glBindBuffers(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -220,19 +217,9 @@ int main(int argc, char **argv) {
         float pcPos[2];
         pc.getPosition(pcPos);
         
-        if(glfwGetKey(window, GLFW_KEY_W)) {
-            pcPos[1] += 0.01;
-        }
-        if(glfwGetKey(window, GLFW_KEY_S)) {
-            pcPos[1] -= 0.01;
-        }
-        if(glfwGetKey(window, GLFW_KEY_D)) {
-            pcPos[0] += 0.01;
-        }
-        if(glfwGetKey(window, GLFW_KEY_A)) {
-            pcPos[0] -= 0.01;
-        }
-        
+        double step_length = 0.001;
+        pcPos[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
+        pcPos[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
         
         pc.setPosition(pcPos);
 //        cout << pcPos[0] << " " << pcPos[1] << endl;
@@ -250,10 +237,7 @@ int main(int argc, char **argv) {
         cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + pcPos[1];
         cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - pcPos[0];
 //        cout << cursorPos[0] << " " << cursorPos[1] << " " << pcPos[0] << " " << pcPos[1] << endl;
-        double radians = atan(cursorPos[1]/cursorPos[0]);
-        if(cursorPos[0] < 0) {
-            radians += M_PI;
-        }
+        double radians = atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI;
 
         float cosMag = static_cast<float>(cos(radians));
         float sinMag = static_cast<float>(sin(radians));
@@ -264,16 +248,16 @@ int main(int argc, char **argv) {
             0.f, 0.f, 0.f, 1.f
         };
         
+        
+            glVertexAttrib4fv(0, attrib);
         for(auto program: programs) {
             glUseProgram(program.ID);
             
             glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
             
-            glVertexAttrib4fv(0, attrib);
             
             glDrawArrays(program.drawType, 0, 4);
         }
-        
         
         glfwPollEvents();
         glfwSwapBuffers(window);
