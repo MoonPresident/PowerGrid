@@ -27,11 +27,15 @@ void close_on_unfocus(GLFWwindow* window, int focused) {
 //int keyboardFlags[256];
 //Range: 108 inputs between 32 and 348 inclusive.
 
+
+//Key input handling: input of 1 prepares a response, input of 2 adapts the response, input of 0 releases the response.
+//Easiest way to differentiate between handling of since press and a long press: only fire off on the release.
+
 void general_keyboard_callback(
         GLFWwindow* window, int key, int scancode, int action, int mods
 ) {
-//    cout << "Key: " << key << (char) key << ", Scancode: " << scancode << endl;
-//    cout << "Action: " << action << ", mods: " << mods << endl;
+    std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
+    std::cout << "Action: " << action << ", mods: " << mods << std::endl;
 //    switch(key) {
 //        case 'w':
 //            

@@ -44,13 +44,16 @@ void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
     }
 }
 
+
+//Attach all shaders to the program.
 void ShaderStore::attachAll(GLuint program) {
     for(int i = 0; i < shaders.size(); i++) {
-        std::cout << i << " : " << shaders.at(i) << std::endl;
+//        std::cout << i << " : " << shaders.at(i) << std::endl;
         glAttachShader(program, shaders.at(i));
     }
 }
 
+//Delete shaders
 void ShaderStore::deleteAll() {
     std::for_each(std::begin(shaders), std::end(shaders), glDeleteShader);
     shaders.clear();

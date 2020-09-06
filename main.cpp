@@ -111,6 +111,8 @@ std::vector<Program> loadPrograms() {
             #endif
         }
     }
+    
+    //Compile the shader programs, 1 program at a time
     for(auto program: programs) {
         program.shaderStore.attachAll(program.ID);
         glLinkProgram(program.ID);
@@ -182,6 +184,7 @@ int main(int argc, char **argv) {
     GLuint vao, vbo;
     
     float pcInit[] = { 0.0f, 0.0f};
+    GLint variant = 0;
     pc.setPosition(pcInit);
     
     //Startup sequence
@@ -217,7 +220,7 @@ int main(int argc, char **argv) {
         float pcPos[2];
         pc.getPosition(pcPos);
         
-        double step_length = 0.001;
+        double step_length = 0.008;
         pcPos[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
         pcPos[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
         
@@ -248,12 +251,19 @@ int main(int argc, char **argv) {
             0.f, 0.f, 0.f, 1.f
         };
         
+        if(getMousebuttonFlag()) {
+            variant = !variant;
+            setMousebuttonFlag(0);
+        }
         
-            glVertexAttrib4fv(0, attrib);
+        glLineWidth(1 + timeSin * 100);
+        
+        glVertexAttrib4fv(0, attrib);
         for(auto program: programs) {
             glUseProgram(program.ID);
             
             glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
+            glUniform1i(2, variant);
             
             
             glDrawArrays(program.drawType, 0, 4);
