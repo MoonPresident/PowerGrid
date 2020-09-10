@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="PowerGrid" Version="11000" InternalType="Console">
-  <VirtualDirectory Name="z_legacy"/>
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>
     </Plugin>
   </Plugins>
+  <VirtualDirectory Name="z_legacy"/>
   <VirtualDirectory Name="audio"/>
   <VirtualDirectory Name="resources">
+    <VirtualDirectory Name="components"/>
     <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/scaled_square.txt"/>
       <File Name="resources/shaders/forward_facing_line.txt"/>
       <File Name="resources/shaders/sb7_basic_vertex.txt"/>
       <File Name="resources/shaders/sb7_basic_input_vertex.txt"/>

@@ -133,10 +133,14 @@ void startup(GLFWwindow** window) {
     cout << "glfw init successful" << endl;
     #endif
     
+    //Set up error callback.
     glfwSetErrorCallback(basic_error_callback);
     
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //Set up multisampling
+    glfwWindowHint(GLFW_SAMPLES, 8);
     
+    //Set OpenGL version.
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     
@@ -168,6 +172,11 @@ void startup(GLFWwindow** window) {
     std::cout << "glad sorted" << std::endl;
     #endif
 
+}
+
+
+void handleViewport(int *width, int *height, float *aspect_ratio) {
+    
 }
 
 
@@ -220,7 +229,7 @@ int main(int argc, char **argv) {
         float pcPos[2];
         pc.getPosition(pcPos);
         
-        double step_length = 0.008;
+        double step_length = 0.002;
         pcPos[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
         pcPos[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
         
@@ -232,9 +241,6 @@ int main(int argc, char **argv) {
         
         double cursorPos[2];
         glfwGetCursorPos(window, cursorPos, cursorPos + 1);
-        
-        
-        
         
         //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
         cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + pcPos[1];
@@ -251,20 +257,36 @@ int main(int argc, char **argv) {
             0.f, 0.f, 0.f, 1.f
         };
         
+        
+        float x_scale = (width < height) * (float) height / (float) width + (width > height) * (1 - (float) height / (float) width);
+        float y_scale = 1.f;
+        
+        std::cout << "Scale: " << x_scale << " ";
+        
+        const float scale[] = { 
+            x_scale, 0.f, 0.f, 0.f,
+            0.f, y_scale, 0.f, 0.f,
+            0.f, 0.f, 1.f, 0.f,
+            0.f, 0.f, 0.f, 1.f
+        };
+        
         if(getMousebuttonFlag()) {
             variant = !variant;
             setMousebuttonFlag(0);
         }
         
-        glLineWidth(1 + timeSin * 100);
+        glLineWidth(5.0f + timeSin * 6.0f);
         
+        float f_vec[] = {(float) width, (float) height};
+        
+        std::cout << f_vec[0] << " " << f_vec[1] << std::endl;
         glVertexAttrib4fv(0, attrib);
         for(auto program: programs) {
             glUseProgram(program.ID);
             
             glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
             glUniform1i(2, variant);
-            
+            glUniformMatrix4fv(3, 1, GL_FALSE, scale);
             
             glDrawArrays(program.drawType, 0, 4);
         }
@@ -281,5 +303,6 @@ int main(int argc, char **argv) {
     glDeleteVertexArrays(1, &vao);
     
     glfwTerminate();
+    std::cout << "Program successfully terminated." << std::endl;
 	return 0;
 }
