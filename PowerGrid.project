@@ -31,6 +31,8 @@
     <File Name="player.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="helpers">
+    <File Name="math.h"/>
+    <File Name="math.cpp"/>
     <File Name="shaderStore.h"/>
     <File Name="shaderStore.cpp"/>
     <File Name="shapes.h"/>

@@ -1,6 +1,7 @@
 /**
- * Author: MoonPresident
- * Date: January 4th 2020
+ * @file main.cpp
+ * @author MoonPresident
+ * @date January 4th 2020
  * 
  * 
  * 
@@ -23,6 +24,9 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+
+//My math library
+#include "math.h"
 
 #include "glad/glad.h"
 #include "glfw3.h"
@@ -226,42 +230,27 @@ int main(int argc, char **argv) {
         glClearBufferfv(GL_COLOR, 0, color);
         
         GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
-        float pcPos[2];
-        pc.getPosition(pcPos);
+        pc.getPosition(attrib);
         
-        double step_length = 0.002;
-        pcPos[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
-        pcPos[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
+        double step_length = 0.008;
+        attrib[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
+        attrib[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
         
-        pc.setPosition(pcPos);
-//        cout << pcPos[0] << " " << pcPos[1] << endl;
-        
-        attrib[0] = pcPos[0];
-        attrib[1] = pcPos[1];
+        pc.setPosition(attrib);
         
         double cursorPos[2];
         glfwGetCursorPos(window, cursorPos, cursorPos + 1);
         
         //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-        cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + pcPos[1];
-        cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - pcPos[0];
-//        cout << cursorPos[0] << " " << cursorPos[1] << " " << pcPos[0] << " " << pcPos[1] << endl;
-        double radians = atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI;
-
-        float cosMag = static_cast<float>(cos(radians));
-        float sinMag = static_cast<float>(sin(radians));
-        const float rotate[] = { 
-            cosMag, -sinMag, 0.f, 0.f,
-            sinMag, cosMag, 0.f, 0.f,
-            0.f, 0.f, 1.f, 0.f,
-            0.f, 0.f, 0.f, 1.f
-        };
+        cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + attrib[1];
+        cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - attrib[0];
+        float radians = (float) (atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI);
         
         
-        float x_scale = (width < height) * (float) height / (float) width + (width > height) * (1 - (float) height / (float) width);
-        float y_scale = 1.f;
+        float x_scale = (width != height) * (float) height / (float) width + (width == height);
+        float y_scale = 1.f; //(width != height) * (float) height / (float) width + (width == height);
         
-        std::cout << "Scale: " << x_scale << " ";
+        std::cout << "X Scale: " << x_scale << ", Y Scale: " << y_scale << " ";
         
         const float scale[] = { 
             x_scale, 0.f, 0.f, 0.f,
@@ -275,18 +264,15 @@ int main(int argc, char **argv) {
             setMousebuttonFlag(0);
         }
         
-        glLineWidth(5.0f + timeSin * 6.0f);
-        
-        float f_vec[] = {(float) width, (float) height};
-        
-        std::cout << f_vec[0] << " " << f_vec[1] << std::endl;
         glVertexAttrib4fv(0, attrib);
         for(auto program: programs) {
             glUseProgram(program.ID);
             
-            glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
+//            glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
             glUniform1i(2, variant);
             glUniformMatrix4fv(3, 1, GL_FALSE, scale);
+            
+            glUniform1f(4, radians);
             
             glDrawArrays(program.drawType, 0, 4);
         }

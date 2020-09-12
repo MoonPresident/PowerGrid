@@ -5,15 +5,15 @@
 ## Debug
 ProjectName            :=PowerGrid
 ConfigurationName      :=Debug
-WorkspacePath          :=C:/spacelessFolder/CPPWorkplace
-ProjectPath            :=C:/spacelessFolder/CPPWorkplace/PowerGrid
+WorkspacePath          :=C:/spacelessFolder/CPPWorkspace
+ProjectPath            :=C:/spacelessFolder/CPPWorkspace/PowerGrid
 IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
-User                   :=Thomas
-Date                   :=10/09/2020
+User                   :=ThomasSebastian
+Date                   :=12/09/2020
 CodeLitePath           :="C:/Program Files/CodeLite"
 LinkerName             :=C:/mingw64/bin/g++.exe
 SharedObjectLinkerName :=C:/mingw64/bin/g++.exe -shared -fPIC
@@ -62,7 +62,7 @@ AS       := C:/mingw64/bin/as.exe
 ## User defined environment variables
 ##
 CodeLiteDir:=C:\Program Files\CodeLite
-Objects0=$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix) $(IntermediateDirectory)/shapes.cpp$(ObjectSuffix) $(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix) $(IntermediateDirectory)/player.cpp$(ObjectSuffix) $(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix) $(IntermediateDirectory)/math.cpp$(ObjectSuffix) $(IntermediateDirectory)/player.cpp$(ObjectSuffix) $(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix) $(IntermediateDirectory)/shapes.cpp$(ObjectSuffix) $(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) 
 
 
 
@@ -93,39 +93,59 @@ PreBuild:
 ##
 ## Objects
 ##
-$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix): Dependencies/GLAD/src/glad.c
+$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix): Dependencies/GLAD/src/glad.c $(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/Dependencies/GLAD/src/glad.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(DependSuffix): Dependencies/GLAD/src/glad.c
 	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix) -MF$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(DependSuffix) -MM Dependencies/GLAD/src/glad.c
-	$(CC) $(SourceSwitch) "C:/spacelessFolder/CPPWorkplace/PowerGrid/Dependencies/GLAD/src/glad.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(ObjectSuffix) $(IncludePath)
+
 $(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(PreprocessSuffix): Dependencies/GLAD/src/glad.c
 	$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Dependencies_GLAD_src_glad.c$(PreprocessSuffix) Dependencies/GLAD/src/glad.c
 
-$(IntermediateDirectory)/shapes.cpp$(ObjectSuffix): shapes.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/shapes.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/shapes.cpp$(DependSuffix) -MM shapes.cpp
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkplace/PowerGrid/shapes.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/shapes.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/shapes.cpp$(PreprocessSuffix): shapes.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/shapes.cpp$(PreprocessSuffix) shapes.cpp
+$(IntermediateDirectory)/math.cpp$(ObjectSuffix): math.cpp $(IntermediateDirectory)/math.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/math.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/math.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/math.cpp$(DependSuffix): math.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/math.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/math.cpp$(DependSuffix) -MM math.cpp
 
-$(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix): shaderStore.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/shaderStore.cpp$(DependSuffix) -MM shaderStore.cpp
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkplace/PowerGrid/shaderStore.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/shaderStore.cpp$(PreprocessSuffix): shaderStore.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/shaderStore.cpp$(PreprocessSuffix) shaderStore.cpp
+$(IntermediateDirectory)/math.cpp$(PreprocessSuffix): math.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/math.cpp$(PreprocessSuffix) math.cpp
 
-$(IntermediateDirectory)/player.cpp$(ObjectSuffix): player.cpp
+$(IntermediateDirectory)/player.cpp$(ObjectSuffix): player.cpp $(IntermediateDirectory)/player.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/player.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/player.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/player.cpp$(DependSuffix): player.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/player.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/player.cpp$(DependSuffix) -MM player.cpp
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkplace/PowerGrid/player.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/player.cpp$(ObjectSuffix) $(IncludePath)
+
 $(IntermediateDirectory)/player.cpp$(PreprocessSuffix): player.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/player.cpp$(PreprocessSuffix) player.cpp
 
-$(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix): callbacks.cpp
+$(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix): shaderStore.cpp $(IntermediateDirectory)/shaderStore.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/shaderStore.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/shaderStore.cpp$(DependSuffix): shaderStore.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/shaderStore.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/shaderStore.cpp$(DependSuffix) -MM shaderStore.cpp
+
+$(IntermediateDirectory)/shaderStore.cpp$(PreprocessSuffix): shaderStore.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/shaderStore.cpp$(PreprocessSuffix) shaderStore.cpp
+
+$(IntermediateDirectory)/shapes.cpp$(ObjectSuffix): shapes.cpp $(IntermediateDirectory)/shapes.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/shapes.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/shapes.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/shapes.cpp$(DependSuffix): shapes.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/shapes.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/shapes.cpp$(DependSuffix) -MM shapes.cpp
+
+$(IntermediateDirectory)/shapes.cpp$(PreprocessSuffix): shapes.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/shapes.cpp$(PreprocessSuffix) shapes.cpp
+
+$(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix): callbacks.cpp $(IntermediateDirectory)/callbacks.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/callbacks.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/callbacks.cpp$(DependSuffix): callbacks.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/callbacks.cpp$(DependSuffix) -MM callbacks.cpp
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkplace/PowerGrid/callbacks.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/callbacks.cpp$(ObjectSuffix) $(IncludePath)
+
 $(IntermediateDirectory)/callbacks.cpp$(PreprocessSuffix): callbacks.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/callbacks.cpp$(PreprocessSuffix) callbacks.cpp
 
-$(IntermediateDirectory)/main.cpp$(ObjectSuffix): main.cpp
+$(IntermediateDirectory)/main.cpp$(ObjectSuffix): main.cpp $(IntermediateDirectory)/main.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkspace/PowerGrid/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/main.cpp$(DependSuffix): main.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/main.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/main.cpp$(DependSuffix) -MM main.cpp
-	$(CXX) $(IncludePCH) $(SourceSwitch) "C:/spacelessFolder/CPPWorkplace/PowerGrid/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
+
 $(IntermediateDirectory)/main.cpp$(PreprocessSuffix): main.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/main.cpp$(PreprocessSuffix) main.cpp
 

@@ -13,14 +13,20 @@ class Player {
 private:
     float x_offset;
     float y_offset;
+    float bearing;
+    float scale;
 public:
     player();
     void setPosition(float pos[2]);
     void getPosition(float pos[2]);
-    void setX(float x);
-    void setY(float y);
     float getX();
+    void setX(float x);
     float getY();
+    void setY(float y);
+    float getBearing();
+    void setBearing(float new_bearing);
+    float getScale();
+    void setScale(float new_scale);
 };
 
 #endif /* PLAYER_H */
