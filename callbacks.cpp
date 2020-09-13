@@ -67,6 +67,22 @@ void setMousebuttonFlag(int val) {
     mousebuttonFlag = val;
 }
 
+int scrollFlag;
+
+int getScrollFlag() {
+    return scrollFlag;
+}
+
+void setScrollFlag(int val) {
+    scrollFlag = val;
+}
+
+void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
+    scrollFlag += y_offset;
+    std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
+}
+
+
 
 
 /**
@@ -79,5 +95,6 @@ void setCallbacks(GLFWwindow** frame) {
     glfwMakeContextCurrent(window);
     glfwSetWindowFocusCallback(window, close_on_unfocus);
     glfwSetMouseButtonCallback(window, mousebutton_flag_callback);
+    glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, general_keyboard_callback);
 }

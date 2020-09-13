@@ -23,6 +23,10 @@ int getMousebuttonFlag();
 
 void setMousebuttonFlag(int val);
 
+int getScrollFlag();
+
+void setScrollFlag(int val);
+
 void setCallbacks(GLFWwindow** frame);
 
 #endif /* CALLBACKS_H */

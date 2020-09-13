@@ -1,1 +1,1 @@
-./Debug/Dependencies_GLAD_src_glad.c.o ./Debug/math.cpp.o ./Debug/player.cpp.o ./Debug/shaderStore.cpp.o ./Debug/shapes.cpp.o ./Debug/callbacks.cpp.o ./Debug/main.cpp.o   
+./Debug/Dependencies_GLAD_src_glad.c.o ./Debug/shapes.cpp.o ./Debug/shaderStore.cpp.o ./Debug/player.cpp.o ./Debug/callbacks.cpp.o ./Debug/main.cpp.o   

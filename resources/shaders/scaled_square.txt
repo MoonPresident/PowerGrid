@@ -1,7 +1,7 @@
 #version 450 core
 
 //uniform hits every vertex shader
-layout (location = 0) in vec4 offset;
+layout (location = 0) uniform vec4 offset;
 layout (location = 1) uniform mat4 rot;
 layout (location = 2) uniform vec2 frame;
 

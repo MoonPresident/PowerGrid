@@ -47,13 +47,14 @@
 //NEXT STEP:
 //Shoot something, and get a menu going.
 //For the Menu: find out what is needed to get characters up and going. May need bitmaps.
+//Print bitmaps
 
 
 namespace Frame {
     int width  {960};//1280};
     int height  {960};
-    int x_off   {100};
-    int y_off     {0};
+    int x_off   {800};
+    int y_off     {50};
     const char* title = "PowerGrid";
 }
 
@@ -130,6 +131,7 @@ void startup(GLFWwindow** window) {
     
     srand(time(NULL));
     setMousebuttonFlag(0);
+    setScrollFlag(0);
     
     if (!glfwInit()) exit(EXIT_FAILURE);
     
@@ -160,6 +162,7 @@ void startup(GLFWwindow** window) {
         NULL
     );
     
+    glfwSetWindowPos(*window, Frame::x_off, Frame::y_off);
     if(!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -179,11 +182,6 @@ void startup(GLFWwindow** window) {
 }
 
 
-void handleViewport(int *width, int *height, float *aspect_ratio) {
-    
-}
-
-
 /**
  * @brief Main function for Powergrid program
  * @param argc
@@ -199,6 +197,8 @@ int main(int argc, char **argv) {
     float pcInit[] = { 0.0f, 0.0f};
     GLint variant = 0;
     pc.setPosition(pcInit);
+    
+    float scale_coeff = 1.f;
     
     //Startup sequence
     startup(&window);
@@ -223,6 +223,18 @@ int main(int argc, char **argv) {
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
         
+        float x_scale = scale_coeff * ((width != height) * (float) height / (float) width + (width == height));
+        float y_scale = scale_coeff;//1.f; //(width != height) * (float) height / (float) width + (width == height);
+        
+        std::cout << "X Scale: " << x_scale << ", Y Scale: " << y_scale << " " << std::endl;
+        
+        const float scale[] = { 
+            x_scale, 0.f, 0.f, 0.f,
+            0.f, y_scale, 0.f, 0.f,
+            0.f, 0.f, 1.f, 0.f,
+            0.f, 0.f, 0.f, 1.f
+        };
+        
         //Set changing screen volor.
         float timeSin = (float)sin(glfwGetTime()) * 0.5f;
         float timeCos = (float)cos(glfwGetTime()) * 0.5f;
@@ -235,50 +247,41 @@ int main(int argc, char **argv) {
         double step_length = 0.008;
         attrib[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
         attrib[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
-        
         pc.setPosition(attrib);
         
         double cursorPos[2];
         glfwGetCursorPos(window, cursorPos, cursorPos + 1);
         
         //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-        cursorPos[1] = 2 * (cursorPos[1] / (float) height) - 1 + attrib[1];
-        cursorPos[0] = 2 * (cursorPos[0] / (float) width) - 1 - attrib[0];
+        cursorPos[1] = (2 * (cursorPos[1] / (float) height) - 1 + attrib[1]) * x_scale;
+        cursorPos[0] = (2 * (cursorPos[0] / (float) width) - 1 - attrib[0]) * y_scale;
         float radians = (float) (atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI);
+        std::cout << "Rads: " << radians << std::endl;
         
-        
-        float x_scale = (width != height) * (float) height / (float) width + (width == height);
-        float y_scale = 1.f; //(width != height) * (float) height / (float) width + (width == height);
-        
-        std::cout << "X Scale: " << x_scale << ", Y Scale: " << y_scale << " ";
-        
-        const float scale[] = { 
-            x_scale, 0.f, 0.f, 0.f,
-            0.f, y_scale, 0.f, 0.f,
-            0.f, 0.f, 1.f, 0.f,
-            0.f, 0.f, 0.f, 1.f
-        };
+
         
         if(getMousebuttonFlag()) {
             variant = !variant;
             setMousebuttonFlag(0);
         }
         
+        scale_coeff = (float) getScrollFlag() * 0.1f;
+        
         glVertexAttrib4fv(0, attrib);
         for(auto program: programs) {
             glUseProgram(program.ID);
             
 //            glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
-            glUniform1i(2, variant);
-            glUniformMatrix4fv(3, 1, GL_FALSE, scale);
+            glUniform1i(1, variant);
+            glUniformMatrix4fv(2, 1, GL_FALSE, scale);
             
-            glUniform1f(4, radians);
+            glUniform1f(3, radians);
             
             glDrawArrays(program.drawType, 0, 4);
         }
         
-        glfwPollEvents();
         glfwSwapBuffers(window);
+        glfwPollEvents();
     }
     
     //Close up shop

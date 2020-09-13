@@ -10,6 +10,7 @@
   <VirtualDirectory Name="resources">
     <VirtualDirectory Name="components"/>
     <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/button.txt"/>
       <File Name="resources/shaders/scaled_square.txt"/>
       <File Name="resources/shaders/forward_facing_line.txt"/>
       <File Name="resources/shaders/sb7_basic_vertex.txt"/>
@@ -31,8 +32,6 @@
     <File Name="player.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="helpers">
-    <File Name="math.h"/>
-    <File Name="math.cpp"/>
     <File Name="shaderStore.h"/>
     <File Name="shaderStore.cpp"/>
     <File Name="shapes.h"/>
