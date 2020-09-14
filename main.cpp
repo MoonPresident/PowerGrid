@@ -131,7 +131,7 @@ void startup(GLFWwindow** window) {
     
     srand(time(NULL));
     setMousebuttonFlag(0);
-    setScrollFlag(0);
+    setScrollFlag(10);
     
     if (!glfwInit()) exit(EXIT_FAILURE);
     
@@ -258,7 +258,7 @@ int main(int argc, char **argv) {
         float radians = (float) (atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI);
         std::cout << "Rads: " << radians << std::endl;
         
-
+//        glBitmap();
         
         if(getMousebuttonFlag()) {
             variant = !variant;
@@ -271,7 +271,6 @@ int main(int argc, char **argv) {
         for(auto program: programs) {
             glUseProgram(program.ID);
             
-//            glUniformMatrix4fv(1, 1, GL_FALSE, rotate);
             glUniform1i(1, variant);
             glUniformMatrix4fv(2, 1, GL_FALSE, scale);
             
