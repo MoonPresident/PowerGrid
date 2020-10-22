@@ -18,6 +18,8 @@
 #include "ShaderStore.h"
 #include "player.h"
 
+#include <chrono>
+
 //Includes
 #include <fstream>
 #include "time.h"
@@ -218,7 +220,14 @@ int main(int argc, char **argv) {
     glCreateVertexArrays(1, &vao);
     glBindVertexArray(vao);
     
+    auto prev_timestamp = std::chrono::high_resolution_clock::now();
+    auto current_timestamp = std::chrono::high_resolution_clock::now();
     while(!glfwWindowShouldClose(window)) {
+        //Get timestamp
+        prev_timestamp = current_timestamp;
+        current_timestamp = std::chrono::high_resolution_clock::now();
+        
+        
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
@@ -226,7 +235,7 @@ int main(int argc, char **argv) {
         float x_scale = scale_coeff * ((width != height) * (float) height / (float) width + (width == height));
         float y_scale = scale_coeff;//1.f; //(width != height) * (float) height / (float) width + (width == height);
         
-        std::cout << "X Scale: " << x_scale << ", Y Scale: " << y_scale << " " << std::endl;
+//        std::cout << "X Scale: " << x_scale << ", Y Scale: " << y_scale << " " << std::endl;
         
         const float scale[] = { 
             x_scale, 0.f, 0.f, 0.f,
@@ -244,7 +253,8 @@ int main(int argc, char **argv) {
         GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
         pc.getPosition(attrib);
         
-        double step_length = 0.008;
+        double step_length = 0.004 * std::chrono::duration_cast<std::chrono::microseconds>(current_timestamp - prev_timestamp).count() / 1000 ;
+        std::cout << "stepsize: " << step_length << std::endl;
         attrib[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
         attrib[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
         pc.setPosition(attrib);
@@ -256,7 +266,7 @@ int main(int argc, char **argv) {
         cursorPos[1] = (2 * (cursorPos[1] / (float) height) - 1 + attrib[1]) * x_scale;
         cursorPos[0] = (2 * (cursorPos[0] / (float) width) - 1 - attrib[0]) * y_scale;
         float radians = (float) (atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI);
-        std::cout << "Rads: " << radians << std::endl;
+//        std::cout << "Rads: " << radians << std::endl;
         
 //        glBitmap();
         
