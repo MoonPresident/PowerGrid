@@ -8,21 +8,24 @@
  * Needs links included to opengl32 and gdi32
  * Get GLM installed. Or make your own vector math, up to you.
  */
- 
- //https://www.glprogramming.com/red/chapter02.html
- //https://nccastaff.bournemouth.ac.uk/jmacey/RobTheBloke/www/opengl_programming.html
 
+//https://www.glprogramming.com/red/chapter02.html
+//https://nccastaff.bournemouth.ac.uk/jmacey/RobTheBloke/www/opengl_programming.html
+//https://www.toptal.com/game/video-game-physics-part-ii-collision-detection-for-solid-objects
+
+/********************************************************************************
+ *******                             Includes                             *******
+ *******************************************************************************/
 //Abstract functions
 #include "callbacks.h"
 #include "shapes.h"
 #include "ShaderStore.h"
 #include "player.h"
+#include "WorldData.h"
 
-#include <chrono>
 
 //Includes
 #include <fstream>
-#include "time.h"
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -34,13 +37,22 @@
 #include "glfw3.h"
 
 
+/********************************************************************************
+ *******                           Namespaces                             *******
+ *******************************************************************************/
+using namespace std::chrono;
 
-
+/********************************************************************************
+ *******                             Defines                              *******
+ *******************************************************************************/
+ 
 //https://thebookofshaders.com/07/
 #define SHADER_PATH         "..\\resources\\shaders\\"
 #define SHADER_INDEX_FILE   "..\\resources\\shaders\\index.txt"
 
 #define debug1
+
+#define SQRT_2 1.4142
 
 //GOALS ACHIEVED:
 //  Square drawn and rotating with mouse
@@ -50,6 +62,7 @@
 //Shoot something, and get a menu going.
 //For the Menu: find out what is needed to get characters up and going. May need bitmaps.
 //Print bitmaps
+//Abstract out the drawing and the game logic
 
 
 namespace Frame {
@@ -60,9 +73,6 @@ namespace Frame {
     const char* title = "PowerGrid";
 }
 
-//Global variables
-ShaderStore shaderStore;
-
 
 //static GLuint create_buffer(GLenum target, const void* data, GLsizei buffer_size) {
 //    GLuint buffer;
@@ -71,62 +81,6 @@ ShaderStore shaderStore;
 //    glBufferData(target, buffer_size, buffer_data, GL_STATIC_DRAW);
 //    return buffer;
 //}
-
-std::vector<Program> loadPrograms() {
-    std::vector<Program> programs;
-    std::string line, path, index(SHADER_INDEX_FILE);
-    std::ifstream shaderIndex;
-    shaderIndex.open(index);
-    
-    //Debug information to confirm the shaders have loaded correctly.
-    #ifdef debug
-    cout << (shaderIndex ? "Shader opened: " : "Shader failed: ") << index.c_str() << endl;
-    #endif
-    
-    /* Iterate over the index file. The first characters determines the shader
-     * type, the second character is a semicolon and the rest of the line is 
-     * the files address.
-     */
-     
-    while(getline(shaderIndex, line)) {
-        #ifdef debug
-        std::cout << "Line in: " << line << std::endl;
-        #endif
-        std::cout << programs.size() << std::endl;
-        path.assign(SHADER_PATH).append(line.substr(2));
-        char shaderType = line.at(0);
-        switch(shaderType) {
-            case 'p': {
-                Program program;
-                program.ID = glCreateProgram();
-                program.drawType = (line.at(1) == 'l') * GL_LINES + (line.at(1) == 'f') * GL_TRIANGLE_FAN;
-                programs.push_back(program);
-                break;
-            }
-            case 'v':
-                programs.back().shaderStore.addShader(path, GL_VERTEX_SHADER);
-                break;
-            case 'f':
-                programs.back().shaderStore.addShader(path, GL_FRAGMENT_SHADER);
-            case '/':
-                break;
-            
-            #ifdef debug
-
-            default:
-                cout << "ShaderType not recognised: " << shaderType << endl;
-            #endif
-        }
-    }
-    
-    //Compile the shader programs, 1 program at a time
-    for(auto program: programs) {
-        program.shaderStore.attachAll(program.ID);
-        glLinkProgram(program.ID);
-        program.shaderStore.deleteAll();
-    }
-    return programs;
-}
 
 
 void startup(GLFWwindow** window) {
@@ -152,10 +106,6 @@ void startup(GLFWwindow** window) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     
-    #ifdef debug
-    cout << getch();
-    #endif
-    
     *window = glfwCreateWindow(
         Frame::width,
         Frame::height,
@@ -180,8 +130,9 @@ void startup(GLFWwindow** window) {
     #ifdef debug
     std::cout << "glad sorted" << std::endl;
     #endif
-
 }
+
+
 
 
 /**
@@ -192,15 +143,8 @@ void startup(GLFWwindow** window) {
  */
 int main(int argc, char **argv) {
     //Init variables
-    Player pc;
     GLFWwindow* window;
     GLuint vao, vbo;
-    
-    float pcInit[] = { 0.0f, 0.0f};
-    GLint variant = 0;
-    pc.setPosition(pcInit);
-    
-    float scale_coeff = 1.f;
     
     //Startup sequence
     startup(&window);
@@ -220,22 +164,30 @@ int main(int argc, char **argv) {
     glCreateVertexArrays(1, &vao);
     glBindVertexArray(vao);
     
-    auto prev_timestamp = std::chrono::high_resolution_clock::now();
-    auto current_timestamp = std::chrono::high_resolution_clock::now();
+    Player pc;
+    GLint variant = 0;
+    
+    float scale_coeff = 1.f;
+    
+    
+    WorldData world_state;
+    
+    std::vector<DisplayObject> objects;
+    
     while(!glfwWindowShouldClose(window)) {
         //Get timestamp
-        prev_timestamp = current_timestamp;
-        current_timestamp = std::chrono::high_resolution_clock::now();
+        auto delta_t = world_state.get_delta_t();
         
+        //Track FPS.
+        auto fps = world_state.check_fps();
+        if(fps) std::cout << "FPS: " << fps << std::endl;
         
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
         
         float x_scale = scale_coeff * ((width != height) * (float) height / (float) width + (width == height));
-        float y_scale = scale_coeff;//1.f; //(width != height) * (float) height / (float) width + (width == height);
-        
-//        std::cout << "X Scale: " << x_scale << ", Y Scale: " << y_scale << " " << std::endl;
+        float y_scale = scale_coeff;
         
         const float scale[] = { 
             x_scale, 0.f, 0.f, 0.f,
@@ -244,7 +196,7 @@ int main(int argc, char **argv) {
             0.f, 0.f, 0.f, 1.f
         };
         
-        //Set changing screen volor.
+        //Set changing screen color.
         float timeSin = (float)sin(glfwGetTime()) * 0.5f;
         float timeCos = (float)cos(glfwGetTime()) * 0.5f;
         const GLfloat color[] = { timeSin + 0.5f, timeCos + 0.5f, 0.0f, 1.0f};
@@ -253,11 +205,20 @@ int main(int argc, char **argv) {
         GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
         pc.getPosition(attrib);
         
-        double step_length = 0.004 * std::chrono::duration_cast<std::chrono::microseconds>(current_timestamp - prev_timestamp).count() / 1000 ;
-        std::cout << "stepsize: " << step_length << std::endl;
-        attrib[1] += glfwGetKey(window, GLFW_KEY_W) * step_length - glfwGetKey(window, GLFW_KEY_S) * step_length;
-        attrib[0] += glfwGetKey(window, GLFW_KEY_D) * step_length - glfwGetKey(window, GLFW_KEY_A) * step_length;
+        double step_length = scale_coeff * 0.001 * delta_t / 256;
+        
+        int y_direction = glfwGetKey(window, GLFW_KEY_W) - glfwGetKey(window, GLFW_KEY_S);
+        int x_direction = glfwGetKey(window, GLFW_KEY_D) - glfwGetKey(window, GLFW_KEY_A);
+        
+        if(x_direction != 0 && y_direction != 0) step_length /= SQRT_2;
+        
+        attrib[1] += y_direction * step_length;
+        attrib[0] += x_direction * step_length;
+
         pc.setPosition(attrib);
+        
+        attrib[1] *= scale_coeff;
+        attrib[0] *= scale_coeff;
         
         double cursorPos[2];
         glfwGetCursorPos(window, cursorPos, cursorPos + 1);
@@ -266,7 +227,6 @@ int main(int argc, char **argv) {
         cursorPos[1] = (2 * (cursorPos[1] / (float) height) - 1 + attrib[1]) * x_scale;
         cursorPos[0] = (2 * (cursorPos[0] / (float) width) - 1 - attrib[0]) * y_scale;
         float radians = (float) (atan(cursorPos[1]/cursorPos[0]) + (cursorPos[0] < 0) * M_PI);
-//        std::cout << "Rads: " << radians << std::endl;
         
 //        glBitmap();
         
@@ -288,6 +248,18 @@ int main(int argc, char **argv) {
             
             glDrawArrays(program.drawType, 0, 4);
         }
+        attrib[0] = -0.5f;
+        attrib[1] = -0.5f;
+        
+        glVertexAttrib4fv(0, attrib);
+        glUseProgram(programs.at(0).ID);
+        glUniform1i(1, variant);
+        glUniformMatrix4fv(2, 1, GL_FALSE, scale);
+        
+        glUniform1f(3, radians);
+        
+        glDrawArrays(programs.at(0).drawType, 0, 4);
+        
         
         glfwSwapBuffers(window);
         glfwPollEvents();

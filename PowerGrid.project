@@ -32,8 +32,12 @@
     <File Name="player.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="helpers">
-    <File Name="shaderStore.h"/>
-    <File Name="shaderStore.cpp"/>
+    <File Name="WorldData.h"/>
+    <File Name="WorldData.cpp"/>
+    <File Name="DisplayObject.cpp"/>
+    <File Name="DisplayObject.h"/>
+    <File Name="ShaderStore.cpp"/>
+    <File Name="ShaderStore.h"/>
     <File Name="shapes.h"/>
     <File Name="shapes.cpp"/>
     <File Name="callbacks.h"/>

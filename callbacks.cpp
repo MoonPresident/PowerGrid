@@ -32,20 +32,17 @@ void close_on_unfocus(GLFWwindow* window, int focused) {
 //Easiest way to differentiate between handling of since press and a long press: only fire off on the release.
 
 void general_keyboard_callback(
-        GLFWwindow* window, int key, int scancode, int action, int mods
+        GLFWwindow* window, 
+        int key, 
+        int scancode, 
+        int action, 
+        int mods
 ) {
+    
+    #ifdef DEBUG
     std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
     std::cout << "Action: " << action << ", mods: " << mods << std::endl;
-//    switch(key) {
-//        case 'w':
-//            
-//        case 'a':
-//        
-//        case 's':
-//        
-//        case 'd':
-//            break;
-//    }
+    #endif
 }
 
 
@@ -54,7 +51,9 @@ int mousebuttonFlag;
 
 void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
     if(action) {
+        #ifdef DEBUG
         std::cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << std::endl << std::endl;
+        #endif
         mousebuttonFlag = 1;
     }
 }
