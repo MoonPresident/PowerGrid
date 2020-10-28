@@ -35,4 +35,7 @@ struct Program {
     ShaderStore shaderStore;
 };
 
+
+std::vector<Program> loadPrograms();
+
 #endif /* SHADER_STORE_H */
