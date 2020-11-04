@@ -11,7 +11,7 @@
 /**
  * @brief Constructor function.
  */
-Player::player() {
+Player::Player() {
     x_offset = 0.f;
     y_offset = 0.f;
     bearing = 0.f;

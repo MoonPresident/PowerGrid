@@ -10,13 +10,14 @@
 #define PLAYER_H
 
 class Player {
-private:
+public:
     float x_offset;
     float y_offset;
     float bearing;
     float scale;
-public:
-    player();
+    
+    
+    Player();
     void setPosition(float pos[2]);
     void getPosition(float pos[2]);
     float getX();

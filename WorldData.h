@@ -12,6 +12,9 @@
 #include <chrono>
 #include "DisplayObject.h"
 
+#include "glad/glad.h"
+#include "glfw3.h"
+
 using namespace std::chrono;
 
 class WorldData {
@@ -22,6 +25,27 @@ public:
     time_point<steady_clock>  fps_timestamp;
     int fps;
     
+    //Cursor
+    double cursor_position[2];
+    
+    //Window information
+    GLFWwindow* window;
+    int width;
+    int height;
+    
+    //Scaling factors
+    float scale_factor;
+    float x_scale;
+    float y_scale;
+    
+    //Display Object
+    std::vector<DisplayObject> display_objects;
+    
+    
+    /**
+     * @brief Initialise the data about the world.
+     * @return 
+     */
     GameState() {
         //Set up time step and fps timestamp
         fps = 0;
@@ -30,10 +54,18 @@ public:
         fps_timestamp = current_timestamp;
     }
     
+    
+    /**
+     * @brief Set the World Data
+     */
     void set_timer() {
         current_timestamp = steady_clock::now();
     }
     
+    /**
+     * @brief Calculate timestep.
+     * @return Timestep
+     */
     int get_delta_t() {
         previous_timestamp = current_timestamp;
         current_timestamp = steady_clock::now();
@@ -43,8 +75,8 @@ public:
     
     
     /**
-     * @brief Checks the fps output
-     * @return 
+     * @brief Triggers fps handling
+     * @return fps if its available, 0 otherwise.
      */
     int check_fps() {
         auto delta_fps = duration_cast<seconds>(current_timestamp - fps_timestamp).count();
@@ -58,6 +90,33 @@ public:
         
         fps++;
         return fps_output;
+    }
+    
+    void init_window() {
+        //Set window and scale.
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        scale_factor = 1.f;
+        x_scale = scale_factor * ((width != height) * (float) height / (float) width + (width == height));
+        y_scale = scale_factor;
+    }
+    
+    void check_window() {
+        int prev_width = width;
+        int prev_height = height;
+        glfwGetFramebufferSize(window, &width, &height);
+        
+        if(prev_width == width && prev_height == height) {
+            return;
+        }
+        
+        glViewport(0, 0, width, height);
+        x_scale = scale_factor * ((width != height) * (float) height / (float) width + (width == height));
+        y_scale = scale_factor;
+    }
+    
+    void draw_objects() {
+        
     }
 };
 
