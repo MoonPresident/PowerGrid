@@ -92,6 +92,42 @@ public:
         return fps_output;
     }
     
+    //Note: need to pick when to scale things. The trouble comes from the fact that OpenGL considers the frame to be a square.
+    
+    
+    /**
+     * @brief Gets the cursor position and translates it into a float
+     */
+    void getCursorPosition() {
+        glfwGetCursorPos(window, cursor_position, cursor_position + 1);
+        
+        cursor_position[1] = (2 * (cursor_position[1] / (float) height) - 1) * x_scale;
+        cursor_position[0] = (2 * (cursor_position[0] / (float) width) - 1) * y_scale;
+    }
+    
+    /**
+     * @brief Get the bearing from an object to the cursor.
+     * @param location
+     * @return 
+     */
+    //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
+    float getBearingToCursor(float location[]) {
+        float x_span = cursor_position[1] + location[1] * x_scale;
+        float y_span = cursor_position[0] - location[0] * y_scale;
+        
+        return (float) atan(x_span / y_span) + (y_span < 0) * M_PI;
+    }
+    
+    float getBearing2D(float x_source, float y_source, float x_target, float y_target) {
+//        float x_span = 
+    }
+    
+    void getBearing2D() {
+        
+    };
+    
+    
+    
     void init_window() {
         //Set window and scale.
         glfwGetFramebufferSize(window, &width, &height);

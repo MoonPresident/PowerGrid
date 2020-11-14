@@ -7,9 +7,13 @@
 
 #include "shaderStore.h"
 
+//#define debug
+
 //Setup function
 ShaderStore::ShaderStore (){
+    #ifdef debug
     std::cout << "ShaderStore activated" << std::endl;//shaders.data();
+    #endif
 }
 
 
@@ -36,7 +40,9 @@ void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
         glShaderSource(shader, 1, &shaderSource, NULL);
         glCompileShader(shader);
         
+        #ifdef debug
         std::cout << shader << std::endl;
+        #endif
         
         shaders.push_back(shader);
     } else {
@@ -74,19 +80,19 @@ std::vector<Program> loadPrograms() {
     
     //Debug information to confirm the shaders have loaded correctly.
     #ifdef debug
-    cout << (shaderIndex ? "Shader opened: " : "Shader failed: ") << index.c_str() << endl;
+    std::cout << (shaderIndex ? "Shader opened: " : "Shader failed: ") << index.c_str() << std::endl;
     #endif
     
     /* Iterate over the index file. The first characters determines the shader
      * type, the second character is a semicolon and the rest of the line is 
      * the files address.
      */
-     
+    
     while(getline(shaderIndex, line)) {
         #ifdef debug
         std::cout << "Line in: " << line << std::endl;
+        std::cout << "Program size: " << programs.size() << std::endl;
         #endif
-        std::cout << programs.size() << std::endl;
         path.assign(SHADER_PATH).append(line.substr(2));
         char shaderType = line.at(0);
         switch(shaderType) {
@@ -108,7 +114,7 @@ std::vector<Program> loadPrograms() {
             #ifdef debug
 
             default:
-                cout << "ShaderType not recognised: " << shaderType << endl;
+                std::cout << "ShaderType not recognised: " << shaderType << std::endl;
             #endif
         }
     }

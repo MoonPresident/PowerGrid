@@ -158,6 +158,9 @@ int main(int argc, char **argv) {
     
     DisplayObject basic_enemy;
     basic_enemy.program = programs.at(0);
+    basic_enemy.location[0] = -0.5f;
+    basic_enemy.location[1] = -0.5f;
+    
     world.display_objects.push_back(basic_enemy);
     std::cout << "Done." << std::endl;
     
@@ -208,16 +211,7 @@ int main(int argc, char **argv) {
         attrib[0] *= scale_coeff;
         
         //Get cursor position.
-        glfwGetCursorPos(world.window, world.cursor_position, world.cursor_position + 1);
-        
-        //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-        world.cursor_position[1] = (2 * (world.cursor_position[1] / (float) world.height) - 1 + attrib[1]) * world.x_scale;
-        world.cursor_position[0] = (2 * (world.cursor_position[0] / (float) world.width) - 1 - attrib[0]) * world.y_scale;
-        float radians = (float) (atan(
-            world.cursor_position[1]/world.cursor_position[0]) + 
-            (world.cursor_position[0] < 0) * M_PI
-        );
-        
+        world.getCursorPosition();
         
 //        glBitmap();
         
@@ -228,30 +222,19 @@ int main(int argc, char **argv) {
         
         scale_coeff = (float) getScrollFlag() * 0.1f;
         
-        glVertexAttrib4fv(0, attrib);
+        //Need to move data into objects.
         for(auto draw_object: world.display_objects) {
-            
+            glVertexAttrib4fv(0, draw_object.location);
+            float radians = world.getBearingToCursor(draw_object.location);
             glUseProgram(draw_object.program.ID);
             
             glUniform1i(1, variant);
             glUniformMatrix4fv(2, 1, GL_FALSE, scale);
             
             glUniform1f(3, radians);
-            
+
             glDrawArrays(draw_object.program.drawType, 0, 4);
         }
-        attrib[0] = -0.5f;
-        attrib[1] = -0.5f;
-        
-        glVertexAttrib4fv(0, attrib);
-        glUseProgram(programs.at(0).ID);
-        glUniform1i(1, variant);
-        glUniformMatrix4fv(2, 1, GL_FALSE, scale);
-        
-        glUniform1f(3, radians);
-        
-        glDrawArrays(programs.at(0).drawType, 0, 4);
-        
         
         glfwSwapBuffers(world.window);
         glfwPollEvents();
