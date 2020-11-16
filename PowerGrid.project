@@ -37,10 +37,12 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="units">
+    <File Name="BasicEnemy.h"/>
     <File Name="player.h"/>
     <File Name="player.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="helpers">
+    <File Name="VirtualObject.h"/>
     <File Name="WorldData.h"/>
     <File Name="WorldData.cpp"/>
     <File Name="DisplayObject.cpp"/>
@@ -55,6 +57,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="debug.h"/>
     <File Name="main.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
@@ -87,7 +90,7 @@
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
+        <![CDATA[debug_all]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>

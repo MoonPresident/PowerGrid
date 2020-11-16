@@ -78,6 +78,7 @@ void setScrollFlag(int val) {
 
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
     scrollFlag += y_offset;
+    if(scrollFlag < 0) scrollFlag = 0;
     std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
 }
 

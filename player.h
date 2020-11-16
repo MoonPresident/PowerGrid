@@ -5,29 +5,24 @@
  * 
  */
 
+#include "DisplayObject.h"
 
 #ifndef PLAYER_H
 #define PLAYER_H
 
 class Player {
 public:
-    float x_offset;
-    float y_offset;
-    float bearing;
-    float scale;
+    GLfloat location[4];
+    std::vector<DisplayObject> display_objects;
     
     
-    Player();
-    void setPosition(float pos[2]);
-    void getPosition(float pos[2]);
-    float getX();
-    void setX(float x);
-    float getY();
-    void setY(float y);
-    float getBearing();
-    void setBearing(float new_bearing);
-    float getScale();
-    void setScale(float new_scale);
+    Player() {
+        for(int i = 0; i < 4; i++) location[i] = 0.f;
+    }
+    
+    void setLocation(GLfloat scale[]) {
+        for(auto obj: display_objects) obj.setLocation(location, scale);
+    }
 };
 
 #endif /* PLAYER_H */

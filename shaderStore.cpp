@@ -5,13 +5,16 @@
  * Stores callbacks for GLFW functions.
  */
 
+//Include this everywhere
+#include "debug.h"
+
 #include "shaderStore.h"
 
 //#define debug
 
 //Setup function
 ShaderStore::ShaderStore (){
-    #ifdef debug
+    #if defined debug_all || defined debug_shaders
     std::cout << "ShaderStore activated" << std::endl;//shaders.data();
     #endif
 }
@@ -40,8 +43,11 @@ void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
         glShaderSource(shader, 1, &shaderSource, NULL);
         glCompileShader(shader);
         
-        #ifdef debug
-        std::cout << shader << std::endl;
+        
+        #if defined debug_all || defined debug_shaders
+        GLint success = 0;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        std::cout << "Compilation: " << success << " for shader " << shader << std::endl;
         #endif
         
         shaders.push_back(shader);
@@ -79,8 +85,8 @@ std::vector<Program> loadPrograms() {
     shaderIndex.open(index);
     
     //Debug information to confirm the shaders have loaded correctly.
-    #ifdef debug
-    std::cout << (shaderIndex ? "Shader opened: " : "Shader failed: ") << index.c_str() << std::endl;
+    #if defined debug_all || defined debug_shaders
+    std::cout << (shaderIndex ? "Reading shader index: " : "Failed to read: ") << index.c_str() << std::endl;
     #endif
     
     /* Iterate over the index file. The first characters determines the shader
@@ -89,8 +95,8 @@ std::vector<Program> loadPrograms() {
      */
     
     while(getline(shaderIndex, line)) {
-        #ifdef debug
-        std::cout << "Line in: " << line << std::endl;
+        #if defined debug_all || defined debug_shaders
+//        std::cout << "Line in: " << line << std::endl;
         std::cout << "Program size: " << programs.size() << std::endl;
         #endif
         path.assign(SHADER_PATH).append(line.substr(2));
@@ -111,8 +117,7 @@ std::vector<Program> loadPrograms() {
             case '/':
                 break;
             
-            #ifdef debug
-
+            #if defined debug_all || defined debug_shaders
             default:
                 std::cout << "ShaderType not recognised: " << shaderType << std::endl;
             #endif

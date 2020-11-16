@@ -6,35 +6,45 @@
  * A class for any object that will be displayed on screen.
  */
 
+//Include this everywhere
+#include "debug.h"
 
 #ifndef DISPLAY_OBJECT_H
 #define DISPLAY_OBJECT_H
 
 #include <chrono>
+#include <ratio>
+#include <functional>
+
+//#include "WorldData.h"
+class WorldData;
+class DisplayObject;
+
 using namespace std::chrono;
+
+/**
+ * @class DisplayObject
+ * @author ThomasSebastian
+ * @date 16/11/2020
+ * @file DisplayObject.h
+ * @brief This class handles the data for a single openGL program
+ */
 
 class DisplayObject {
 public:
     Program program;
     GLfloat location[4];
+    GLfloat real_location[4];
     float radians;
+    std::function<void (WorldData, DisplayObject&)> movement_behaviour;
     
     DisplayObject() {
-        for(int i = 0; i < 4; i++) location[i] = 0.f;
+        for(int i = 0; i < 4; i++) real_location[i] = 0.f;
     }
     
-};
-
-class TransientObject: public DisplayObject {
-public:
-    time_point<steady_clock> end;
-    
-    TransientObject(time_point<steady_clock> _end) {
-        end = _end;
-    }
-    
-    void setEnd(time_point<steady_clock> _end) {
-        end = _end;
+    void setLocation(GLfloat source[4], GLfloat scale[4]) {
+        for(int i = 0; i < 4; i++) real_location[i] = source[i];
+        for(int i = 0; i < 4; i++) location[i] = source[i] * scale[i];
     }
 };
 

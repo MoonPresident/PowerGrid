@@ -15,15 +15,25 @@
 
 //https://www.haroldserrano.com/articles
 
+/**
+ * DEBUG DEFINES
+ * debug_all
+ * debug_shaders
+ */
+
 /********************************************************************************
  *******                             Includes                             *******
  *******************************************************************************/
+//Include this everywhere
+#include "debug.h"
+
 //Abstract functions
 #include "callbacks.h"
 #include "shapes.h"
 #include "ShaderStore.h"
 #include "player.h"
 #include "WorldData.h"
+#include "BasicEnemy.h"
 
 
 //Includes
@@ -106,7 +116,10 @@ void startup(GLFWwindow** window);
 
 
 
-
+void basic_enemy_movement_behaviour(WorldData world, DisplayObject& draw_object) {
+    draw_object.radians = world.getBearing2D(draw_object.location, world.display_objects.at(0).location);
+//    std::cout << draw
+}
 
 
 /**
@@ -117,7 +130,6 @@ void startup(GLFWwindow** window);
  */
 int main(int argc, char **argv) {
     //Init variables
-    GLFWwindow* window;
     GLuint vao, vbo;
     
     
@@ -144,8 +156,7 @@ int main(int argc, char **argv) {
     
     glCreateVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    
-    Player pc;
+
     GLint variant = 0;
     float scale_coeff = 1.f;
     
@@ -158,15 +169,25 @@ int main(int argc, char **argv) {
     
     DisplayObject basic_enemy;
     basic_enemy.program = programs.at(0);
-    basic_enemy.location[0] = -0.5f;
-    basic_enemy.location[1] = -0.5f;
+    basic_enemy.movement_behaviour = basic_enemy_movement_behaviour;
+    basic_enemy.real_location[0] = -0.5f;
+    basic_enemy.real_location[1] = -0.5f;
     
     world.display_objects.push_back(basic_enemy);
+    
+    basic_enemy.real_location[0] = 0.5f;
+    world.display_objects.push_back(basic_enemy);
+    
+    basic_enemy.real_location[1] = 0.5f;
+    world.display_objects.push_back(basic_enemy);
+    
+    basic_enemy.real_location[0] = -0.5f;
+    world.display_objects.push_back(basic_enemy);
+    
     std::cout << "Done." << std::endl;
     
     while(!glfwWindowShouldClose(world.window)) {
-        //Get timestamp
-        auto delta_t = world.get_delta_t();
+        world.calculate_timestep();
         
         //Track FPS.
         auto fps = world.check_fps();
@@ -175,12 +196,7 @@ int main(int argc, char **argv) {
         //Check window, and set scale
         world.check_window();
         
-        const float scale[] = { 
-            world.x_scale, 0.f, 0.f, 0.f,
-            0.f, world.y_scale, 0.f, 0.f,
-            0.f, 0.f, 1.f, 0.f,
-            0.f, 0.f, 0.f, 1.f
-        };
+        GLfloat scale[] = { world.x_scale, world.y_scale, 0.f, 0.f };
         
         //Set changing screen color.
         float timeSin = (float)sin(glfwGetTime()) * 0.5f;
@@ -190,10 +206,11 @@ int main(int argc, char **argv) {
         
         GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
         
-        pc.getPosition(attrib);
+        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(0).real_location[i];
+        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(1).real_location[i];
         
-        
-        double step_length = scale_coeff * 0.001 * delta_t / 256;
+        double step_length = scale_coeff * 0.000002 * world.get_delta_t();
+//        world.x_scale = scale_coeff;
         
         int y_direction = glfwGetKey(world.window, GLFW_KEY_W) - glfwGetKey(world.window, GLFW_KEY_S);
         int x_direction = glfwGetKey(world.window, GLFW_KEY_D) - glfwGetKey(world.window, GLFW_KEY_A);
@@ -202,39 +219,49 @@ int main(int argc, char **argv) {
         
         attrib[1] += y_direction * step_length;
         attrib[0] += x_direction * step_length;
-
+        
         //Set absolute position
-        pc.setPosition(attrib);
+        world.display_objects.at(0).setLocation(attrib, scale);
+        world.display_objects.at(1).setLocation(attrib, scale);
         
-        //Scale value.
-        attrib[1] *= scale_coeff;
-        attrib[0] *= scale_coeff;
+        world.display_objects.at(0).radians = world.getBearingToCursor(world.display_objects.at(0).location);
+        world.display_objects.at(1).radians = world.display_objects.at(0).radians;
         
-        //Get cursor position.
-        world.getCursorPosition();
+        for(int i = 2; i < world.display_objects.size(); i++) {
+            world.display_objects.at(i).movement_behaviour(world, world.display_objects.at(i));
+            world.display_objects.at(i).setLocation(world.display_objects.at(i).real_location, scale);
+        }
         
-//        glBitmap();
+
         
+
+            
+    //        glBitmap();
+            
         if(getMousebuttonFlag()) {
             variant = !variant;
             setMousebuttonFlag(0);
         }
         
-        scale_coeff = (float) getScrollFlag() * 0.1f;
+        world.scale_factor = (float) getScrollFlag() * 0.1f;
+        
+        //Attribs can be set just once
+        //Uniforms need to be reset when the program changes.
         
         //Need to move data into objects.
-        for(auto draw_object: world.display_objects) {
-            glVertexAttrib4fv(0, draw_object.location);
-            float radians = world.getBearingToCursor(draw_object.location);
-            glUseProgram(draw_object.program.ID);
+        glVertexAttrib4fv(0, scale);
             
-            glUniform1i(1, variant);
-            glUniformMatrix4fv(2, 1, GL_FALSE, scale);
-            
-            glUniform1f(3, radians);
-
-            glDrawArrays(draw_object.program.drawType, 0, 4);
-        }
+        world.draw_objects();
+//        for(auto draw_object: world.display_objects) {
+//            float radians = world.getBearingToCursor(draw_object.location);
+//            glUseProgram(draw_object.program.ID);
+//            
+//            glVertexAttrib4fv(1, draw_object.location);
+//            glUniform1i(2, variant);
+//            glUniform1f(3, radians);
+//
+//            glDrawArrays(draw_object.program.drawType, 0, 4);
+//        }
         
         glfwSwapBuffers(world.window);
         glfwPollEvents();

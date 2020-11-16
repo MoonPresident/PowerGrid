@@ -1,5 +1,12 @@
+//Include this everywhere
+#include "debug.h"
 
+#include <chrono>
+#include "DisplayObject.h"
+#include "BasicEnemy.h"
 
+#include "glad/glad.h"
+#include "glfw3.h"
 
 
 
@@ -9,11 +16,7 @@
 #define WORLD_DATA_H
 
 
-#include <chrono>
-#include "DisplayObject.h"
 
-#include "glad/glad.h"
-#include "glfw3.h"
 
 using namespace std::chrono;
 
@@ -46,12 +49,25 @@ public:
      * @brief Initialise the data about the world.
      * @return 
      */
-    GameState() {
+    WorldData() {
         //Set up time step and fps timestamp
         fps = 0;
         current_timestamp = steady_clock::now();
         previous_timestamp = current_timestamp;
         fps_timestamp = current_timestamp;
+    }
+    
+    
+    void draw_objects() {
+        for(auto draw_object: display_objects) {
+            glUseProgram(draw_object.program.ID);
+            
+            glVertexAttrib4fv(1, draw_object.location);
+            glUniform1i(2, 0);//variant
+            glUniform1f(3, draw_object.radians);
+
+            glDrawArrays(draw_object.program.drawType, 0, 4);
+        }
     }
     
     
@@ -118,8 +134,14 @@ public:
         return (float) atan(x_span / y_span) + (y_span < 0) * M_PI;
     }
     
-    float getBearing2D(float x_source, float y_source, float x_target, float y_target) {
-//        float x_span = 
+    
+    
+    
+    float getBearing2D(float source[], float target[]) {
+        float x_span = 0 - (target[1] - source[1]) * x_scale;
+        float y_span = (target[0] - source[0]) * y_scale;
+        
+        return (float) atan(x_span / y_span) + (y_span < 0) * M_PI;
     }
     
     void getBearing2D() {
@@ -151,8 +173,8 @@ public:
         y_scale = scale_factor;
     }
     
-    void draw_objects() {
-        
+    void calculate_timestep() {
+        getCursorPosition();
     }
 };
 
