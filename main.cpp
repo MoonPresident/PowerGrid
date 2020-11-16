@@ -88,17 +88,18 @@ void startup(GLFWwindow** window);
 //GOALS ACHIEVED:
 //  Square drawn and rotating with mouse
 //  Movement with WASD
+//  Abstract out the drawing and the game logic
 
 //NEXT STEP:
-//For the Menu: find out what is needed to get characters up and going. May need bitmaps.
-//Print bitmaps
-//Abstract out the drawing and the game logic
+//  For the Menu: find out what is needed to get characters up and going. May need bitmaps.
+//  Print bitmaps
+//  Implement a Resource Manager
 
-//Implement a Resource Manager
-//Implement key mapping
+//  Implement key mapping
+//  Work out transient objects
 
 
-//Shoot something, and get a menu going.
+//  Shoot something, and get a menu going.
 //  - New transient class added
 //  - Need to work out how to throw around behaviour for different objects. Function pointers seems probably.
 //  - Engine makes the actual game take years to design. This was expected, but jesus.
@@ -118,7 +119,8 @@ void startup(GLFWwindow** window);
 
 void basic_enemy_movement_behaviour(WorldData world, DisplayObject& draw_object) {
     draw_object.radians = world.getBearing2D(draw_object.location, world.display_objects.at(0).location);
-//    std::cout << draw
+    draw_object.real_location[0] += cos(draw_object.radians) * 0.001;
+    draw_object.real_location[1] -= sin(draw_object.radians) * 0.001;
 }
 
 
@@ -232,11 +234,6 @@ int main(int argc, char **argv) {
             world.display_objects.at(i).setLocation(world.display_objects.at(i).real_location, scale);
         }
         
-
-        
-
-            
-    //        glBitmap();
             
         if(getMousebuttonFlag()) {
             variant = !variant;
@@ -252,16 +249,6 @@ int main(int argc, char **argv) {
         glVertexAttrib4fv(0, scale);
             
         world.draw_objects();
-//        for(auto draw_object: world.display_objects) {
-//            float radians = world.getBearingToCursor(draw_object.location);
-//            glUseProgram(draw_object.program.ID);
-//            
-//            glVertexAttrib4fv(1, draw_object.location);
-//            glUniform1i(2, variant);
-//            glUniform1f(3, radians);
-//
-//            glDrawArrays(draw_object.program.drawType, 0, 4);
-//        }
         
         glfwSwapBuffers(world.window);
         glfwPollEvents();

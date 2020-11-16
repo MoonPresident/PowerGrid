@@ -12,8 +12,8 @@ void main (void){
     float cosZ = cos(radians);
     float sinZ = sin(radians);
     
-    float x_scale = scale[1];
-    float y_scale = scale[0];
+    float x_scale = scale[0];
+    float y_scale = scale[1];
     
     mat4 scale = mat4(
         x_scale, 0, 0, 0,

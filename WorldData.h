@@ -164,9 +164,9 @@ public:
         int prev_height = height;
         glfwGetFramebufferSize(window, &width, &height);
         
-        if(prev_width == width && prev_height == height) {
-            return;
-        }
+//        if(prev_width == width && prev_height == height) {
+//            return;
+//        }
         
         glViewport(0, 0, width, height);
         x_scale = scale_factor * ((width != height) * (float) height / (float) width + (width == height));
