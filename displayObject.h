@@ -36,9 +36,15 @@ public:
     GLfloat location[4];
     GLfloat real_location[4];
     float radians;
-    std::function<void (WorldData, DisplayObject&)> movement_behaviour;
+    
+    time_point<steady_clock> creation_timestamp;
+    
+    std::function<void (WorldData&, DisplayObject&)> movement_behaviour;
+    std::function<bool (DisplayObject&, DisplayObject&)> collision_detection;
+    std::function<bool (DisplayObject&)> lifecycle_conditions;
     
     DisplayObject() {
+        creation_timestamp = steady_clock::now();
         for(int i = 0; i < 4; i++) real_location[i] = 0.f;
     }
     

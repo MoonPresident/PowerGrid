@@ -47,24 +47,38 @@ void general_keyboard_callback(
 
 
 //Flags
-int mousebuttonFlag;
+int leftClickFlag;
+int rightClickFlag;
 
 void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
     if(action) {
         #ifdef DEBUG
         std::cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << std::endl << std::endl;
         #endif
-        mousebuttonFlag = 1;
+        if(button == 0) {
+            leftClickFlag = 1;
+        } else if(button == 1) {
+            rightClickFlag = 1;
+        }
     }
 }
 
-int getMousebuttonFlag() {
-    return mousebuttonFlag;
+int getLeftClickFlag() {
+    return leftClickFlag;
 }
 
-void setMousebuttonFlag(int val) {
-    mousebuttonFlag = val;
+void resetLeftClickFlag() {
+    leftClickFlag = 0;
 }
+
+int getRightClickFlag() {
+    return rightClickFlag;
+}
+
+void resetRightClickFlag() {
+    rightClickFlag = 0;
+}
+
 
 int scrollFlag;
 
@@ -73,12 +87,16 @@ int getScrollFlag() {
 }
 
 void setScrollFlag(int val) {
-    scrollFlag = val;
+    if(val < 1) {
+        scrollFlag = 1;
+    } else {
+        scrollFlag = val;
+    }
 }
 
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
     scrollFlag += y_offset;
-    if(scrollFlag < 0) scrollFlag = 0;
+    if(scrollFlag < 1) scrollFlag = 1;
     std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
 }
 

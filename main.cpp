@@ -117,10 +117,27 @@ void startup(GLFWwindow** window);
 
 
 
-void basic_enemy_movement_behaviour(WorldData world, DisplayObject& draw_object) {
+void basic_enemy_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
     draw_object.radians = world.getBearing2D(draw_object.location, world.display_objects.at(0).location);
     draw_object.real_location[0] += cos(draw_object.radians) * 0.001;
     draw_object.real_location[1] -= sin(draw_object.radians) * 0.001;
+}
+
+void basic_enemy_collision_detection(DisplayObject& object, DisplayObject& collider) {
+    //Check if any of the four vertices are within the other 4 vertices.
+}
+
+void bullet_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
+    draw_object.real_location[0] += cos(draw_object.radians) * 0.01;
+    draw_object.real_location[1] -= sin(draw_object.radians) * 0.01;
+}
+
+bool bullet_lifecycle_condition(DisplayObject& bullet) {
+    int lifetime = duration_cast<milliseconds>(steady_clock::now() - bullet.creation_timestamp).count();
+    if(lifetime > /* BULLET_LIFETIME */ 1000) {
+        return true;
+    }
+    return false;
 }
 
 
@@ -186,6 +203,8 @@ int main(int argc, char **argv) {
     basic_enemy.real_location[0] = -0.5f;
     world.display_objects.push_back(basic_enemy);
     
+    basic_enemy.program = programs.at(0);
+    
     std::cout << "Done." << std::endl;
     
     while(!glfwWindowShouldClose(world.window)) {
@@ -229,15 +248,40 @@ int main(int argc, char **argv) {
         world.display_objects.at(0).radians = world.getBearingToCursor(world.display_objects.at(0).location);
         world.display_objects.at(1).radians = world.display_objects.at(0).radians;
         
-        for(int i = 2; i < world.display_objects.size(); i++) {
-            world.display_objects.at(i).movement_behaviour(world, world.display_objects.at(i));
-            world.display_objects.at(i).setLocation(world.display_objects.at(i).real_location, scale);
-        }
-        
+
+        for(int i = world.display_objects.size() - 1; i >= 2; i--) {
+            DisplayObject& target = world.display_objects.at(i);
+            target.movement_behaviour(world, target);
+            target.setLocation(target.real_location, scale);
             
-        if(getMousebuttonFlag()) {
-            variant = !variant;
-            setMousebuttonFlag(0);
+            if(target.lifecycle_conditions && target.lifecycle_conditions(world.display_objects.at(i))) {
+                world.display_objects.erase(world.display_objects.begin() + i);
+            }
+        }
+            
+        if(getLeftClickFlag()) {
+            DisplayObject bullet;
+            bullet.program = programs.at(0);
+            bullet.movement_behaviour = bullet_movement_behaviour;
+            bullet.lifecycle_conditions = bullet_lifecycle_condition;
+            
+            bullet.radians = world.display_objects.at(0).radians;
+            bullet.location[0] = world.display_objects.at(0).location[0];
+            bullet.location[1] = world.display_objects.at(0).location[1];
+            world.display_objects.push_back(bullet);
+            
+            basic_enemy.real_location[0] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+            basic_enemy.real_location[1] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+            
+            world.display_objects.push_back(basic_enemy);
+            resetLeftClickFlag();
+            std::cout << "Enemies: " << world.display_objects.size() - 2 << std::endl;
+        }
+        if(getRightClickFlag()) {
+            if(world.display_objects.size() > 2) {
+                world.display_objects.pop_back();
+            }
+            resetRightClickFlag();
         }
         
         world.scale_factor = (float) getScrollFlag() * 0.1f;
@@ -277,7 +321,8 @@ int main(int argc, char **argv) {
 void startup(GLFWwindow** window) {
     
     srand(time(NULL));
-    setMousebuttonFlag(0);
+    resetLeftClickFlag();
+    resetRightClickFlag();
     setScrollFlag(10);
     
     if (!glfwInit()) exit(EXIT_FAILURE);

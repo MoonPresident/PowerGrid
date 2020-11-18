@@ -19,9 +19,13 @@ void general_keyboard_callback(GLFWwindow* window, int key, int scancode, int ac
 
 void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods);
 
-int getMousebuttonFlag();
+int getLeftClickFlag();
 
-void setMousebuttonFlag(int val);
+void resetLeftClickFlag();
+
+int getRightClickFlag();
+
+void resetRightClickFlag();
 
 int getScrollFlag();
 
