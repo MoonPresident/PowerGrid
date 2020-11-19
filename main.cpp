@@ -15,6 +15,8 @@
 
 //https://www.haroldserrano.com/articles
 
+//http://www-cs-students.stanford.edu/%7Eamitp/gameprog.html
+
 /**
  * DEBUG DEFINES
  * debug_all
@@ -89,30 +91,20 @@ void startup(GLFWwindow** window);
 //  Square drawn and rotating with mouse
 //  Movement with WASD
 //  Abstract out the drawing and the game logic
+//  Bullets shooting, object addition implemented.
+//  Passing lifecycle and movement behaviour around as std::functions.
 
 //NEXT STEP:
 //  For the Menu: find out what is needed to get characters up and going. May need bitmaps.
 //  Print bitmaps
 //  Implement a Resource Manager
-
 //  Implement key mapping
-//  Work out transient objects
+//  Look into how passing 3D models works. That will answers a lot of questions.
+//  Get buttons working.
 
+//  Get a menu going.
 
-//  Shoot something, and get a menu going.
-//  - New transient class added
-//  - Need to work out how to throw around behaviour for different objects. Function pointers seems probably.
-//  - Engine makes the actual game take years to design. This was expected, but jesus.
-
-
-
-//static GLuint create_buffer(GLenum target, const void* data, GLsizei buffer_size) {
-//    GLuint buffer;
-//    glGenBuffer(1, &buffer);
-//    glBindBuffer(target, buffer);
-//    glBufferData(target, buffer_size, buffer_data, GL_STATIC_DRAW);
-//    return buffer;
-//}
+//  Engine makes the actual game take years to design. This was expected, but jesus.
 
 
 
@@ -192,20 +184,14 @@ int main(int argc, char **argv) {
     basic_enemy.real_location[0] = -0.5f;
     basic_enemy.real_location[1] = -0.5f;
     
-    world.display_objects.push_back(basic_enemy);
+    for(int i = 0; i < 4; i++) {
+        basic_enemy.real_location[i % 2] *= -1.f;
+        world.display_objects.push_back(basic_enemy);
+    }
     
-    basic_enemy.real_location[0] = 0.5f;
-    world.display_objects.push_back(basic_enemy);
-    
-    basic_enemy.real_location[1] = 0.5f;
-    world.display_objects.push_back(basic_enemy);
-    
-    basic_enemy.real_location[0] = -0.5f;
-    world.display_objects.push_back(basic_enemy);
-    
-    basic_enemy.program = programs.at(0);
-    
+    #ifdef debug_all
     std::cout << "Done." << std::endl;
+    #endif
     
     while(!glfwWindowShouldClose(world.window)) {
         world.calculate_timestep();

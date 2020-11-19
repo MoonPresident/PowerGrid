@@ -4,6 +4,6 @@
 #define DEBUG_H
 
 //#define debug_all
-#define debug_shaders
+//#define debug_shaders
 
 #endif /* DEBUG_H */
