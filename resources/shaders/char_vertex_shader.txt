@@ -1,0 +1,10 @@
+#version 450 core
+layout (location = 0) in vec4 vertex; // pos, pos, text, text.
+out vec2 TexCoords;
+
+//uniform mat4 projection;
+
+void main() {
+    gl_Position = vec4(vertex.xy, 0, 1);//projection * vec4(vertex.xy, 0, 1);
+    TexCoords = vertex.zw;
+}

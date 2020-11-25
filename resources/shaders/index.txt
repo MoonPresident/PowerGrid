@@ -8,3 +8,6 @@ v;pc_basic_vertex.txt
 f;sb7_basic_fragment.txt
 pl
 v;forward_facing_line.txt
+pf
+v;char_vertex_shader.txt
+f;char_fragment_shader.txt

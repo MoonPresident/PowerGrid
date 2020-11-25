@@ -66,7 +66,7 @@ public:
             glUniform1i(2, 0);//variant
             glUniform1f(3, draw_object.radians);
 
-            glDrawArrays(draw_object.program.drawType, 0, 4);
+            glDrawArrays(draw_object.program.drawType, 0, 5);
         }
     }
     

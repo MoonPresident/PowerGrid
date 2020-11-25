@@ -17,6 +17,10 @@
 
 //http://www-cs-students.stanford.edu/%7Eamitp/gameprog.html
 
+//https://www.gamasutra.com/blogs/MichaelKissner/20151027/257369/Writing_a_Game_Engine_from_Scratch__Part_1_Messaging.php
+
+//https://www.youtube.com/watch?v=Cfe3sO_L0fM&feature=share
+
 /**
  * DEBUG DEFINES
  * debug_all
@@ -50,6 +54,11 @@
 #include "glad/glad.h"
 #include "glfw3.h"
 
+
+
+//Text Rendering
+#define STB_TRUETYPE_IMPLEMENTATION 1
+#include "stb_truetype.h"
 
 /********************************************************************************
  *******                           Namespaces                             *******
@@ -109,10 +118,12 @@ void startup(GLFWwindow** window);
 
 
 
+
+
 void basic_enemy_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
     draw_object.radians = world.getBearing2D(draw_object.location, world.display_objects.at(0).location);
-    draw_object.real_location[0] += cos(draw_object.radians) * 0.001;
-    draw_object.real_location[1] -= sin(draw_object.radians) * 0.001;
+    draw_object.real_location[0] += cos(draw_object.radians) * 0.01;
+    draw_object.real_location[1] -= sin(draw_object.radians) * 0.01;
 }
 
 void basic_enemy_collision_detection(DisplayObject& object, DisplayObject& collider) {
@@ -120,8 +131,8 @@ void basic_enemy_collision_detection(DisplayObject& object, DisplayObject& colli
 }
 
 void bullet_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
-    draw_object.real_location[0] += cos(draw_object.radians) * 0.01;
-    draw_object.real_location[1] -= sin(draw_object.radians) * 0.01;
+    draw_object.real_location[0] += cos(draw_object.radians) * 0.1;
+    draw_object.real_location[1] -= sin(draw_object.radians) * 0.1;
 }
 
 bool bullet_lifecycle_condition(DisplayObject& bullet) {
@@ -132,6 +143,35 @@ bool bullet_lifecycle_condition(DisplayObject& bullet) {
     return false;
 }
 
+//typedef struct
+//{
+//   float x0,y0,s0,t0; // top-left
+//   float x1,y1,s1,t1; // bottom-right
+//} stbtt_aligned_quad;
+
+//void my_stbtt_print(WorldData world, GLuint ftex, float x, float y, char *text)
+//{
+//    // assume orthographic projection with units = screen pixels, origin at top left
+//    glEnable(GL_TEXTURE_2D);
+//    glBindTexture(GL_TEXTURE_2D, ftex);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+//    glUseProgram(world.programs(2));
+//    
+////    glBegin(GL_TRIANGLE_FAN);
+//    while (*text) {
+//        if (*text >= 32 && *text < 128) {
+//            stbtt_aligned_quad q;
+//            stbtt_GetBakedQuad(cdata, 512,512, *text-32, &x,&y,&q,1);//1=opengl & d3d10+,0=d3d9
+//            glTexCoord2f(q.s0,q.t1); glVertex2f(q.x0,q.y0);
+//            glTexCoord2f(q.s1,q.t1); glVertex2f(q.x1,q.y0);
+//            glTexCoord2f(q.s1,q.t0); glVertex2f(q.x1,q.y1);
+//            glTexCoord2f(q.s0,q.t0); glVertex2f(q.x0,q.y1);
+//        }
+//        ++text;
+//    }
+//    glDrawArrays(GL_TRIANGLE_FAN, 0, 0);
+////    glEnd();
+//}
 
 /**
  * @brief Main function for Powergrid program
@@ -144,7 +184,8 @@ int main(int argc, char **argv) {
     GLuint vao, vbo;
     
     
-    WorldData world;
+    WorldData world; 
+    
     
     //Startup sequence
     startup(&world.window);
@@ -189,6 +230,23 @@ int main(int argc, char **argv) {
         world.display_objects.push_back(basic_enemy);
     }
     
+    
+    //Font Stuff:
+    unsigned char ttf_buffer[1<<20];
+    unsigned char temp_bitmap[512*512];
+    
+    stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
+    GLuint ftex;
+    
+    fread(ttf_buffer, 1, 1<<20, fopen("c:/windows/fonts/times.ttf", "rb"));
+    stbtt_BakeFontBitmap(ttf_buffer,0, 32.0, temp_bitmap,512,512, 32,96, cdata); // no guarantee this fits!
+    // can free ttf_buffer at this point
+    glGenTextures(1, &ftex);
+    glBindTexture(GL_TEXTURE_2D, ftex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 512,512, 0, GL_ALPHA, GL_UNSIGNED_BYTE, temp_bitmap);
+    // can free temp_bitmap at this point
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
     #ifdef debug_all
     std::cout << "Done." << std::endl;
     #endif
@@ -214,10 +272,9 @@ int main(int argc, char **argv) {
         GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
         
         for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(0).real_location[i];
-        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(1).real_location[i];
+//        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(1).real_location[i];
         
         double step_length = scale_coeff * 0.000002 * world.get_delta_t();
-//        world.x_scale = scale_coeff;
         
         int y_direction = glfwGetKey(world.window, GLFW_KEY_W) - glfwGetKey(world.window, GLFW_KEY_S);
         int x_direction = glfwGetKey(world.window, GLFW_KEY_D) - glfwGetKey(world.window, GLFW_KEY_A);
@@ -252,14 +309,16 @@ int main(int argc, char **argv) {
             bullet.lifecycle_conditions = bullet_lifecycle_condition;
             
             bullet.radians = world.display_objects.at(0).radians;
-            bullet.location[0] = world.display_objects.at(0).location[0];
-            bullet.location[1] = world.display_objects.at(0).location[1];
+            bullet.real_location[0] = world.display_objects.at(0).real_location[0];
+            bullet.real_location[1] = world.display_objects.at(0).real_location[1];
             world.display_objects.push_back(bullet);
             
+            for(int i = 0; i < 100; i++) {
             basic_enemy.real_location[0] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
             basic_enemy.real_location[1] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
             
             world.display_objects.push_back(basic_enemy);
+            }
             resetLeftClickFlag();
             std::cout << "Enemies: " << world.display_objects.size() - 2 << std::endl;
         }
