@@ -181,33 +181,179 @@ bool bullet_lifecycle_condition(DisplayObject& bullet) {
  */
 int main(int argc, char **argv) {
     //Init variables
-    GLuint vao, vbo;
-    
-    
-    WorldData world; 
-    
+    GLuint VAO, VBO, VAO1, VBO1;
+    unsigned int EBO, EBO1;
     
     //Startup sequence
+    WorldData world; 
+    
     startup(&world.window);
     setCallbacks(&world.window);    
-
     world.init_window();
     
-        
     std::vector<Program> programs = loadPrograms();
     
     #ifdef debug
     std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
     #endif
     
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * LEARN OPENLGL TUTORIAL
+     * 
+     * Extra reading
+     * https://stackoverflow.com/questions/19636054/opengl-drawarrays-or-drawelements
+     */
+    
+    float vertices[] = {
+        0.1f, 0.1f, 0.f,
+        0.1f, -0.1f, 0.f,
+        -0.1f, -0.1f, 0.f,
+        -0.1f, 0.1f, 0.f
+    };
+    
+    float vertices1[] = {
+        0.3f, 0.3f, 0.f,
+        0.3f, 0.2f, 0.f,
+        0.2f, 0.2f, 0.f,
+        0.2f, 0.3f, 0.f
+    };
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
     //Arrays:
     //You can check if arrays are generated or not using gllsVertexArray
-    glGenBuffers(1, &vbo);
-//    glBindBuffers(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glEnableVertexAttribArray(0);
+    
+    glGenVertexArrays(1, &VAO1);
+    glBindVertexArray(VAO1);
+    
+    glGenBuffers(1, &VBO1);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &EBO1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO1);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    
+    const char *vertexShaderSource = "#version 330 core\n"
+        "layout (location = 0) in vec3 aPos;\n"
+        "void main()\n"
+        "{\n"
+        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "}\0";
+        
+    const char *fragmentShaderSource = "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main()\n"
+        "{\n"
+        "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "}\0";
+        
+    unsigned int vertexShader, fragmentShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    
+    int  success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+    
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    
+    glUseProgram(shaderProgram);
+    
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader); 
+    
+    if(!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    
+    //IMPORTANT: How to set up vertex attributes.
+    /*
+     * In order to pass things in with a vbo, you need to tell opengl what the data looks like.
+     * In this case, the position is decribes as (x, y, x), each as 4 byte (32 bit) value.
+     * this means a stride of 12, but and offset of zero as there is only vertices to worry about.
+     * 
+     * 
+     */
+    //glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,    const void * pointer);
+    glVertexAttribPointer(   0,            3,          GL_FLOAT,    GL_FALSE,             3 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glEnableVertexAttribArray(0); 
+    
+    
+    //Apparently OpenGL Core requires a VAO to draw things, though I disagree.
+    //A VAO is used to store the Vertex Attrib pointer so you don't have to recall it every time.
+    //It lets you simply rebind a VAO instead of redoing a vertexattribpointer call. Cool.
+    
+
+    
+    #ifdef main_code
+    while(0) {
+    #else
+    while(!glfwWindowShouldClose(world.window)) {
+    #endif
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        glUseProgram(shaderProgram);
+
+        //The last element buffer object tjat gets bound while a VAO is bound gets stred as that VAO's element
+        //Buffer object.
+        glBindVertexArray(VAO);
+        
+        
+        //Then
+//        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        //Or
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
+        glBindVertexArray(VAO1);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
+        glfwSwapBuffers(world.window);
+        glfwPollEvents();
+    }  
+    
+
+
 //    glBindBuffers(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     
-    glCreateVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+//    glCreateVertexArrays(1, &VAO);
 
     GLint variant = 0;
     float scale_coeff = 1.f;
@@ -251,7 +397,13 @@ int main(int argc, char **argv) {
     std::cout << "Done." << std::endl;
     #endif
     
+
+    
+    #ifdef main_code
     while(!glfwWindowShouldClose(world.window)) {
+    #else
+    while(0) {
+    #endif
         world.calculate_timestep();
         
         //Track FPS.
@@ -344,11 +496,11 @@ int main(int argc, char **argv) {
     }
     
     //Close up shop
-    glDeleteVertexArrays(1, &vao);
+    glDeleteVertexArrays(1, &VAO);
     for(auto program: programs) {
         glDeleteProgram(program.ID);
     }
-    glDeleteVertexArrays(1, &vao);
+    glDeleteVertexArrays(1, &VAO);
     
     glfwTerminate();
     std::cout << "Program successfully terminated." << std::endl;

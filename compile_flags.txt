@@ -7,5 +7,6 @@
 -IC:\spacelessFolder\CPPWorkplace\PowerGrid
 -IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\GLFW\include\GLFW
 -IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\GLAD\include
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\stb-master
 -target
 x86_64-pc-windows-gnu
