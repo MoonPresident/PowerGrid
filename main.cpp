@@ -21,6 +21,12 @@
 
 //https://www.youtube.com/watch?v=Cfe3sO_L0fM&feature=share
 
+
+
+
+//Working out the difference between using a VAO and using VertexAttrib/Uniforms
+//https://www.reddit.com/r/opengl/comments/4e9jmw/is_it_better_to_separate_the_vbo_update_from_the/d1ydon0/
+
 /**
  * DEBUG DEFINES
  * debug_all
@@ -59,6 +65,9 @@
 //Text Rendering
 #define STB_TRUETYPE_IMPLEMENTATION 1
 #include "stb_truetype.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 /********************************************************************************
  *******                           Namespaces                             *******
@@ -212,18 +221,20 @@ int main(int argc, char **argv) {
      * https://stackoverflow.com/questions/19636054/opengl-drawarrays-or-drawelements
      */
     
+    float scale = 0.7f;
     float vertices[] = {
-        0.1f, 0.1f, 0.f,
-        0.1f, -0.1f, 0.f,
-        -0.1f, -0.1f, 0.f,
-        -0.1f, 0.1f, 0.f
+         scale,  scale, 0.f,      0.f, 0.f,
+         scale, -scale, 0.f,      0.f, 1.f,
+        -scale, -scale, 0.f,      1.f, 1.f,
+        -scale,  scale, 0.f,      1.f, 0.f 
     };
     
+    float offset = 0.7f;
     float vertices1[] = {
-        0.3f, 0.3f, 0.f,
-        0.3f, 0.2f, 0.f,
-        0.2f, 0.2f, 0.f,
-        0.2f, 0.3f, 0.f
+        0.3f + offset,  0.3f + offset, 0.f,       0.f, 0.f,
+        0.3f + offset,  0.2f + offset, 0.f,       1.f, 0.f,
+        0.2f + offset,  0.2f + offset, 0.f,       1.f, 1.f,
+        0.2f + offset,  0.3f + offset, 0.f,       0.f, 1.f 
     };
     unsigned int indices[] = {
         0, 1, 3,
@@ -242,8 +253,10 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glEnableVertexAttribArray(1);
     
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
@@ -258,16 +271,21 @@ int main(int argc, char **argv) {
     
     const char *vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 1) in vec2 aTexCoord;\n"
+        "out vec2 TexCoord;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "   TexCoord = aTexCoord;\n"
         "}\0";
         
     const char *fragmentShaderSource = "#version 330 core\n"
         "out vec4 FragColor;\n"
+        "in vec2 TexCoord;\n"
+        "uniform sampler2D ourTexture;\n"
         "void main()\n"
         "{\n"
-        "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "    FragColor = texture(ourTexture, TexCoord);\n"
         "}\0";
         
     unsigned int vertexShader, fragmentShader;
@@ -280,9 +298,10 @@ int main(int argc, char **argv) {
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
     
-    int  success;
+    int  success = 0, success1 = 0;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success1);
     
     unsigned int shaderProgram;
     shaderProgram = glCreateProgram();
@@ -296,9 +315,17 @@ int main(int argc, char **argv) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader); 
     
+    std::cout << "Success IV: " << success << "!" << std::endl;
+
+    
     if(!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    if(!success1) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
     
     //IMPORTANT: How to set up vertex attributes.
@@ -310,15 +337,48 @@ int main(int argc, char **argv) {
      * 
      */
     //glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,    const void * pointer);
-    glVertexAttribPointer(   0,            3,          GL_FLOAT,    GL_FALSE,             3 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer(   0,            3,          GL_FLOAT,    GL_FALSE,             5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(0); 
+    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glEnableVertexAttribArray(1);
     
     
     //Apparently OpenGL Core requires a VAO to draw things, though I disagree.
     //A VAO is used to store the Vertex Attrib pointer so you don't have to recall it every time.
     //It lets you simply rebind a VAO instead of redoing a vertexattribpointer call. Cool.
     
+    const float texCoords[] = {
+        0.f, 0.f,
+        1.f, 0.f,
+        0.5f, 1.f
+    };  
+    
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    
+    const float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("../resources/textures/stock_images/binocupede.jpg", &width, &height, &nrChannels, 0); 
 
+    if(data) {
+        
+    } else {
+        std::cout << "Image loading gone wrong" << std::endl;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    
+    stbi_image_free(data);
+    
+    glUniform1i(1, 0);
     
     #ifdef main_code
     while(0) {
@@ -327,6 +387,8 @@ int main(int argc, char **argv) {
     #endif
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        
+        glBindTexture(GL_TEXTURE_2D, texture);
         
         glUseProgram(shaderProgram);
 
@@ -348,6 +410,11 @@ int main(int argc, char **argv) {
         glfwSwapBuffers(world.window);
         glfwPollEvents();
     }  
+    
+    glDeleteVertexArrays(1, &VAO1);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     
 
 
