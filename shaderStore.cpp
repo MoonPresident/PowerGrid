@@ -105,7 +105,9 @@ std::vector<Program> loadPrograms() {
             case 'p': {
                 Program program;
                 program.ID = glCreateProgram();
-                program.drawType = (line.at(1) == 'l') * GL_LINES + (line.at(1) == 'f') * GL_TRIANGLE_FAN;
+                program.drawType =  (line.at(1) == 'l') * GL_LINES + 
+                                    (line.at(1) == 'f') * GL_TRIANGLE_FAN +
+                                    (line.at(1) == 't') * GL_TRIANGLES;
                 programs.push_back(program);
                 break;
             }

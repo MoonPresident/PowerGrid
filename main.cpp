@@ -27,6 +27,8 @@
 //Working out the difference between using a VAO and using VertexAttrib/Uniforms
 //https://www.reddit.com/r/opengl/comments/4e9jmw/is_it_better_to_separate_the_vbo_update_from_the/d1ydon0/
 
+//https://teaching.csse.uwa.edu.au/units/CITS3003/lectures/04-OpenGL-Example-Program.pdf
+
 
 /********************************************************************************
  *******                             Includes                             *******
@@ -79,7 +81,7 @@ using namespace std::chrono;
  * debug_shaders
  */
 
-//#define main_code
+#define main_code
 
 //https://thebookofshaders.com/07/
 #define SHADER_PATH         "..\\resources\\shaders\\"
@@ -181,28 +183,19 @@ int main(int argc, char **argv) {
     #endif
     
     
-    glEnable(GL_BLEND); 
+    glEnable(GL_BLEND);  
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     
     //Font Stuff:
     unsigned char ttf_buffer[1<<20];
     unsigned char temp_bitmap[512*512];
-//    unsigned char ttf_buffer[1<<25];
-//    unsigned char *bitmap;
-    
-//    int w,h,i,j,c = 'a';
     
     stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
     GLuint ftex;
     
     fread(ttf_buffer, 1, 1<<20, fopen("c:/windows/fonts/times.ttf", "rb"));
-//    stbtt_fontinfo Font;
-//    stbtt_InitFont(&Font, ttf_buffer, stbtt_GetFontOffsetForIndex(ttf_buffer, 0));
-//    bitmap = stbtt_GetCodepointBitmap(&Font, 0, stbtt_ScaleForPixelHeight(&Font, 20), c, &w, &h, 0, 0);
-//    
-//    stbtt_FreeBitmap(bitmap);
-    
     stbtt_BakeFontBitmap(ttf_buffer,0, 32.0, temp_bitmap, 512,512, 32,96, cdata); // no guarantee this fits!
+    
     // can free ttf_buffer at this point
     glGenTextures(1, &ftex);
     glBindTexture(GL_TEXTURE_2D, ftex);
@@ -219,10 +212,10 @@ int main(int argc, char **argv) {
     stbtt_GetBakedQuad(cdata, 512, 512, *textCharacter - 32, &x,&y,&q, 1);//1=opengl & d3d10+,0=d3d9
     std::cout << ", " << x << std::endl;
     float textVertices[] = {
-        (q.x0 / 512.f), q.y0 / 512.f, 0.f,    q.s0, q.t1,
-        q.x1 / 512.f, q.y0 / 512.f, 0.f,    q.s1, q.t1,
-        q.x1 / 512.f, q.y1 / 512.f, 0.f,    q.s1, q.t0,
-        q.x0 / 512.f, q.y1 / 512.f, 0.f,    q.s0, q.t0,
+        0.f, 0.f, 0.f,    q.s0, q.t1,
+        0.05f, 0.f, 0.f,    q.s1, q.t1,
+        0.05f, 0.05f, 0.f,    q.s1, q.t0,
+        0.f, 0.05f, 0.f,    q.s0, q.t0,
     };
     unsigned int textIndices[] = {
         0, 1, 2,
@@ -309,64 +302,6 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO1);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    const char *vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec2 aTexCoord;\n"
-        "out vec2 TexCoord;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "   TexCoord = aTexCoord;\n"
-        "}\0";
-        
-    const char *fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "in vec2 TexCoord;\n"
-        "uniform sampler2D ourTexture;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = texture(ourTexture, TexCoord);\n"
-        "}\0";
-        
-    unsigned int vertexShader, fragmentShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    
-    int  success = 0, success1 = 0;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success1);
-    
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    
-    glUseProgram(shaderProgram);
-    
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader); 
-    
-    std::cout << "Success IV: " << success << "!" << std::endl;
-
-    
-    if(!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    if(!success1) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
     
     //IMPORTANT: How to set up vertex attributes.
     /*
@@ -426,7 +361,7 @@ int main(int argc, char **argv) {
 //        glBindTexture(GL_TEXTURE_2D, texture);
 //        glBindTexture(GL_TEXTURE_2D, ftex);        
         
-        glUseProgram(shaderProgram);
+        glUseProgram(programs.back().ID);
 
         //The last element buffer object tjat gets bound while a VAO is bound gets stred as that VAO's element
         //Buffer object.
@@ -443,12 +378,6 @@ int main(int argc, char **argv) {
         glBindVertexArray(VAO1);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
-        glBindTexture(GL_TEXTURE_2D, ftex);
-        glUseProgram(shaderProgram);
-        
-        glBindVertexArray(textVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        
         glfwSwapBuffers(world.window);
         glfwPollEvents();
     }  
@@ -461,18 +390,10 @@ int main(int argc, char **argv) {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * MY CODE
     **/
-    
+    world.initBuffers();
     
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -595,9 +516,16 @@ int main(int argc, char **argv) {
         //Uniforms need to be reset when the program changes.
         
         //Need to move data into objects.
+        glBindVertexArray(VAO);
         glVertexAttrib4fv(0, scale);
             
         world.draw_objects();
+        
+        glBindTexture(GL_TEXTURE_2D, ftex);
+        glUseProgram(programs.back().ID);
+        
+        glBindVertexArray(textVAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(world.window);
         glfwPollEvents();
@@ -609,6 +537,7 @@ int main(int argc, char **argv) {
         glDeleteProgram(program.ID);
     }
     glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &textVAO);
     
     glfwTerminate();
     std::cout << "Program successfully terminated." << std::endl;

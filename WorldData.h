@@ -7,6 +7,7 @@
 
 #include "glad/glad.h"
 #include "glfw3.h"
+#include "glm.hpp"
 
 
 
@@ -28,7 +29,10 @@ public:
     time_point<steady_clock>  fps_timestamp;
     int fps;
     
-    GLuint VAO, VBO;
+    //Buffers
+    GLuint worldVAO;
+    GLuint worldVBO;
+    unsigned int worldEBO;
     
     //Cursor
     double cursor_position[2];
@@ -59,11 +63,60 @@ public:
         fps_timestamp = current_timestamp;
     }
     
+    ~WorldData() {
+        glDeleteBuffers(1, &worldVAO);
+    }
     
+    void initBuffers() {
+        glGenVertexArrays(1, &worldVAO);
+        glBindVertexArray(worldVAO);
+        
+        glGenBuffers(1, &worldVBO);
+        glNamedBufferStorage(worldVBO,
+                        1024*1024, 
+                        NULL, 
+                        GL_MAP_WRITE_BIT);
+        glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
+        
+        glGenBuffers(1, &worldEBO);
+        glNamedBufferStorage(worldEBO,
+                        1024*128,
+                        NULL,
+                        GL_MAP_WRITE_BIT);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, worldEBO);
+        
+        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (6 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+        glEnableVertexAttribArray(2);
+    }
+    
+    
+    /**
+     * @brief Render all of the objects.
+    **/
     void draw_objects() {
+        
+        unsigned int vertex_offset = 0;
+        //Setting this up will require math.
+        //This needs to be broken up into the different spaces (i.e. local, world and view).
+        //Then, you need to work out whats being handed out. Vertical and horizontal rotation? Vertices? Colours?
+        //Use some hash defines to figure this out. Most importantly, work out how to generalise this.
+        
         for(auto draw_object: display_objects) {
-            glUseProgram(draw_object.program.ID);
             
+            glUseProgram(draw_object.program.ID);
+            //VBO Method.
+            float vertices[] = {
+                
+            };
+            unsigned int indices[] = {
+                0 + vertex_offset, 1 + vertex_offset, 3 + vertex_offset,
+                1 + vertex_offset, 2 + vertex_offset, 3 + vertex_offset
+            };
+//            offset += draw_object.
             glVertexAttrib4fv(1, draw_object.location);
             glUniform1i(2, 0);//variant
             glUniform1f(3, draw_object.radians);

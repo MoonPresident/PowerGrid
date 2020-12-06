@@ -19,6 +19,8 @@
   <VirtualDirectory Name="resources">
     <VirtualDirectory Name="components"/>
     <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/single_fragment_shader.txt"/>
+      <File Name="resources/shaders/single_vertex_shader.txt"/>
       <File Name="resources/shaders/char_fragment_shader.txt"/>
       <File Name="resources/shaders/char_vertex_shader.txt"/>
       <File Name="resources/shaders/button.txt"/>
@@ -80,6 +82,7 @@
         <IncludePath Value="./Dependencies/GLFW/include/GLFW"/>
         <IncludePath Value="./Dependencies/GLAD/include"/>
         <IncludePath Value="./Dependencies/stb-master"/>
+        <IncludePath Value="./Dependencies/glm-stable/glm"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="./Dependencies/GLFW/lib-mingw-w64"/>
