@@ -28,6 +28,8 @@ public:
     time_point<steady_clock>  fps_timestamp;
     int fps;
     
+    GLuint VAO, VBO;
+    
     //Cursor
     double cursor_position[2];
     

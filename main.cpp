@@ -114,10 +114,9 @@ void startup(GLFWwindow** window);
 //  Abstract out the drawing and the game logic
 //  Bullets shooting, object addition implemented.
 //  Passing lifecycle and movement behaviour around as std::functions.
+//  Print Character Bitmaps
 
 //NEXT STEP:
-//  For the Menu: find out what is needed to get characters up and going. May need bitmaps.
-//  Print bitmaps
 //  Implement a Resource Manager
 //  Implement key mapping
 //  Look into how passing 3D models works. That will answers a lot of questions.
@@ -182,49 +181,54 @@ int main(int argc, char **argv) {
     #endif
     
     
+    glEnable(GL_BLEND); 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+    
     //Font Stuff:
     unsigned char ttf_buffer[1<<20];
     unsigned char temp_bitmap[512*512];
+//    unsigned char ttf_buffer[1<<25];
+//    unsigned char *bitmap;
+    
+//    int w,h,i,j,c = 'a';
     
     stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
     GLuint ftex;
     
     fread(ttf_buffer, 1, 1<<20, fopen("c:/windows/fonts/times.ttf", "rb"));
-    stbtt_BakeFontBitmap(ttf_buffer,0, 32.0, temp_bitmap,512,512, 32,96, cdata); // no guarantee this fits!
+//    stbtt_fontinfo Font;
+//    stbtt_InitFont(&Font, ttf_buffer, stbtt_GetFontOffsetForIndex(ttf_buffer, 0));
+//    bitmap = stbtt_GetCodepointBitmap(&Font, 0, stbtt_ScaleForPixelHeight(&Font, 20), c, &w, &h, 0, 0);
+//    
+//    stbtt_FreeBitmap(bitmap);
+    
+    stbtt_BakeFontBitmap(ttf_buffer,0, 32.0, temp_bitmap, 512,512, 32,96, cdata); // no guarantee this fits!
     // can free ttf_buffer at this point
     glGenTextures(1, &ftex);
     glBindTexture(GL_TEXTURE_2D, ftex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512,512, 0, GL_RGB, GL_UNSIGNED_BYTE, temp_bitmap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512,512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
+
     // can free temp_bitmap at this point
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
     //Text setup.
     stbtt_aligned_quad q;
-    float x = -0.55f, y = -0.55f;
+    float x = -0.f, y = -0.f;
     char* textCharacter = "a";
-    stbtt_GetBakedQuad(cdata, 512,512, *textCharacter - 32, &x,&y,&q, 1);//1=opengl & d3d10+,0=d3d9
-
-    std::cout << q.x0 << ", " << q.y0 << std::endl;
-    std::cout << q.x1 << ", " << q.y1 << std::endl;
-    std::cout << q.s0 << ", " << q.t0 << std::endl;
-    std::cout << q.s1 << ", " << q.t1 << std::endl;
+    std::cout << "X: " << x;
+    stbtt_GetBakedQuad(cdata, 512, 512, *textCharacter - 32, &x,&y,&q, 1);//1=opengl & d3d10+,0=d3d9
+    std::cout << ", " << x << std::endl;
     float textVertices[] = {
-        0.05f * q.x0, 0.05f * q.y0, 0.f,    0.f, 0.f,   0.1f, 0.1f, 0.1f,
-        0.05f * q.x1, 0.05f * q.y0, 0.f,    0.f, 1.f,   0.1f, 0.1f, 0.1f,
-        0.05f * q.x1, 0.05f * q.y1, 0.f,    1.f, 1.f,   0.1f, 0.1f, 0.1f,
-        0.05f * q.x0, 0.05f * q.y1, 0.f,    1.f, 0.f,   0.1f, 0.8f, 0.1f,
+        (q.x0 / 512.f), q.y0 / 512.f, 0.f,    q.s0, q.t1,
+        q.x1 / 512.f, q.y0 / 512.f, 0.f,    q.s1, q.t1,
+        q.x1 / 512.f, q.y1 / 512.f, 0.f,    q.s1, q.t0,
+        q.x0 / 512.f, q.y1 / 512.f, 0.f,    q.s0, q.t0,
     };
-//    float textVertices[] = {
-//        0.05f * q.x0, 0.05f * q.y0, 0.f,    q.s0, q.t1,
-//        0.05f * q.x1, 0.05f * q.y0, 0.f,    q.s1, q.t1,
-//        0.05f * q.x1, 0.05f * q.y1, 0.f,    q.s1, q.t0,
-//        0.05f * q.x0, 0.05f * q.y1, 0.f,    q.s0, q.t0,
-//    };
     unsigned int textIndices[] = {
-//        0, 1, 2,
-        0, 1, 3,
-//        0, 2, 3,
-        1, 2, 3,
+        0, 1, 2,
+//        1, 2, 3,
+        0, 2, 3,
+//        0, 1, 3,
     };
     
     GLuint textVAO, textVBO;
@@ -240,12 +244,10 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, textEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(textIndices), textIndices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (5 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(2);
     
     
     
@@ -254,22 +256,25 @@ int main(int argc, char **argv) {
      * 
      * Extra reading
      * https://stackoverflow.com/questions/19636054/opengl-drawarrays-or-drawelements
+     * 
+     * Projection matrix notes:
+     * https://www.songho.ca/opengl/gl_projectionmatrix.html
     **/
     
     float scale = 0.7f;
     float vertices[] = {
-         scale,  scale, 0.f,      0.f, 0.f,   0.1f, 0.1f, 0.1f,
-         scale, -scale, 0.f,      0.f, 1.f,   0.1f, 0.1f, 0.1f,
-        -scale, -scale, 0.f,      1.f, 1.f,   0.1f, 0.1f, 0.9f,
-        -scale,  scale, 0.f,      1.f, 0.f,   0.1f, 0.1f, 0.1f,
+         scale,  scale, 0.f,      0.f, 0.f,
+         scale, -scale, 0.f,      0.f, 1.f,
+        -scale, -scale, 0.f,      1.f, 1.f,
+        -scale,  scale, 0.f,      1.f, 0.f 
     };
     
     float offset = 0.7f;
     float vertices1[] = {
-        0.3f + offset,  0.3f + offset, 0.f,       0.f, 0.f,   0.1f, 0.1f, 0.1f,
-        0.3f + offset,  0.2f + offset, 0.f,       1.f, 0.f,   0.8f, 0.1f, 0.1f,
-        0.2f + offset,  0.2f + offset, 0.f,       1.f, 1.f,   0.1f, 0.1f, 0.1f,
-        0.2f + offset,  0.3f + offset, 0.f,       0.f, 1.f,   0.1f, 0.1f, 0.1f,
+        0.3f + offset,  0.3f + offset, 0.f,       0.f, 0.f,
+        0.3f + offset,  0.2f + offset, 0.f,       1.f, 0.f,
+        0.2f + offset,  0.2f + offset, 0.f,       1.f, 1.f,
+        0.2f + offset,  0.3f + offset, 0.f,       0.f, 1.f 
     };
     unsigned int indices[] = {
         0, 1, 3,
@@ -288,12 +293,10 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (5 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(2);
     
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
@@ -309,24 +312,20 @@ int main(int argc, char **argv) {
     const char *vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
         "layout (location = 1) in vec2 aTexCoord;\n"
-        "layout (location = 2) in vec3 color;\n"
         "out vec2 TexCoord;\n"
-        "out vec3 colorFrag;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
         "   TexCoord = aTexCoord;\n"
-        "   colorFrag = color;\n"
         "}\0";
         
     const char *fragmentShaderSource = "#version 330 core\n"
         "out vec4 FragColor;\n"
         "in vec2 TexCoord;\n"
-        "in vec3 colorFrag;\n"
         "uniform sampler2D ourTexture;\n"
         "void main()\n"
         "{\n"
-        "    FragColor = texture(ourTexture, TexCoord) * vec4(colorFrag, 0.1);\n"
+        "    FragColor = texture(ourTexture, TexCoord);\n"
         "}\0";
         
     unsigned int vertexShader, fragmentShader;
@@ -378,12 +377,10 @@ int main(int argc, char **argv) {
      * 
      */
     //glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,    const void * pointer);
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glVertexAttribPointer(   0,            3,          GL_FLOAT,    GL_FALSE,             5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+    glEnableVertexAttribArray(0); 
+    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (5 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(2);
     
     
     //Apparently OpenGL Core requires a VAO to draw things, though I disagree.
@@ -426,7 +423,7 @@ int main(int argc, char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        glBindTexture(GL_TEXTURE_2D, texture);
+//        glBindTexture(GL_TEXTURE_2D, texture);
 //        glBindTexture(GL_TEXTURE_2D, ftex);        
         
         glUseProgram(shaderProgram);
