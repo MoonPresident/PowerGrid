@@ -30,11 +30,18 @@
 //https://teaching.csse.uwa.edu.au/units/CITS3003/lectures/04-OpenGL-Example-Program.pdf
 
 
+
+
+/**
+ * THIS!!! https://docs.gl/gl4/glBufferData
+**/
+
+
 /********************************************************************************
  *******                             Includes                             *******
  *******************************************************************************/
 //Include this everywhere
-#include "debug.h"
+#include "my_debug.h"
 
 //Abstract functions
 #include "callbacks.h"
@@ -81,7 +88,7 @@ using namespace std::chrono;
  * debug_shaders
  */
 
-#define main_code
+
 
 //https://thebookofshaders.com/07/
 #define SHADER_PATH         "..\\resources\\shaders\\"
@@ -242,7 +249,7 @@ int main(int argc, char **argv) {
     glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(1);
     
-    
+    #ifndef main_code
     
     /**
      * LEARN OPENLGL TUTORIAL
@@ -280,7 +287,8 @@ int main(int argc, char **argv) {
     
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 0, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), &vertices);
     
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -349,14 +357,11 @@ int main(int argc, char **argv) {
     
 //    glUniform1i(1, 0);
     
-    
-    #ifdef main_code
-    while(0) {
-    #else
     while(!glfwWindowShouldClose(world.window)) {
-    #endif
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        
+        vertices[0] -= 0.0001f * glfwGetKey(world.window, GLFW_KEY_W);
         
 //        glBindTexture(GL_TEXTURE_2D, texture);
 //        glBindTexture(GL_TEXTURE_2D, ftex);        
@@ -366,7 +371,9 @@ int main(int argc, char **argv) {
         //The last element buffer object tjat gets bound while a VAO is bound gets stred as that VAO's element
         //Buffer object.
         glBindVertexArray(VAO);
-        
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), &vertices);
+
         
         //Then
 //        glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -388,12 +395,12 @@ int main(int argc, char **argv) {
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     
+    #endif
     
     
     /**
      * MY CODE
     **/
-    world.initBuffers();
     
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -406,7 +413,7 @@ int main(int argc, char **argv) {
     pcObject.program = programs.at(0);
     pcLine.program   = programs.at(1);
     world.display_objects.push_back(pcObject);
-    world.display_objects.push_back(pcLine);
+//    world.display_objects.push_back(pcLine);
     
     DisplayObject basic_enemy;
     basic_enemy.program = programs.at(0);
@@ -419,7 +426,40 @@ int main(int argc, char **argv) {
         world.display_objects.push_back(basic_enemy);
     }
     
+    world.initBuffers();
     
+    
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+        
+                float new_verts[] = {0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER,
+                        9*sizeof(float), 
+                        new_verts,//0, 
+                        GL_DYNAMIC_DRAW);
+        
+//        glGenBuffers(1, &worldEBO);
+//        glNamedBufferStorage(worldEBO,
+//                        1024*128,
+//                        NULL,
+//                        GL_MAP_WRITE_BIT);
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, worldEBO);
+        
+//        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+//        glEnableVertexAttribArray(0);
+//        glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+//        glEnableVertexAttribArray(1);
+//        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (6 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+//        glEnableVertexAttribArray(2);
+        glVertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (4 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float),  (void*) (8 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
+        glEnableVertexAttribArray(2);
 
     
     #ifdef debug_all
@@ -517,15 +557,17 @@ int main(int argc, char **argv) {
         
         //Need to move data into objects.
         glBindVertexArray(VAO);
-        glVertexAttrib4fv(0, scale);
-            
-        world.draw_objects();
-        
-        glBindTexture(GL_TEXTURE_2D, ftex);
-        glUseProgram(programs.back().ID);
-        
-        glBindVertexArray(textVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//        float new_verts[] = {scale[0], scale[1], 0, 0, world.display_objects.at(0).location[0], world.display_objects.at(0).location[1], 0, 0, world.display_objects.at(0).radians};
+//        glBufferSubData(VBO, 0, 9 * sizeof(float), &new_verts);
+//        world.draw_objects();
+//        glBindVertexArray(world.worldVAO);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);        
+//        glBindTexture(GL_TEXTURE_2D, ftex);
+//        glUseProgram(programs.back().ID);
+//        
+//        glBindVertexArray(textVAO);
+//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(world.window);
         glfwPollEvents();

@@ -3,8 +3,7 @@
 //uniform hits every vertex shader
 layout (location = 0) in vec4 scale;
 layout (location = 1) in vec4 offset;
-layout (location = 2) uniform int variant;
-layout (location = 3) uniform float radians;
+layout (location = 2) in float radians;
 
 void main (void){
     
@@ -29,26 +28,14 @@ void main (void){
     );
     
     vec4 verts[4];
-    
-    if(variant == 0) {
-        verts = vec4[4](
-            vec4(-0.1, -0.1, 0.1, 1),
-            vec4(0.1, 0.1, 0.1, 1),
-            vec4(-0.1, 0.1, 0.1, 1),
-            vec4(0.1, -0.1, 0.1, 1)
-        );
+    verts = vec4[4](
+        vec4(-0.1, -0.1, 0.1, 1),
+        vec4(0.1, 0.1, 0.1, 1),
+        vec4(-0.1, 0.1, 0.1, 1),
+        vec4(0.1, -0.1, 0.1, 1)
+    );
 
-        //Rotate, scale and add offset
-    } else {
-        verts = vec4[4](
-            vec4(0.14, 0.0, 0.1, 1),
-            vec4(0.0, 0.14, 0.1, 1),
-            vec4(-0.14, 0.0, 0.1, 1),
-            vec4(0.0, -0.14, 0.1, 1)
-        );
-    }
 
     //Rotate and add offset
     gl_Position = scale * (rot_mat * verts[gl_VertexID]) + offset;
-    
 }

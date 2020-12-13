@@ -7,7 +7,7 @@
  */
 
 //Include this everywhere
-#include "debug.h"
+#include "my_debug.h"
 
 #include "DisplayObject.h"
 

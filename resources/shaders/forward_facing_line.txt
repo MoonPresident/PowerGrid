@@ -4,8 +4,7 @@
 
 layout (location = 0) in vec4 scale;
 layout (location = 1) in vec4 offset;
-layout (location = 2) uniform int variant;
-layout (location = 3) uniform float radians;
+layout (location = 2) in float radians;
 
 void main (void){
     
