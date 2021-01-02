@@ -8,5 +8,6 @@
 -IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\GLFW\include\GLFW
 -IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\GLAD\include
 -IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\stb-master
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\glm-stable\glm
 -target
 x86_64-pc-windows-gnu

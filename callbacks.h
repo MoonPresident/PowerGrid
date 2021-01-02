@@ -11,6 +11,8 @@
 #include "glad/glad.h"
 #include "glfw3.h"
 
+//TODO: find a better way to handle the massive chunk of globals in this file.
+
 void basic_error_callback(int error, const char* description);
 
 void close_on_unfocus(GLFWwindow* window, int focused);
@@ -31,6 +33,23 @@ int getScrollFlag();
 
 void setScrollFlag(int val);
 
+
+//Mouse callbacks
+float getMouseOffsetX();
+float getMouseOffsetY();
+float getMouseLastX();
+float getMouseLastY();
+
+void setMouseOffsetX(float _x);
+void setMouseOffsetY(float _y);
+void setMouseLastX(float _x);
+void setMouseLastY(float _y);
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
+
+//Callback setter
 void setCallbacks(GLFWwindow** frame);
+
 
 #endif /* CALLBACKS_H */

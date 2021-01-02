@@ -3,7 +3,7 @@
 //p indicates a new program
 //
 //v;sb7_basic_input_vertex.txt
-pf
+pt
 v;pc_basic_vertex.txt
 f;sb7_basic_fragment.txt
 pl

@@ -40,11 +40,7 @@
       </VirtualDirectory>
     </VirtualDirectory>
   </VirtualDirectory>
-  <VirtualDirectory Name="units">
-    <File Name="BasicEnemy.h"/>
-    <File Name="player.h"/>
-    <File Name="player.cpp"/>
-  </VirtualDirectory>
+  <VirtualDirectory Name="units"/>
   <VirtualDirectory Name="helpers">
     <File Name="VirtualObject.h"/>
     <File Name="WorldData.h"/>
@@ -86,6 +82,7 @@
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="./Dependencies/GLFW/lib-mingw-w64"/>
+        <LibraryPath Value="./Dependencies/glm-stable/"/>
         <Library Value="glfw3.dll"/>
         <Library Value="libglfw3.a"/>
         <Library Value="libglfw3dll.a"/>

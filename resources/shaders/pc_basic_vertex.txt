@@ -5,7 +5,8 @@ layout (location = 0) in vec4 scale;
 layout (location = 1) in vec4 offset;
 layout (location = 2) in float radians;
 
-void main (void){
+void main ()
+{
     
     float cosZ = cos(radians);
     float sinZ = sin(radians);
@@ -27,9 +28,11 @@ void main (void){
         0, 0, 0, 1
     );
     
-    vec4 verts[4];
-    verts = vec4[4](
+    vec4 verts[6];
+    verts = vec4[6](
         vec4(-0.1, -0.1, 0.1, 1),
+        vec4(0.1, 0.1, 0.1, 1),
+        vec4(-0.1, 0.1, 0.1, 1),
         vec4(0.1, 0.1, 0.1, 1),
         vec4(-0.1, 0.1, 0.1, 1),
         vec4(0.1, -0.1, 0.1, 1)
@@ -37,5 +40,6 @@ void main (void){
 
 
     //Rotate and add offset
-    gl_Position = scale * (rot_mat * verts[gl_VertexID]) + offset;
+    //gl_Position = scale * (rot_mat * verts[gl_VertexID]) + offset;
+    gl_Position = rot_mat * verts[gl_VertexID] + offset;
 }

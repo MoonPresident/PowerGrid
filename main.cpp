@@ -47,13 +47,14 @@
 #include "callbacks.h"
 #include "shapes.h"
 #include "ShaderStore.h"
-#include "player.h"
 #include "WorldData.h"
-#include "BasicEnemy.h"
 
 
 //Includes
 #include <fstream>
+#include <utility>
+#include <vector>
+#include <numeric>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -63,6 +64,11 @@
 
 #include "glad/glad.h"
 #include "glfw3.h"
+
+//GLM library
+#include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
 
 
 
@@ -75,18 +81,18 @@
 
 /********************************************************************************
  *******                           Namespaces                             *******
- *******************************************************************************/
+********************************************************************************/
 using namespace std::chrono;
 
 /********************************************************************************
  *******                             Defines                              *******
- *******************************************************************************/
+********************************************************************************/
 
 /**
  * DEBUG DEFINES
  * debug_all
  * debug_shaders
- */
+**/
 
 
 
@@ -140,29 +146,87 @@ void startup(GLFWwindow** window);
 
 
 
-void basic_enemy_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
-    draw_object.radians = world.getBearing2D(draw_object.location, world.display_objects.at(0).location);
-    draw_object.real_location[0] += cos(draw_object.radians) * 0.01;
-    draw_object.real_location[1] -= sin(draw_object.radians) * 0.01;
-}
+//void basic_enemy_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
+//    draw_object.radians = world.getBearing2D(draw_object.location, world.display_objects.at(0).location);
+//    draw_object.real_location[0] += cos(draw_object.radians) * 0.01;
+//    draw_object.real_location[1] -= sin(draw_object.radians) * 0.01;
+//}
+//
+//void basic_enemy_collision_detection(DisplayObject& object, DisplayObject& collider) {
+//    //Check if any of the four vertices are within the other 4 vertices.
+//}
+//
+//void bullet_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
+//    draw_object.real_location[0] += cos(draw_object.radians) * 0.1;
+//    draw_object.real_location[1] -= sin(draw_object.radians) * 0.1;
+//}
+//
+//bool bullet_lifecycle_condition(DisplayObject& bullet) {
+//    int lifetime = duration_cast<milliseconds>(steady_clock::now() - bullet.creation_timestamp).count();
+//    if(lifetime > /* BULLET_LIFETIME */ 1000) {
+//        return true;
+//    }
+//    return false;
+//}
 
-void basic_enemy_collision_detection(DisplayObject& object, DisplayObject& collider) {
-    //Check if any of the four vertices are within the other 4 vertices.
-}
-
-void bullet_movement_behaviour(WorldData& world, DisplayObject& draw_object) {
-    draw_object.real_location[0] += cos(draw_object.radians) * 0.1;
-    draw_object.real_location[1] -= sin(draw_object.radians) * 0.1;
-}
-
-bool bullet_lifecycle_condition(DisplayObject& bullet) {
-    int lifetime = duration_cast<milliseconds>(steady_clock::now() - bullet.creation_timestamp).count();
-    if(lifetime > /* BULLET_LIFETIME */ 1000) {
-        return true;
+#define debug_getSquare
+void getSquare(float square[], float width, int stride, int z_const = 0.f) {
+    float half_width = width / 2;
+    for(int i = 0; i < 4; i++) {
+        square[stride * i    ] = half_width * ((i < 2) - (i >= 2));
+        square[stride * i + 1] = half_width * (2 * (i % 2) - 1);
+        square[stride * i + 2] = z_const;
     }
-    return false;
 }
 
+#define debug_getCube
+void getCube(float square[], float width, int stride) {
+    float half_width = width / 2;
+    for(int i = 0; i < 8; i++) {
+        square[stride * i    ] = half_width * ((i < 4) - (i >= 4));
+        square[stride * i + 1] = half_width * ((i % 4 < 2) - (i % 4 >= 2));
+        square[stride * i + 2] = half_width * (2 * (i % 2) - 1);
+    }
+}
+
+#define debug_setVertexPointerFloat
+void setVertexPointerFloat(std::vector<int> dataLayout) {
+    //IMPORTANT: How to set up vertex attributes.
+    /*
+     * In order to pass things in with a vbo, you need to tell opengl what the data looks like.
+     * In this case, the position is decribes as (x, y, x), each as 4 byte (32 bit) value.
+     * this means a stride of 12, but and offset of zero as there is only vertices to worry about.
+     * 
+     * glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,    const void * pointer);
+     */
+    
+    //Get total size, initialise offset variable and precalculate size in bytes for repeated use.
+    int stride = std::accumulate(dataLayout.begin(), dataLayout.end(), 0);
+    int offset = 0;
+    int size = stride * sizeof(float);
+    
+    #ifdef debug_setVertexPointerFloat
+    std::cout << "Stride: " << stride << std::endl;
+    #endif
+    
+    //Loop
+    for(int i = 0; i < dataLayout.size(); i++) {
+        int step = dataLayout.at(i);
+        
+        #ifdef debug_setVertexPointerFloat
+        std::cout << "Offset: " << offset << std::endl;
+        std::cout << "Step: " << step << std::endl;
+        #endif
+        
+        glVertexAttribPointer(i, step, GL_FLOAT, GL_FALSE, size, (void*) (offset * sizeof(float)));
+        glEnableVertexAttribArray(i);
+        offset += step;
+    }
+    
+    #ifdef debug_setVertexPointerFloat
+    std::cout << "Final Offset: " << offset << std::endl;
+    #endif
+}
 
 
 /**
@@ -178,9 +242,11 @@ int main(int argc, char **argv) {
     
     //Startup sequence
     WorldData world; 
-    
     startup(&world.window);
-    setCallbacks(&world.window);    
+    setCallbacks(&world.window);
+    setMouseOffsetX(0.f);
+    setMouseOffsetY(0.f);
+    setMouseLastY(world.height / 2.f);
     world.init_window();
     
     std::vector<Program> programs = loadPrograms();
@@ -189,7 +255,7 @@ int main(int argc, char **argv) {
     std::cout << glGetString(GL_VERSION) << " : " << GLVersion.major << GLVersion.minor << std::endl;
     #endif
     
-    
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);  
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     
@@ -220,16 +286,11 @@ int main(int argc, char **argv) {
     std::cout << ", " << x << std::endl;
     float textVertices[] = {
         0.f, 0.f, 0.f,    q.s0, q.t1,
+        0.f, 0.05f, 0.f,    q.s0, q.t0,
         0.05f, 0.f, 0.f,    q.s1, q.t1,
         0.05f, 0.05f, 0.f,    q.s1, q.t0,
-        0.f, 0.05f, 0.f,    q.s0, q.t0,
     };
-    unsigned int textIndices[] = {
-        0, 1, 2,
-//        1, 2, 3,
-        0, 2, 3,
-//        0, 1, 3,
-    };
+    unsigned int textIndices[] = { 0, 1, 2,     1, 2, 3, };
     
     GLuint textVAO, textVBO;
     unsigned int textEBO;
@@ -244,10 +305,10 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, textEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(textIndices), textIndices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(1);
+    std::vector<int> layout = {3, 2};
+    setVertexPointerFloat(layout);
+    
+    
     
     #ifndef main_code
     
@@ -262,24 +323,32 @@ int main(int argc, char **argv) {
     **/
     
     float scale = 0.7f;
+    float rot = 0.1f;
     float vertices[] = {
-         scale,  scale, 0.f,      0.f, 0.f,
-         scale, -scale, 0.f,      0.f, 1.f,
-        -scale, -scale, 0.f,      1.f, 1.f,
-        -scale,  scale, 0.f,      1.f, 0.f 
+        0.f, 0.f, 0.f,      0.f, 0.f, rot,
+        0.f, 0.f, 0.f,      0.f, 1.f, rot,
+        0.f, 0.f, 0.f,      1.f, 0.f, rot,
+        0.f, 0.f, 0.f,      1.f, 1.f, rot,
+        0.f, 0.f, 0.f,      0.f, 0.f, rot,
+        0.f, 0.f, 0.f,      0.f, 1.f, rot,
+        0.f, 0.f, 0.f,      1.f, 0.f, rot,
+        0.f, 0.f, 0.f,      1.f, 1.f, rot,
     };
+    getCube(vertices, scale, 6);
     
     float offset = 0.7f;
     float vertices1[] = {
-        0.3f + offset,  0.3f + offset, 0.f,       0.f, 0.f,
-        0.3f + offset,  0.2f + offset, 0.f,       1.f, 0.f,
-        0.2f + offset,  0.2f + offset, 0.f,       1.f, 1.f,
-        0.2f + offset,  0.3f + offset, 0.f,       0.f, 1.f 
+        0.3f + offset,  0.3f + offset, 0.f,       0.f, 0.f, rot,
+        0.3f + offset,  0.2f + offset, 0.f,       1.f, 0.f, rot,
+        0.2f + offset,  0.2f + offset, 0.f,       1.f, 1.f, rot,
+        0.2f + offset,  0.3f + offset, 0.f,       0.f, 1.f, rot,
     };
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
+    unsigned int indices[] = { 
+        0, 1, 2,    1, 2, 3,    4, 5, 6,    5, 6, 7,
+        0, 1, 4,    1, 4, 5,    2, 3, 6,    3, 6, 7,
+        0, 2, 4,    2, 4, 6,    1, 3, 5,    3, 5, 7
     };
+    
     //Arrays:
     //You can check if arrays are generated or not using gllsVertexArray
     glGenVertexArrays(1, &VAO);
@@ -294,10 +363,10 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),  (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(1);
+    {
+        std::vector<int> vboLayout = {3, 2, 1};
+        setVertexPointerFloat(vboLayout);
+    }
     
     glGenVertexArrays(1, &VAO1);
     glBindVertexArray(VAO1);
@@ -310,20 +379,10 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO1);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
-    
-    //IMPORTANT: How to set up vertex attributes.
-    /*
-     * In order to pass things in with a vbo, you need to tell opengl what the data looks like.
-     * In this case, the position is decribes as (x, y, x), each as 4 byte (32 bit) value.
-     * this means a stride of 12, but and offset of zero as there is only vertices to worry about.
-     * 
-     * 
-     */
-    //glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,    const void * pointer);
-    glVertexAttribPointer(   0,            3,          GL_FLOAT,    GL_FALSE,             5 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(0); 
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-    glEnableVertexAttribArray(1);
+    {
+        std::vector<int> vboLayout = {3, 2, 1};
+        setVertexPointerFloat(vboLayout);
+    }
     
     
     //Apparently OpenGL Core requires a VAO to draw things, though I disagree.
@@ -355,32 +414,98 @@ int main(int argc, char **argv) {
     
     stbi_image_free(data);
     
-//    glUniform1i(1, 0);
+    //3D code.
+    glm::mat4 projection = glm::perspective(
+                                    glm::radians(45.0f), 
+                                    1.3f, 
+                                    0.1f, 
+                                    100.f);
+    
+    glm::mat4 view = glm::mat4(1.f);
+    view = glm::translate(view, glm::vec3(0.f, 0.f, -3.f));
+    
+    glm::mat4 model = glm::mat4(1.0);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.f, 0.f, 0.f));
+    
+
+    //Camera
+    glm::vec3 cameraPos = glm::vec3(0.f, 0.f, 3.f);
+    glm::vec3 cameraTarget = glm::vec3(0.f, 0.f, 0.f);
+    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+    glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+    
+    
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+
+    float yaw = -90.f;
+    float pitch = 0.f;
+    
     
     while(!glfwWindowShouldClose(world.window)) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        vertices[0] -= 0.0001f * glfwGetKey(world.window, GLFW_KEY_W);
+        world.scale_factor = (float) getScrollFlag() * 0.1f;
+        
+        world.calculate_timestep();
+        
+        //Track FPS.
+        auto fps = world.check_fps();
+        if(fps) std::cout << "FPS: " << fps << std::endl;
+        float newYaw    = world.getMouseYaw() - getMouseOffsetX() * world.sensitivity;
+        float newPitch  = world.getMousePitch() + getMouseOffsetY() * world.sensitivity;
+        if(newPitch < -89.0f) newPitch = -89.f;
+        else if (newPitch > 89.0f) newPitch = 89.f;
+        world.setMouseYaw(newYaw);
+        world.setMousePitch(newPitch);
+        setMouseOffsetX(0.f);
+        setMouseOffsetY(0.f);
+        
+        
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(world.mouseYaw)) * cos(glm::radians(world.mousePitch));
+        direction.y = sin(glm::radians(world.mousePitch));
+        direction.z = sin(glm::radians(world.mouseYaw)) * cos(glm::radians(world.mousePitch));
+        cameraFront = glm::normalize(direction);
+
+        world.check_window();
         
 //        glBindTexture(GL_TEXTURE_2D, texture);
 //        glBindTexture(GL_TEXTURE_2D, ftex);        
+        const float cameraSpeed = 0.005f * world.get_delta_t() / 1000.f; // adjust accordingly
+        if (glfwGetKey(world.window, GLFW_KEY_W) == GLFW_PRESS)
+            cameraPos += cameraSpeed * glm::vec3(cameraFront.x, 0.f, cameraFront.z);
+        if (glfwGetKey(world.window, GLFW_KEY_S) == GLFW_PRESS)
+            cameraPos -= cameraSpeed * glm::vec3(cameraFront.x, 0.f, cameraFront.z);
+        if (glfwGetKey(world.window, GLFW_KEY_A) == GLFW_PRESS)
+            cameraPos -= glm::normalize(glm::cross( glm::vec3(cameraFront.x, 0.f, cameraFront.z), cameraUp)) * cameraSpeed;
+        if (glfwGetKey(world.window, GLFW_KEY_D) == GLFW_PRESS)
+            cameraPos += glm::normalize(glm::cross( glm::vec3(cameraFront.x, 0.f, cameraFront.z), cameraUp)) * cameraSpeed;
+        
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         
         glUseProgram(programs.back().ID);
+        
+//        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(0.01f), glm::vec3(0.5f, 1.0f, 0.f));
+        int modelLoc = glGetUniformLocation(programs.back().ID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        
+        int viewLoc = glGetUniformLocation(programs.back().ID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-        //The last element buffer object tjat gets bound while a VAO is bound gets stred as that VAO's element
+        int projectionLoc = glGetUniformLocation(programs.back().ID, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        //The last element buffer object that gets bound while a VAO is bound gets stred as that VAO's element
         //Buffer object.
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), &vertices);
 
         
-        //Then
-//        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        //Or
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         
         glBindVertexArray(VAO1);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -389,201 +514,197 @@ int main(int argc, char **argv) {
         glfwPollEvents();
     }  
     
+    //Close up shop
+    for(auto program: programs) {
+        glDeleteProgram(program.ID);
+    }
     
     glDeleteVertexArrays(1, &VAO1);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     
+    glfwTerminate();
+    std::cout << "Program successfully terminated." << std::endl;
+	return 0;
+    
     #endif
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     /**
      * MY CODE
     **/
     
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+//    glGenVertexArrays(1, &VAO);
+//    glBindVertexArray(VAO);
+//    
+//    GLint variant = 0;
+//    float scale_coeff = 1.f;
+//    
+//    std::cout << "Programs: " << programs.size() << std::endl;
+//    DisplayObject pcObject, pcLine;
+//    pcObject.program = programs.at(0);
+//    pcLine.program   = programs.at(1);
+//    world.display_objects.push_back(pcObject);
     
-    GLint variant = 0;
-    float scale_coeff = 1.f;
-    
-    std::cout << "Creating objects: " << programs.size() << std::endl;
-    DisplayObject pcObject, pcLine;
-    pcObject.program = programs.at(0);
-    pcLine.program   = programs.at(1);
-    world.display_objects.push_back(pcObject);
 //    world.display_objects.push_back(pcLine);
     
-    DisplayObject basic_enemy;
-    basic_enemy.program = programs.at(0);
-    basic_enemy.movement_behaviour = basic_enemy_movement_behaviour;
-    basic_enemy.real_location[0] = -0.5f;
-    basic_enemy.real_location[1] = -0.5f;
+//    DisplayObject basic_enemy;
+//    basic_enemy.program = programs.at(0);
+//    basic_enemy.movement_behaviour = basic_enemy_movement_behaviour;
+//    basic_enemy.real_location[0] = -0.5f;
+//    basic_enemy.real_location[1] = -0.5f;
+//    basic_enemy.real_location[2] = 1.f;
+//    basic_enemy.real_location[3] = 1.f;
     
-    for(int i = 0; i < 4; i++) {
-        basic_enemy.real_location[i % 2] *= -1.f;
-        world.display_objects.push_back(basic_enemy);
-    }
+//    for(int i = 0; i < 4; i++) {
+//        basic_enemy.real_location[i % 2] *= -1.f;
+//        world.display_objects.push_back(basic_enemy);
+//    }
     
-    world.initBuffers();
-    
-    
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-        
-                float new_verts[] = {0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
-
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER,
-                        9*sizeof(float), 
-                        new_verts,//0, 
-                        GL_DYNAMIC_DRAW);
-        
-//        glGenBuffers(1, &worldEBO);
-//        glNamedBufferStorage(worldEBO,
-//                        1024*128,
-//                        NULL,
-//                        GL_MAP_WRITE_BIT);
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, worldEBO);
-        
-//        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-//        glEnableVertexAttribArray(0);
-//        glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-//        glEnableVertexAttribArray(1);
-//        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),  (void*) (6 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-//        glEnableVertexAttribArray(2);
-        glVertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (4 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float),  (void*) (8 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
-        glEnableVertexAttribArray(2);
-
-    
-    #ifdef debug_all
-    std::cout << "Done." << std::endl;
-    #endif
-    
-
-    
-    #ifdef main_code
-    while(!glfwWindowShouldClose(world.window)) {
-    #else
-    while(0) {
-    #endif
-        world.calculate_timestep();
-        
+//    world.initBuffers();
+//
+//    
+//    #ifdef debug_all
+//    std::cout << "Done." << std::endl;
+//    #endif
+//    
+//
+//    
+//    #ifdef main_code
+//    while(!glfwWindowShouldClose(world.window)) {
+//    #else
+//    while(0) {
+//    #endif
+//        world.calculate_timestep();
+//        
         //Track FPS.
-        auto fps = world.check_fps();
-        if(fps) std::cout << "FPS: " << fps << std::endl;
+//        auto fps = world.check_fps();
+//        if(fps) std::cout << "FPS: " << fps << std::endl;
         
         //Check window, and set scale
-        world.check_window();
+//        world.check_window();
+//        
+//        GLfloat scale[] = { world.x_scale, world.y_scale, 0.f, 0.f };
+//        
+//        //Set changing screen color.
+//        float timeSin = (float)sin(glfwGetTime()) * 0.5f;
+//        float timeCos = (float)cos(glfwGetTime()) * 0.5f;
+//        const GLfloat color[] = { timeSin + 0.5f, timeCos + 0.5f, 0.0f, 1.0f};
+//        glClearBufferfv(GL_COLOR, 0, color);
+//        
+//        GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
         
-        GLfloat scale[] = { world.x_scale, world.y_scale, 0.f, 0.f };
-        
-        //Set changing screen color.
-        float timeSin = (float)sin(glfwGetTime()) * 0.5f;
-        float timeCos = (float)cos(glfwGetTime()) * 0.5f;
-        const GLfloat color[] = { timeSin + 0.5f, timeCos + 0.5f, 0.0f, 1.0f};
-        glClearBufferfv(GL_COLOR, 0, color);
-        
-        GLfloat attrib[] = { 0.0f, 0.0f, 0.0f, 0.0f};
-        
-        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(0).real_location[i];
+//        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(0).real_location[i];
 //        for(int i = 0; i < 4; i++) attrib[i] = world.display_objects.at(1).real_location[i];
         
-        double step_length = scale_coeff * 0.000002 * world.get_delta_t();
+//        double step_length = scale_coeff * 0.000002 * world.get_delta_t();
+//        
+//        int y_direction = glfwGetKey(world.window, GLFW_KEY_W) - glfwGetKey(world.window, GLFW_KEY_S);
+//        int x_direction = glfwGetKey(world.window, GLFW_KEY_D) - glfwGetKey(world.window, GLFW_KEY_A);
+//        
+//        if(x_direction != 0 && y_direction != 0) step_length /= SQRT_2;
+//        
+//        attrib[1] += y_direction * step_length;
+//        attrib[0] += x_direction * step_length;
+//        
+//        //Set absolute position
+//        world.display_objects.at(0).setLocation(attrib, scale);
+//        world.display_objects.at(1).setLocation(attrib, scale);
+//        
+//        world.display_objects.at(0).radians = world.getBearingToCursor(world.display_objects.at(0).location);
+//        world.display_objects.at(1).radians = world.display_objects.at(0).radians;
         
-        int y_direction = glfwGetKey(world.window, GLFW_KEY_W) - glfwGetKey(world.window, GLFW_KEY_S);
-        int x_direction = glfwGetKey(world.window, GLFW_KEY_D) - glfwGetKey(world.window, GLFW_KEY_A);
+//        for(int i = world.display_objects.size() - 1; i >= 1; i--) {
+//            
+//            DisplayObject& target = world.display_objects.at(i);
+//            target.movement_behaviour(world, target);
+//            target.setLocation(target.real_location, scale);
+//            
+//            if(target.lifecycle_conditions && target.lifecycle_conditions(world.display_objects.at(i))) {
+//                world.display_objects.erase(world.display_objects.begin() + i);
+//            }
+//            
+//        }
         
-        if(x_direction != 0 && y_direction != 0) step_length /= SQRT_2;
+//        if(getLeftClickFlag()) {
+//            DisplayObject bullet;
+//            bullet.program = programs.at(0);
+//            bullet.movement_behaviour = bullet_movement_behaviour;
+//            bullet.lifecycle_conditions = bullet_lifecycle_condition;
+//            
+//            bullet.radians = world.display_objects.at(0).radians;
+//            bullet.real_location[0] = world.display_objects.at(0).real_location[0];
+//            bullet.real_location[1] = world.display_objects.at(0).real_location[1];
+//            world.display_objects.push_back(bullet);
+//            
+//            for(int i = 0; i < 100; i++) {
+//            basic_enemy.real_location[0] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+//            basic_enemy.real_location[1] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+//            
+//            world.display_objects.push_back(basic_enemy);
+//            }
+//            resetLeftClickFlag();
+//            std::cout << "Enemies: " << world.display_objects.size() - 2 << std::endl;
+//        }
+//        if(getRightClickFlag()) {
+//            if(world.display_objects.size() > 2) {
+//                world.display_objects.pop_back();
+//            }
+//            resetRightClickFlag();
+//        }
         
-        attrib[1] += y_direction * step_length;
-        attrib[0] += x_direction * step_length;
-        
-        //Set absolute position
-        world.display_objects.at(0).setLocation(attrib, scale);
-        world.display_objects.at(1).setLocation(attrib, scale);
-        
-        world.display_objects.at(0).radians = world.getBearingToCursor(world.display_objects.at(0).location);
-        world.display_objects.at(1).radians = world.display_objects.at(0).radians;
-        
-
-        for(int i = world.display_objects.size() - 1; i >= 2; i--) {
-            DisplayObject& target = world.display_objects.at(i);
-            target.movement_behaviour(world, target);
-            target.setLocation(target.real_location, scale);
-            
-            if(target.lifecycle_conditions && target.lifecycle_conditions(world.display_objects.at(i))) {
-                world.display_objects.erase(world.display_objects.begin() + i);
-            }
-        }
-            
-        if(getLeftClickFlag()) {
-            DisplayObject bullet;
-            bullet.program = programs.at(0);
-            bullet.movement_behaviour = bullet_movement_behaviour;
-            bullet.lifecycle_conditions = bullet_lifecycle_condition;
-            
-            bullet.radians = world.display_objects.at(0).radians;
-            bullet.real_location[0] = world.display_objects.at(0).real_location[0];
-            bullet.real_location[1] = world.display_objects.at(0).real_location[1];
-            world.display_objects.push_back(bullet);
-            
-            for(int i = 0; i < 100; i++) {
-            basic_enemy.real_location[0] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
-            basic_enemy.real_location[1] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
-            
-            world.display_objects.push_back(basic_enemy);
-            }
-            resetLeftClickFlag();
-            std::cout << "Enemies: " << world.display_objects.size() - 2 << std::endl;
-        }
-        if(getRightClickFlag()) {
-            if(world.display_objects.size() > 2) {
-                world.display_objects.pop_back();
-            }
-            resetRightClickFlag();
-        }
-        
-        world.scale_factor = (float) getScrollFlag() * 0.1f;
+//        world.scale_factor = (float) getScrollFlag() * 0.1f;
         
         //Attribs can be set just once
         //Uniforms need to be reset when the program changes.
         
         //Need to move data into objects.
-        glBindVertexArray(VAO);
-//        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//        float new_verts[] = {scale[0], scale[1], 0, 0, world.display_objects.at(0).location[0], world.display_objects.at(0).location[1], 0, 0, world.display_objects.at(0).radians};
-//        glBufferSubData(VBO, 0, 9 * sizeof(float), &new_verts);
 //        world.draw_objects();
-//        glBindVertexArray(world.worldVAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);        
+        
 //        glBindTexture(GL_TEXTURE_2D, ftex);
 //        glUseProgram(programs.back().ID);
 //        
 //        glBindVertexArray(textVAO);
 //        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
-        glfwSwapBuffers(world.window);
-        glfwPollEvents();
-    }
-    
-    //Close up shop
-    glDeleteVertexArrays(1, &VAO);
-    for(auto program: programs) {
-        glDeleteProgram(program.ID);
-    }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteVertexArrays(1, &textVAO);
-    
-    glfwTerminate();
-    std::cout << "Program successfully terminated." << std::endl;
-	return 0;
+//        glfwSwapBuffers(world.window);
+//        glfwPollEvents();
+//    }
+//    
+//    //Close up shop
+//    glDeleteVertexArrays(1, &VAO);
+//    for(auto program: programs) {
+//        glDeleteProgram(program.ID);
+//    }
+//    glDeleteVertexArrays(1, &VAO);
+//    glDeleteVertexArrays(1, &textVAO);
+//    
+//    glfwTerminate();
+//    std::cout << "Program successfully terminated." << std::endl;
+//	return 0;
 }
 
 

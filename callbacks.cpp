@@ -9,6 +9,8 @@
 #include "glfw3.h"
 #include <iostream>
 
+#include "my_debug.h"
+
 
 void basic_error_callback(int error, const char* description){
     fputs(description, stderr);
@@ -39,7 +41,7 @@ void general_keyboard_callback(
         int mods
 ) {
     
-    #ifdef DEBUG
+    #ifdef debug_all
     std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
     std::cout << "Action: " << action << ", mods: " << mods << std::endl;
     #endif
@@ -52,7 +54,7 @@ int rightClickFlag;
 
 void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
     if(action) {
-        #ifdef DEBUG
+        #ifdef debug_all
         std::cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << std::endl << std::endl;
         #endif
         if(button == 0) {
@@ -97,17 +99,47 @@ void setScrollFlag(int val) {
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
     scrollFlag += y_offset;
     if(scrollFlag < 1) scrollFlag = 1;
+    
+    #ifdef debug_all
     std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
+    #endif
 }
 
+float mouseOffsetX;
+float mouseOffsetY;
+float mouseLastX;
+float mouseLastY;
 
+float getMouseOffsetX()   { return mouseOffsetX; };
+float getMouseOffsetY()   { return mouseOffsetY; };
+float getMouseLastX()     { return mouseLastX; };
+float getMouseLastY()     { return mouseLastY; };
 
+void setMouseOffsetX(float _x)    { mouseOffsetX  = _x; };
+void setMouseOffsetY(float _y)    { mouseOffsetY  = _y; };
+void setMouseLastX(float _x)      { mouseLastX    = _x; };
+void setMouseLastY(float _y)      { mouseLastY    = _y; };
+
+int firstMouse;
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if(!firstMouse) {
+        mouseLastX = (float) xpos;
+        mouseLastY = (float) ypos;
+        firstMouse = 1;
+    }
+    mouseOffsetX = mouseLastX - (float) xpos;
+    mouseOffsetY = mouseLastY - (float) ypos;
+    mouseLastX = (float) xpos;
+    mouseLastY = (float) ypos;
+}
 
 /**
  * @brief 
  * @param frame
  */
 void setCallbacks(GLFWwindow** frame) {
+    firstMouse = 0;
+    
     GLFWwindow* window = *frame;
     
     glfwMakeContextCurrent(window);
@@ -115,4 +147,9 @@ void setCallbacks(GLFWwindow** frame) {
     glfwSetMouseButtonCallback(window, mousebutton_flag_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, general_keyboard_callback);
+    
+    
+    //Mouse callback
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 }
