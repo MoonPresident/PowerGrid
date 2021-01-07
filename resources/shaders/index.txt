@@ -12,5 +12,8 @@ pf
 v;char_vertex_shader.txt
 f;char_fragment_shader.txt
 pt
+v;hud_vertex_shader.txt
+f;hud_fragment_shader.txt
+pt
 v;single_vertex_shader.txt
 f;single_fragment_shader.txt

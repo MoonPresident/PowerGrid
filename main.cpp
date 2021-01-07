@@ -48,6 +48,9 @@
 #include "shapes.h"
 #include "ShaderStore.h"
 #include "WorldData.h"
+#include "Terminal.h"
+#include "Font.h"
+#include "Camera.h"
 
 
 //Includes
@@ -73,12 +76,15 @@
 
 
 //Text Rendering
-#define STB_TRUETYPE_IMPLEMENTATION 1
-#include "stb_truetype.h"
+//#define STB_TRUETYPE_IMPLEMENTATION 1
+//#include "stb_truetype.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+//Freetype kinda sucks to get working
+//https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html
+//Idk tho
 /********************************************************************************
  *******                           Namespaces                             *******
 ********************************************************************************/
@@ -179,7 +185,7 @@ void getSquare(float square[], float width, int stride, int z_const = 0.f) {
     }
 }
 
-#define debug_getCube
+//#define debug_getCube
 void getCube(float square[], float width, int stride) {
     float half_width = width / 2;
     for(int i = 0; i < 8; i++) {
@@ -189,7 +195,7 @@ void getCube(float square[], float width, int stride) {
     }
 }
 
-#define debug_setVertexPointerFloat
+//#define debug_setVertexPointerFloat
 void setVertexPointerFloat(std::vector<int> dataLayout) {
     //IMPORTANT: How to set up vertex attributes.
     /*
@@ -229,6 +235,7 @@ void setVertexPointerFloat(std::vector<int> dataLayout) {
 }
 
 
+
 /**
  * @brief Main function for Powergrid program
  * @param argc
@@ -237,11 +244,13 @@ void setVertexPointerFloat(std::vector<int> dataLayout) {
  */
 int main(int argc, char **argv) {
     //Init variables
-    GLuint VAO, VBO, VAO1, VBO1;
-    unsigned int EBO, EBO1;
+    GLuint VAO, VBO, VAO1, VBO1, EBO, EBO1;
+    float moveSpeed = 5.f;
+    float jumpVelocity = 2.8f;
     
     //Startup sequence
     WorldData world; 
+    Camera camera;
     startup(&world.window);
     setCallbacks(&world.window);
     setMouseOffsetX(0.f);
@@ -256,39 +265,18 @@ int main(int argc, char **argv) {
     #endif
     
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);  
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    //Font Stuff:
-    unsigned char ttf_buffer[1<<20];
-    unsigned char temp_bitmap[512*512];
     
-    stbtt_bakedchar cdata[96]; // ASCII 32..126 is 95 glyphs
-    GLuint ftex;
+    Font times("c:/windows/fonts/times.ttf");
     
-    fread(ttf_buffer, 1, 1<<20, fopen("c:/windows/fonts/times.ttf", "rb"));
-    stbtt_BakeFontBitmap(ttf_buffer,0, 32.0, temp_bitmap, 512,512, 32,96, cdata); // no guarantee this fits!
-    
-    // can free ttf_buffer at this point
-    glGenTextures(1, &ftex);
-    glBindTexture(GL_TEXTURE_2D, ftex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512,512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
-
-    // can free temp_bitmap at this point
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    //Text setup.
-    stbtt_aligned_quad q;
-    float x = -0.f, y = -0.f;
-    char* textCharacter = "a";
-    std::cout << "X: " << x;
-    stbtt_GetBakedQuad(cdata, 512, 512, *textCharacter - 32, &x,&y,&q, 1);//1=opengl & d3d10+,0=d3d9
-    std::cout << ", " << x << std::endl;
     float textVertices[] = {
-        0.f, 0.f, 0.f,    q.s0, q.t1,
-        0.f, 0.05f, 0.f,    q.s0, q.t0,
-        0.05f, 0.f, 0.f,    q.s1, q.t1,
-        0.05f, 0.05f, 0.f,    q.s1, q.t0,
+        0.f,   0.f,   0.f,    times.q.s0, times.q.t1,
+        0.f,   0.05f, 0.f,    times.q.s0, times.q.t0,
+        0.05f, 0.f,   0.f,    times.q.s1, times.q.t1,
+        0.05f, 0.05f, 0.f,    times.q.s1, times.q.t0,
     };
     unsigned int textIndices[] = { 0, 1, 2,     1, 2, 3, };
     
@@ -320,19 +308,20 @@ int main(int argc, char **argv) {
      * 
      * Projection matrix notes:
      * https://www.songho.ca/opengl/gl_projectionmatrix.html
+     * https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
     **/
     
     float scale = 0.7f;
     float rot = 0.1f;
     float vertices[] = {
-        0.f, 0.f, 0.f,      0.f, 0.f, rot,
-        0.f, 0.f, 0.f,      0.f, 1.f, rot,
-        0.f, 0.f, 0.f,      1.f, 0.f, rot,
         0.f, 0.f, 0.f,      1.f, 1.f, rot,
-        0.f, 0.f, 0.f,      0.f, 0.f, rot,
-        0.f, 0.f, 0.f,      0.f, 1.f, rot,
         0.f, 0.f, 0.f,      1.f, 0.f, rot,
+        0.f, 0.f, 0.f,      0.f, 1.f, rot,
+        0.f, 0.f, 0.f,      0.f, 0.f, rot,
         0.f, 0.f, 0.f,      1.f, 1.f, rot,
+        0.f, 0.f, 0.f,      1.f, 0.f, rot,
+        0.f, 0.f, 0.f,      0.f, 1.f, rot,
+        0.f, 0.f, 0.f,      0.f, 0.f, rot,
     };
     getCube(vertices, scale, 6);
     
@@ -414,36 +403,15 @@ int main(int argc, char **argv) {
     
     stbi_image_free(data);
     
-    //3D code.
-    glm::mat4 projection = glm::perspective(
-                                    glm::radians(45.0f), 
-                                    1.3f, 
-                                    0.1f, 
-                                    100.f);
     
-    glm::mat4 view = glm::mat4(1.f);
-    view = glm::translate(view, glm::vec3(0.f, 0.f, -3.f));
-    
-    glm::mat4 model = glm::mat4(1.0);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.f, 0.f, 0.f));
-    
-
-    //Camera
-    glm::vec3 cameraPos = glm::vec3(0.f, 0.f, 3.f);
-    glm::vec3 cameraTarget = glm::vec3(0.f, 0.f, 0.f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-    
-    
-    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-
     float yaw = -90.f;
     float pitch = 0.f;
     
-    
+    glm::vec3 force_vector(0.f, 0.f, 0.f); //x, y, z
+    float pc_z_pos = 0.f;
     while(!glfwWindowShouldClose(world.window)) {
+        float delta_t = world.get_delta_t()  / 1000000.f;
+//        std::cout << world.get_delta_t() / 1000000.f << std::endl;
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
@@ -453,7 +421,12 @@ int main(int argc, char **argv) {
         
         //Track FPS.
         auto fps = world.check_fps();
-        if(fps) std::cout << "FPS: " << fps << std::endl;
+        //Things to be done once a second.
+//        if(fps) {
+//            std::cout << "FPS: " << fps << std::endl;
+//            std::cout << "\t" << cameraPos.x << "\t" << cameraPos.y << "\t" << cameraPos.z <<
+//                    "\t" << force_vector[2] << std::endl;
+//        }
         float newYaw    = world.getMouseYaw() - getMouseOffsetX() * world.sensitivity;
         float newPitch  = world.getMousePitch() + getMouseOffsetY() * world.sensitivity;
         if(newPitch < -89.0f) newPitch = -89.f;
@@ -468,35 +441,46 @@ int main(int argc, char **argv) {
         direction.x = cos(glm::radians(world.mouseYaw)) * cos(glm::radians(world.mousePitch));
         direction.y = sin(glm::radians(world.mousePitch));
         direction.z = sin(glm::radians(world.mouseYaw)) * cos(glm::radians(world.mousePitch));
-        cameraFront = glm::normalize(direction);
+        camera.cameraFront = glm::normalize(direction);
 
         world.check_window();
         
-//        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
 //        glBindTexture(GL_TEXTURE_2D, ftex);        
-        const float cameraSpeed = 0.005f * world.get_delta_t() / 1000.f; // adjust accordingly
+        const float cameraSpeed = moveSpeed * delta_t; // adjust accordingly
         if (glfwGetKey(world.window, GLFW_KEY_W) == GLFW_PRESS)
-            cameraPos += cameraSpeed * glm::vec3(cameraFront.x, 0.f, cameraFront.z);
+            camera.cameraPos += cameraSpeed * glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z);
         if (glfwGetKey(world.window, GLFW_KEY_S) == GLFW_PRESS)
-            cameraPos -= cameraSpeed * glm::vec3(cameraFront.x, 0.f, cameraFront.z);
+            camera.cameraPos -= cameraSpeed * glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z);
         if (glfwGetKey(world.window, GLFW_KEY_A) == GLFW_PRESS)
-            cameraPos -= glm::normalize(glm::cross( glm::vec3(cameraFront.x, 0.f, cameraFront.z), cameraUp)) * cameraSpeed;
+            camera.cameraPos -= glm::normalize(glm::cross( glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z), camera.cameraUp)) * cameraSpeed;
         if (glfwGetKey(world.window, GLFW_KEY_D) == GLFW_PRESS)
-            cameraPos += glm::normalize(glm::cross( glm::vec3(cameraFront.x, 0.f, cameraFront.z), cameraUp)) * cameraSpeed;
+            camera.cameraPos += glm::normalize(glm::cross( glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z), camera.cameraUp)) * cameraSpeed;
+        if(glfwGetKey(world.window, GLFW_KEY_SPACE) && force_vector.z == 0.f) {
+            force_vector.z = jumpVelocity;//m/s
+        }
+        camera.cameraPos = glm::vec3(camera.cameraPos.x, pc_z_pos, camera.cameraPos.z);
         
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        force_vector.z -= 9.8f * delta_t;
+        pc_z_pos += force_vector.z * delta_t;
+        if(pc_z_pos < 0.f) {
+            pc_z_pos = 0.f;
+            force_vector.z = 0.f;
+        }
+        
+        camera.view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFront, camera.cameraUp);
         
         glUseProgram(programs.back().ID);
         
 //        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(0.01f), glm::vec3(0.5f, 1.0f, 0.f));
         int modelLoc = glGetUniformLocation(programs.back().ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
         
         int viewLoc = glGetUniformLocation(programs.back().ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
 
         int projectionLoc = glGetUniformLocation(programs.back().ID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
 
         //The last element buffer object that gets bound while a VAO is bound gets stred as that VAO's element
         //Buffer object.
@@ -508,6 +492,13 @@ int main(int argc, char **argv) {
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         
         glBindVertexArray(VAO1);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
+        
+        glBindTexture(GL_TEXTURE_2D, times.ftex);
+        glUseProgram(programs.at(programs.size() - 2).ID);
+        
+        glBindVertexArray(textVAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(world.window);

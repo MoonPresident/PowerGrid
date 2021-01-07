@@ -1,7 +1,6 @@
 #version 450 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
-layout (location = 2) in float aRadians;
 out vec2 TexCoord;
 
 uniform mat4 model;
@@ -10,18 +9,6 @@ uniform mat4 projection;
 
 void main()
 {
-    
-    
-    float cosZ = cos(aRadians);
-    float sinZ = sin(aRadians);
-
-    mat4 rot_mat = mat4(
-        cosZ, -sinZ, 0, 0,
-        sinZ, cosZ, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-    );
-    
    gl_Position = projection * view * model * vec4(aPos, 1.0);
    TexCoord = aTexCoord;
 }

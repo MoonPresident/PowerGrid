@@ -17,8 +17,13 @@
   <VirtualDirectory Name="z_legacy"/>
   <VirtualDirectory Name="audio"/>
   <VirtualDirectory Name="resources">
+    <VirtualDirectory Name="Shapes">
+      <File Name="resources/Shape.h"/>
+      <File Name="resources/Shape.cpp"/>
+    </VirtualDirectory>
     <VirtualDirectory Name="components"/>
     <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/hud_vertex_shader.txt"/>
       <File Name="resources/shaders/single_fragment_shader.txt"/>
       <File Name="resources/shaders/single_vertex_shader.txt"/>
       <File Name="resources/shaders/char_fragment_shader.txt"/>
@@ -42,6 +47,10 @@
   </VirtualDirectory>
   <VirtualDirectory Name="units"/>
   <VirtualDirectory Name="helpers">
+    <File Name="Camera.h"/>
+    <File Name="Font.h"/>
+    <File Name="Terminal.h"/>
+    <File Name="Terminal.cpp"/>
     <File Name="VirtualObject.h"/>
     <File Name="WorldData.h"/>
     <File Name="WorldData.cpp"/>
