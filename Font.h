@@ -18,12 +18,15 @@ public:
     GLuint ftex;
     stbtt_aligned_quad q;
     
+    float textVertices[16];
+    int textIndices[6];
+    
     
     //Consider a move onto the better library with this for reference
     //https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c
     //May not be a real possibility tho.
-    void initFont(const char* path, float charHeight) {
-        fread(ttf_buffer, 1, 1<<20, fopen("c:/windows/fonts/times.ttf", "rb"));
+    Font(const char* fontPath, float charHeight)  {
+        fread(ttf_buffer, 1, 1<<20, fopen(fontPath, "rb"));
         stbtt_BakeFontBitmap(ttf_buffer, 0, charHeight, 
                 temp_bitmap, alpha_bitmap_width, alpha_bitmap_height, 32, 96, cdata); 
         //No guarantee this fits! ^^
@@ -44,15 +47,15 @@ public:
             alpha_bitmap_height, 
             *textCharacter - 32, &x,&y,&q, 1
         );//1=opengl & d3d10+,0=d3d9
+        
+        for(int i = 0; i < 3; i++) {
+            textIndices[i] = i;
+            textIndices[i + 3] = i + 1;
+        }
     }
     
-    Font(const char* fontPath) {
-        initFont(fontPath, 128.0);
-    }
-    
-    Font(const char* fontPath, float charHeight) {
-        initFont(fontPath, charHeight);
-    }
+    Font(const char* fontPath) : Font(fontPath, 128.0) {}
+    Font() : Font("c:/windows/fonts/times.ttf", 128.0) {}
     
 //    float textVertices[] = {
 //        0.f,   0.f,   0.f,    q.s0, q.t1,

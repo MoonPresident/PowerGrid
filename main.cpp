@@ -120,9 +120,58 @@ using namespace std::chrono;
 
 
 /********************************************************************************
- *******                           Prototypes                             *******
- *******************************************************************************/
-void startup(GLFWwindow** window);
+*******                              Startup                              *******
+********************************************************************************/
+
+void startup(GLFWwindow** window) {
+    
+    srand(time(NULL));
+    resetLeftClickFlag();
+    resetRightClickFlag();
+    setScrollFlag(10);
+    
+    if (!glfwInit()) exit(EXIT_FAILURE);
+    
+    #ifdef debug
+    cout << "glfw init successful" << endl;
+    #endif
+    
+    //Set up error callback.
+    glfwSetErrorCallback(basic_error_callback);
+    
+    //Set up multisampling
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    
+    //Set OpenGL version.
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    
+    *window = glfwCreateWindow(
+        INITIAL_WIDTH,
+        INITIAL_HEIGHT,
+        WINDOW_TITLE,
+        NULL, //glfwGetPrimaryMonitor(), //<- does fullscreen
+        NULL
+    );
+    
+    glfwSetWindowPos(*window, INITIAL_X_OFF, INITIAL_Y_OFF);
+    if(!window) {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+    
+    glfwMakeContextCurrent(*window);
+    
+    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        std::cout << "Glad crashed. Exiting." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    
+    #ifdef debug
+    std::cout << "Glad loaded." << std::endl;
+    #endif
+}
 
 
 
@@ -146,6 +195,9 @@ void startup(GLFWwindow** window);
 //  Get a menu going.
 
 //  Engine makes the actual game take years to design. This was expected, but jesus.
+//  Get Terminal Working
+//  Get an input interface
+//  Work out model for state machine
 
 
 
@@ -410,14 +462,16 @@ int main(int argc, char **argv) {
     glm::vec3 force_vector(0.f, 0.f, 0.f); //x, y, z
     float pc_z_pos = 0.f;
     while(!glfwWindowShouldClose(world.window)) {
+        //Trigger new timestep
+        world.calculate_timestep();
+        
         float delta_t = world.get_delta_t()  / 1000000.f;
-//        std::cout << world.get_delta_t() / 1000000.f << std::endl;
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         world.scale_factor = (float) getScrollFlag() * 0.1f;
         
-        world.calculate_timestep();
+
         
         //Track FPS.
         auto fps = world.check_fps();
@@ -547,10 +601,6 @@ int main(int argc, char **argv) {
     /**
      * MY CODE
     **/
-    
-//    glGenVertexArrays(1, &VAO);
-//    glBindVertexArray(VAO);
-//    
 //    GLint variant = 0;
 //    float scale_coeff = 1.f;
 //    
@@ -576,19 +626,6 @@ int main(int argc, char **argv) {
 //    }
     
 //    world.initBuffers();
-//
-//    
-//    #ifdef debug_all
-//    std::cout << "Done." << std::endl;
-//    #endif
-//    
-//
-//    
-//    #ifdef main_code
-//    while(!glfwWindowShouldClose(world.window)) {
-//    #else
-//    while(0) {
-//    #endif
 //        world.calculate_timestep();
 //        
         //Track FPS.
@@ -668,90 +705,4 @@ int main(int argc, char **argv) {
 //        }
         
 //        world.scale_factor = (float) getScrollFlag() * 0.1f;
-        
-        //Attribs can be set just once
-        //Uniforms need to be reset when the program changes.
-        
-        //Need to move data into objects.
-//        world.draw_objects();
-        
-//        glBindTexture(GL_TEXTURE_2D, ftex);
-//        glUseProgram(programs.back().ID);
-//        
-//        glBindVertexArray(textVAO);
-//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        
-//        glfwSwapBuffers(world.window);
-//        glfwPollEvents();
-//    }
-//    
-//    //Close up shop
-//    glDeleteVertexArrays(1, &VAO);
-//    for(auto program: programs) {
-//        glDeleteProgram(program.ID);
-//    }
-//    glDeleteVertexArrays(1, &VAO);
-//    glDeleteVertexArrays(1, &textVAO);
-//    
-//    glfwTerminate();
-//    std::cout << "Program successfully terminated." << std::endl;
-//	return 0;
-}
-
-
-
-
-
-
-
-
-
-void startup(GLFWwindow** window) {
-    
-    srand(time(NULL));
-    resetLeftClickFlag();
-    resetRightClickFlag();
-    setScrollFlag(10);
-    
-    if (!glfwInit()) exit(EXIT_FAILURE);
-    
-    #ifdef debug
-    cout << "glfw init successful" << endl;
-    #endif
-    
-    //Set up error callback.
-    glfwSetErrorCallback(basic_error_callback);
-    
-    //Set up multisampling
-    glfwWindowHint(GLFW_SAMPLES, 8);
-    
-    //Set OpenGL version.
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    
-    *window = glfwCreateWindow(
-        INITIAL_WIDTH,
-        INITIAL_HEIGHT,
-        WINDOW_TITLE,
-        NULL, //glfwGetPrimaryMonitor(), //<- does fullscreen
-        NULL
-    );
-    
-    glfwSetWindowPos(*window, INITIAL_X_OFF, INITIAL_Y_OFF);
-    if(!window) {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-    
-    glfwMakeContextCurrent(*window);
-    
-    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        std::cout << "Glad crash" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    
-    #ifdef debug
-    std::cout << "glad sorted" << std::endl;
-    #endif
 }
