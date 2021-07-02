@@ -96,7 +96,7 @@ int WorldData::check_fps() {
  * @brief Gets the cursor position and translates it into a float
  */
 void WorldData::getCursorPosition() {
-    glfwGetCursorPos(window, cursor_position, cursor_position + 1);
+    glfwGetCursorPos(window.getWindow(), cursor_position, cursor_position + 1);
     
     cursor_position[1] = (2 * (cursor_position[1] / (float) height) - 1) * x_scale;
     cursor_position[0] = (2 * (cursor_position[0] / (float) width) - 1) * y_scale;
@@ -132,7 +132,7 @@ void WorldData::setScale(float source[]) {
 
 void WorldData::init_window() {
     //Set window and scale.
-    glfwGetFramebufferSize(window, &width, &height);
+    glfwGetFramebufferSize(window.getWindow(), &width, &height);
     glViewport(0, 0, width, height);
     scale_factor = 1.f;
     x_scale = scale_factor * ((width != height) * (float) height / (float) width + (width == height));
@@ -142,7 +142,7 @@ void WorldData::init_window() {
 void WorldData::check_window() {
     int prev_width = width;
     int prev_height = height;
-    glfwGetFramebufferSize(window, &width, &height);
+    glfwGetFramebufferSize(window.getWindow(), &width, &height);
     
 //        if(prev_width == width && prev_height == height) {
 //            return;

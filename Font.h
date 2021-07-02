@@ -8,6 +8,9 @@
 #define STB_TRUETYPE_IMPLEMENTATION 1
 #include "stb_truetype.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 class Font {
 public:
     unsigned char ttf_buffer[1<<20];
@@ -25,7 +28,7 @@ public:
     //Consider a move onto the better library with this for reference
     //https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c
     //May not be a real possibility tho.
-    Font(const char* fontPath, float charHeight)  {
+    Font(const char* fontPath, float charHeight) {
         fread(ttf_buffer, 1, 1<<20, fopen(fontPath, "rb"));
         stbtt_BakeFontBitmap(ttf_buffer, 0, charHeight, 
                 temp_bitmap, alpha_bitmap_width, alpha_bitmap_height, 32, 96, cdata); 
@@ -63,6 +66,11 @@ public:
 //        0.05f, 0.f,   0.f,    q.s1, q.t1,
 //        0.05f, 0.05f, 0.f,    q.s1, q.t0,
 //    };
+
+    //Freetype implementation
+    FT_Library ft;
+    
+    
 };
 
 #endif /* FONT_H */

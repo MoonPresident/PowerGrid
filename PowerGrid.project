@@ -47,6 +47,7 @@
   </VirtualDirectory>
   <VirtualDirectory Name="units"/>
   <VirtualDirectory Name="helpers">
+    <File Name="Window.h"/>
     <File Name="Camera.h"/>
     <File Name="Font.h"/>
     <File Name="Terminal.h"/>
@@ -66,6 +67,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="config.h"/>
     <File Name="my_debug.h"/>
     <File Name="main.cpp"/>
   </VirtualDirectory>
@@ -88,15 +90,19 @@
         <IncludePath Value="./Dependencies/GLAD/include"/>
         <IncludePath Value="./Dependencies/stb-master"/>
         <IncludePath Value="./Dependencies/glm-stable/glm"/>
+        <IncludePath Value="./Dependencies/FreeType/include"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="./Dependencies/GLFW/lib-mingw-w64"/>
         <LibraryPath Value="./Dependencies/glm-stable/"/>
+        <LibraryPath Value="./Dependencies/FreeType"/>
         <Library Value="glfw3.dll"/>
         <Library Value="libglfw3.a"/>
         <Library Value="libglfw3dll.a"/>
         <Library Value="opengl32"/>
         <Library Value="gdi32"/>
+        <Library Value="freetype.dll"/>
+        <Library Value="freetype"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>

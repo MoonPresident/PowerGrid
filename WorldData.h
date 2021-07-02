@@ -23,6 +23,8 @@
 #include "glfw3.h"
 #include "glm.hpp"
 
+#include "Window.h"
+
 using namespace std::chrono;
 
 class WorldData {
@@ -52,7 +54,7 @@ public:
     double cursor_position[2];
     
     //Window information
-    GLFWwindow* window;
+    Window window;
     int width;
     int height;
     

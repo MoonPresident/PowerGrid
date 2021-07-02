@@ -10,6 +10,7 @@
 #define SHAPES_H
 
 #include <iostream>
+#include <callbacks.h>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
