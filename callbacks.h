@@ -49,7 +49,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 
 //Callback setter
-void setCallbacks(GLFWwindow** frame);
+void setCallbacks(GLFWwindow* frame);
 
 
 #endif /* CALLBACKS_H */

@@ -48,7 +48,79 @@ void WorldData::initBuffers() {
  * @brief Render all of the objects.
 **/
 void WorldData::draw_objects() {
-    
+            unsigned int offset = 0;
+        //Setting this up will require math.
+        //This needs to be broken up into the different spaces (i.e. local, world and view).
+        //Then, you need to work out whats being handed out. Vertical and horizontal rotation? Vertices? Colours?
+        //Use some hash defines to figure this out. Most importantly, work out how to generalise this.
+
+        glBindVertexArray(worldVAO);
+//        glBindBuffer(GL_ARRAY_BUFFER,  worldVBO);
+        for(auto draw_object: display_objects) {
+
+
+            //VBO Method.
+            float vertices[9];
+            vertices[0] = x_scale;
+            vertices[1] = y_scale;
+            vertices[2] = 0;
+            vertices[3] = 0;
+
+            for(int i = 0; i < 4; i++) {
+                vertices[i + 4] = draw_object.location[i];
+            }
+            vertices[8] = draw_object.radians;
+
+            glBufferSubData(GL_ARRAY_BUFFER, offset, 9*sizeof(float), vertices);
+
+            offset += sizeof(vertices);
+
+//            unsigned int indices[] = {
+//                0 + vertex_offset, 1 + vertex_offset, 3 + vertex_offset,
+//                1 + vertex_offset, 2 + vertex_offset, 3 + vertex_offset
+//            };
+//        for(int i = 0; i < 8; i++) std::cout << vertices[i] << ", ";
+//        std::cout << vertices[8] << std::endl;
+        std::cout << "ERROR: " << glGetError() << std::endl;
+//        break;
+        }
+        auto target = (display_objects.at(0));
+        glUseProgram(target.program.ID);
+
+        glBindVertexArray(worldVAO);
+
+//        std::cout << scale[0] << ", " << scale[1] << ", " << scale[2] << ", " << scale[3] << ", ";
+//        std::cout << target.location[0] << ", " << target.location[1] << ", " << target.location[2] << ", " << target.location[3] << ", " << target.radians << std::endl;
+        glVertexAttrib4fv(0, scale);
+        glVertexAttrib4fv(1, target.location);
+        glVertexAttrib1f(2, target.radians);
+        glDrawArrays(target.program.drawType, 0, 4* display_objects.size());
+        
+        
+        
+        //Previous implementation:
+//        glVertexAttrib4fv(0, attrib);
+//        for(auto program: programs) {
+//            glUseProgram(program.ID);
+//            
+//            glUniform1i(1, variant);
+//            glUniformMatrix4fv(2, 1, GL_FALSE, scale);
+//            
+//            glUniform1f(3, radians);
+//
+//            glDrawArrays(program.drawType, 0, 4);
+//        }
+//        attrib[0] = -0.5f;
+//        attrib[1] = -0.5f;
+//
+//        glVertexAttrib4fv(0, attrib);
+//        glUseProgram(programs.at(0).ID);
+//        glUniform1i(1, variant);
+//        glUniformMatrix4fv(2, 1, GL_FALSE, scale);
+//
+//        glUniform1f(3, radians);
+//
+//        glDrawArrays(programs.at(0).drawType, 0, 4);
 };
 
 

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="PowerGrid" Version="11000" InternalType="Console">
+  <VirtualDirectory Name="games">
+    <File Name="games/example_game_3D.h"/>
+    <File Name="games/example_game_3D.cpp"/>
+    <File Name="games/squares_original.h"/>
+    <File Name="games/squares_original.cpp"/>
+  </VirtualDirectory>
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>

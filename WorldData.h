@@ -24,8 +24,10 @@
 #include "glm.hpp"
 
 #include "Window.h"
+#include "DisplayObject.h"
 
 using namespace std::chrono;
+
 
 class WorldData {
 public:
@@ -63,6 +65,8 @@ public:
     float x_scale;
     float y_scale;
     GLfloat scale[4];
+    
+    std::vector<DisplayObject> display_objects;
     
     
     /**

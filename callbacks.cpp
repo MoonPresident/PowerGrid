@@ -137,10 +137,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
  * @brief 
  * @param frame
  */
-void setCallbacks(GLFWwindow** frame) {
+void setCallbacks(GLFWwindow* frame) {
     firstMouse = 0;
     
-    GLFWwindow* window = *frame;
+    GLFWwindow* window = frame;
     
     glfwMakeContextCurrent(window);
     glfwSetWindowFocusCallback(window, close_on_unfocus);
