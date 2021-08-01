@@ -166,7 +166,7 @@ int squares_original_game() {
         //Uniforms need to be reset when the program changes.
         
         //Need to move data into objects.
-        glVertexAttrib4fv(0, scale);
+//        glVertexAttrib4fv(0, scale);
             
         world.draw_objects();
         

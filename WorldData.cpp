@@ -30,7 +30,7 @@ void WorldData::initBuffers() {
     glGenBuffers(1, &worldVBO);
     glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
     glBufferData(GL_ARRAY_BUFFER,
-                    1024*sizeof(float), 
+                    9*sizeof(float), 
                     0, 
                     GL_DYNAMIC_DRAW);
     
@@ -48,17 +48,16 @@ void WorldData::initBuffers() {
  * @brief Render all of the objects.
 **/
 void WorldData::draw_objects() {
-            unsigned int offset = 0;
+        unsigned int offset = 0;
         //Setting this up will require math.
         //This needs to be broken up into the different spaces (i.e. local, world and view).
         //Then, you need to work out whats being handed out. Vertical and horizontal rotation? Vertices? Colours?
         //Use some hash defines to figure this out. Most importantly, work out how to generalise this.
 
         glBindVertexArray(worldVAO);
-//        glBindBuffer(GL_ARRAY_BUFFER,  worldVBO);
+        glBindBuffer(GL_ARRAY_BUFFER,  worldVBO);
         for(auto draw_object: display_objects) {
-
-
+        
             //VBO Method.
             float vertices[9];
             vertices[0] = x_scale;
@@ -81,7 +80,7 @@ void WorldData::draw_objects() {
 //            };
 //        for(int i = 0; i < 8; i++) std::cout << vertices[i] << ", ";
 //        std::cout << vertices[8] << std::endl;
-        std::cout << "ERROR: " << glGetError() << std::endl;
+//        std::cout << "ERROR: " << glGetError() << std::endl;
 //        break;
         }
         auto target = (display_objects.at(0));

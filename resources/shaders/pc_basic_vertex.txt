@@ -14,7 +14,7 @@ void main ()
     float x_scale = scale[0];
     float y_scale = scale[1];
     
-    mat4 scale = mat4(
+    mat4 scaleMat = mat4(
         x_scale, 0, 0, 0,
         0, y_scale, 0, 0,
         0, 0, 1, 0,
@@ -40,6 +40,6 @@ void main ()
 
 
     //Rotate and add offset
-    //gl_Position = scale * (rot_mat * verts[gl_VertexID]) + offset;
+    //gl_Position = scaleMat * (rot_mat * verts[gl_VertexID]) + offset;
     gl_Position = rot_mat * verts[gl_VertexID] + offset;
 }
