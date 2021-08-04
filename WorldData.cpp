@@ -17,6 +17,8 @@ WorldData::WorldData() {
     mousePitch = 0.f;
     mouseYaw = -90.f;
     sensitivity = 0.1f;
+    
+    initBuffers();
 };
 
 WorldData::~WorldData() {
@@ -31,7 +33,7 @@ void WorldData::initBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
     glBufferData(GL_ARRAY_BUFFER,
                     9*sizeof(float), 
-                    0, 
+                    &(this->display_object_coords.front()),//0, 
                     GL_DYNAMIC_DRAW);
     
     glVertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
@@ -40,6 +42,9 @@ void WorldData::initBuffers() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float),  (void*) (8 * sizeof(float))); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
     glEnableVertexAttribArray(2);
+    glVertexAttribDivisor(0, 1);
+    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
     
 };
 
@@ -56,6 +61,7 @@ void WorldData::draw_objects() {
 
         glBindVertexArray(worldVAO);
         glBindBuffer(GL_ARRAY_BUFFER,  worldVBO);
+        std::cout << "ERROR: ";
         for(auto draw_object: display_objects) {
         
             //VBO Method.
@@ -69,10 +75,14 @@ void WorldData::draw_objects() {
                 vertices[i + 4] = draw_object.location[i];
             }
             vertices[8] = draw_object.radians;
-
+            
+            for(int i = 0; i < 9; i++) display_object_coords.at(i + offset) = vertices[i];
+            
+            //This is an incorrect usage of this.
             glBufferSubData(GL_ARRAY_BUFFER, offset, 9*sizeof(float), vertices);
-
-            offset += sizeof(vertices);
+            
+            
+            offset += 9;
 
 //            unsigned int indices[] = {
 //                0 + vertex_offset, 1 + vertex_offset, 3 + vertex_offset,
@@ -80,20 +90,39 @@ void WorldData::draw_objects() {
 //            };
 //        for(int i = 0; i < 8; i++) std::cout << vertices[i] << ", ";
 //        std::cout << vertices[8] << std::endl;
-//        std::cout << "ERROR: " << glGetError() << std::endl;
+          std::cout << glGetError() << ", ";
 //        break;
         }
-        auto target = (display_objects.at(0));
-        glUseProgram(target.program.ID);
+        std::cout << std::endl;
 
-        glBindVertexArray(worldVAO);
+//        glBindVertexArray(worldVAO);
+        
+//        for(int i = 0; i < 2; i++) {
+        for(int i = 0; i < display_objects.size(); i++) {
+            glUseProgram(display_objects.at(i).program.ID);
+            
+            glVertexAttrib4fv(0, scale);
+            glVertexAttrib4fv(1, display_objects.at(i).location);
+            glVertexAttrib1f(2, display_objects.at(i).radians);
+            glDrawArrays(display_objects.at(i).program.drawType, 0, 4);
+        }
+        
+        
+//        auto target = (display_objects.at(0));
+//        glUseProgram(target.program.ID);
+//
+//        glVertexAttrib4fv(0, scale);
+//        glVertexAttrib4fv(1, target.location);
+//        glVertexAttrib1f(2, target.radians);
+//        glDrawArraysInstanced(GL_TRIANGLES, 0, 9, display_objects.size());
 
 //        std::cout << scale[0] << ", " << scale[1] << ", " << scale[2] << ", " << scale[3] << ", ";
 //        std::cout << target.location[0] << ", " << target.location[1] << ", " << target.location[2] << ", " << target.location[3] << ", " << target.radians << std::endl;
-        glVertexAttrib4fv(0, scale);
-        glVertexAttrib4fv(1, target.location);
-        glVertexAttrib1f(2, target.radians);
-        glDrawArrays(target.program.drawType, 0, 4* display_objects.size());
+        
+//        glVertexAttrib4fv(0, scale);
+//        glVertexAttrib4fv(1, target.location);
+//        glVertexAttrib1f(2, target.radians);
+//        glDrawArrays(target.program.drawType, 0, 4 * display_objects.size());
         
         
         
@@ -109,17 +138,7 @@ void WorldData::draw_objects() {
 //
 //            glDrawArrays(program.drawType, 0, 4);
 //        }
-//        attrib[0] = -0.5f;
-//        attrib[1] = -0.5f;
-//
-//        glVertexAttrib4fv(0, attrib);
-//        glUseProgram(programs.at(0).ID);
-//        glUniform1i(1, variant);
-//        glUniformMatrix4fv(2, 1, GL_FALSE, scale);
-//
-//        glUniform1f(3, radians);
-//
-//        glDrawArrays(programs.at(0).drawType, 0, 4);
+
 };
 
 
@@ -200,34 +219,13 @@ void WorldData::setScale(float source[]) {
     for(int i = 0; i < 4; i++) scale[i] = source[i];
 };
 
-
-void WorldData::init_window() {
-    //Set window and scale.
-    glfwGetFramebufferSize(window.getWindow(), &width, &height);
-    glViewport(0, 0, width, height);
-    scale_factor = 1.f;
-    x_scale = scale_factor * ((width != height) * (float) height / (float) width + (width == height));
-    y_scale = scale_factor;
-};
-
-void WorldData::check_window() {
-    int prev_width = width;
-    int prev_height = height;
-    glfwGetFramebufferSize(window.getWindow(), &width, &height);
-    
-//        if(prev_width == width && prev_height == height) {
-//            return;
-//        }
-    
-    glViewport(0, 0, width, height);
-    x_scale = scale_factor * ((width != height) * (float) height / (float) width + (width == height));
-    y_scale = scale_factor;
-};
-
 void WorldData::calculate_timestep() {
     getCursorPosition();
 };
 
+void WorldData::run() {
+    std::cout << "running "; 
+}
 
 //Mouse handler
 void WorldData::setMouseYaw(float _x) {

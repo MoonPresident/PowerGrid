@@ -1,4 +1,3 @@
-#include "glfw3.h"
 #include "callbacks.h"
 #include "my_debug.h"
 

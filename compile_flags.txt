@@ -4,11 +4,11 @@
 -IC:\mingw64\lib\gcc\x86_64-w64-mingw32\7.1.0\include
 -IC:\mingw64\lib\gcc\x86_64-w64-mingw32\7.1.0\include-fixed
 -IC:\mingw64\x86_64-w64-mingw32\include
--IC:\spacelessFolder\CPPWorkspace\PowerGrid
--IC:\spacelessFolder\CPPWorkspace\PowerGrid\Dependencies\GLFW\include\GLFW
--IC:\spacelessFolder\CPPWorkspace\PowerGrid\Dependencies\GLAD\include
--IC:\spacelessFolder\CPPWorkspace\PowerGrid\Dependencies\stb-master
--IC:\spacelessFolder\CPPWorkspace\PowerGrid\Dependencies\glm-stable\glm
--IC:\spacelessFolder\CPPWorkspace\PowerGrid\Dependencies\FreeType\include
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\GLFW\include\GLFW
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\GLAD\include
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\stb-master
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\glm-stable\glm
+-IC:\spacelessFolder\CPPWorkplace\PowerGrid\Dependencies\FreeType\include
 -target
 x86_64-pc-windows-gnu

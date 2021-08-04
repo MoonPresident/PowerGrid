@@ -76,11 +76,17 @@ void ShaderStore::deleteAll() {
 #define SHADER_PATH         "..\\resources\\shaders\\"
 #define SHADER_INDEX_FILE   "..\\resources\\shaders\\index.txt"
 
+GLuint loadShader(const char* shader_path) {};
+
 //Load in shaders
 std::vector<Program> loadPrograms() {
+//    loadPrograms(SHADER_INDEX_FILE);
+//}
+//    
+//std::vector<Program> loadPrograms(const char* index_path) {
     ShaderStore shaderStore;
     std::vector<Program> programs;
-    std::string line, path, index(SHADER_INDEX_FILE);
+    std::string line, path, index(SHADER_INDEX_FILE);//index_path);
     std::ifstream shaderIndex;
     shaderIndex.open(index);
     

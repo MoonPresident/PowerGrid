@@ -3,8 +3,6 @@
  * @author MoonPresident
  * @date January 4th 2020
  * 
- * 
- * 
  * Needs links included to opengl32 and gdi32
  * Get GLM installed. Or make your own vector math, up to you.
  */
@@ -20,7 +18,6 @@
 //https://www.gamasutra.com/blogs/MichaelKissner/20151027/257369/Writing_a_Game_Engine_from_Scratch__Part_1_Messaging.php
 
 //https://www.youtube.com/watch?v=Cfe3sO_L0fM&feature=share
-
 
 
 
@@ -43,47 +40,10 @@
 //Include this everywhere
 #include "my_debug.h"
 
-//Abstract functions
-//#include "shapes.h"
-//#include "ShaderStore.h"
-//#include "WorldData.h"
-//#include "Terminal.h"
-//#include "Font.h"
-//#include "Camera.h"
-
-
-//Includes
-//#include <fstream>
-//#include <utility>
-//#include <vector>
-//#include <numeric>
-
-//#define _USE_MATH_DEFINES
-//#include <cmath>
-
-//My math library
-//#include "math.h"
-
-//#include "glad/glad.h"
-//#include "glfw3.h"
-
-//GLM library
-//#include "glm.hpp"
-//#include "gtc/matrix_transform.hpp"
-//#include "gtc/type_ptr.hpp"
-
 //Games
 #include "games/squares_original.h"
 #include "games/example_game_3D.h"
-
-
-
-//Text Rendering
-//#define STB_TRUETYPE_IMPLEMENTATION 1
-//#include "stb_truetype.h"
-
-//#define STB_IMAGE_IMPLEMENTATION
-//#include "stb_image.h"
+#include "games/opengl_examples/simple_square.h"
 
 //Freetype kinda sucks to get working
 //https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html
@@ -106,12 +66,6 @@ using namespace std::chrono;
 
 
 //https://thebookofshaders.com/07/
-#define SHADER_PATH         "..\\resources\\shaders\\"
-#define SHADER_INDEX_FILE   "..\\resources\\shaders\\index.txt"
-
-#define debug1
-
-
 
 
 /********************************************************************************
@@ -147,7 +101,12 @@ using namespace std::chrono;
  * @return Error value
  */
 int main(int argc, char **argv) {
+    //LearnOpenGL inspired examples:
+    SimpleSquare target;
     
-    squares_original_game();
+    //Original Creations
+//    squares_original_game();
 //    example_game_3D();
+
+    target.run();
 }

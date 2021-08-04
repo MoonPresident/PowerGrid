@@ -12,4 +12,8 @@
 
 int squares_original_game();
 
+class SquaresOriginal: public AbstractSimulation {
+    
+};
+
 #endif /* SQUARES_ORIGINAL_H */

@@ -1,17 +1,11 @@
 //Include this everywhere
 
-
-
-
-
-
 #ifndef WORLD_DATA_H
 #define WORLD_DATA_H
 
 
 #include "my_debug.h"
 
-#include <chrono>
 #include <vector>
 #include "callbacks.h"
 
@@ -23,13 +17,14 @@
 #include "glfw3.h"
 #include "glm.hpp"
 
-#include "Window.h"
 #include "DisplayObject.h"
+
+#include "AbstractSimulation.h"
 
 using namespace std::chrono;
 
 
-class WorldData {
+class WorldData: public AbstractSimulation {
 public:
     float mouseYaw;
     float mousePitch;
@@ -55,18 +50,8 @@ public:
     //Cursor
     double cursor_position[2];
     
-    //Window information
-    Window window;
-    int width;
-    int height;
-    
-    //Scaling factors
-    float scale_factor;
-    float x_scale;
-    float y_scale;
-    GLfloat scale[4];
-    
     std::vector<DisplayObject> display_objects;
+    std::vector<GLfloat> display_object_coords;
     
     
     /**
@@ -75,7 +60,7 @@ public:
      */
     WorldData();
     
-    ~WorldData();
+    virtual ~WorldData();
     
     void initBuffers();
     
@@ -128,11 +113,13 @@ public:
     void setScale(float source[]);
     
     
-    void init_window();
-    
-    void check_window();
-    
+//    void init_window();
+//    
+//    void check_window();
+//    
     void calculate_timestep();
+    
+    void run();
     
     //Mouse handler
     void  setMouseYaw(float _x);

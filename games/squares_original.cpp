@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "glad/glad.h"
-#include "ShaderStore.h"
 #include "DisplayObject.h"
 #include "WorldData.h"
 #include "Camera.h"
@@ -46,6 +45,8 @@ int squares_original_game() {
     float jumpVelocity = 2.8f;
     
     WorldData world; 
+    
+    std::cout << "here";
     Camera camera;
     setCallbacks(world.window.getWindow());
     setMouseOffsetX(0.f);
@@ -67,6 +68,8 @@ int squares_original_game() {
     world.display_objects.push_back(pcObject);
     world.display_objects.push_back(pcLine);
     
+    for (int k = 0; k < 18; k++) world.display_object_coords.push_back(0.f);
+    
     DisplayObject basic_enemy;
     basic_enemy.program = programs.at(0);
     basic_enemy.movement_behaviour = basic_enemy_movement_behaviour;
@@ -76,6 +79,7 @@ int squares_original_game() {
     for(int i = 0; i < 4; i++) {
         basic_enemy.real_location[i % 2] *= -1.f;
         world.display_objects.push_back(basic_enemy);
+        for (int k = 0; k < 9; k++) world.display_object_coords.push_back(0.f);
     }
     
     #ifdef debug_all
@@ -167,7 +171,7 @@ int squares_original_game() {
         
         //Need to move data into objects.
 //        glVertexAttrib4fv(0, scale);
-            
+        
         world.draw_objects();
         
         glfwSwapBuffers(world.window.getWindow());

@@ -1,4 +1,15 @@
+#include <iostream>
+#include <vector>
 
+#include "glad/glad.h"
+#include "DisplayObject.h"
+#include "WorldData.h"
+#include "Camera.h"
+
+
+#define SQRT_2 1.4142
+
+#include "glad/glad.h"
 #include "WorldData.h"
 #include "Camera.h"
 
@@ -84,6 +95,7 @@ int example_game_3D() {
     setMouseOffsetY(0.f);
     setMouseLastY(world.height / 2.f);
     world.init_window();
+    
     
     std::vector<Program> programs = loadPrograms();
     
