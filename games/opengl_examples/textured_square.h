@@ -15,7 +15,7 @@
 class TexturedSquare: public AbstractSimulation {
 public:
     TexturedSquare() {
-        #ifdef debug_all || debug_textured_squares
+        #ifdef debug_all
         std::cout << "Textured Square started " << std::endl;
 #endif 
     }
@@ -71,7 +71,7 @@ public:
             
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-                
+            
             glBindTexture(GL_TEXTURE_2D, tex);
             
             glUseProgram(program);

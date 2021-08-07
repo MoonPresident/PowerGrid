@@ -41,11 +41,12 @@
 #include "my_debug.h"
 
 //Games
-//#include "games/squares_original.h"
-//#include "games/example_game_3D.h"
-//#include "games/opengl_examples/simple_square.h"
+#include "games/squares_original.h"
+#include "games/example_game_3D.h"
+#include "games/opengl_examples/SimpleSquare.h"
 #include "games/opengl_examples/textured_square.h"
-//#include "games/opengl_examples/tranformed_square.h"
+#include "games/opengl_examples/transformed_square.h"
+#include "games/opengl_examples/SimpleCube.h"
 
 //Freetype kinda sucks to get working
 //https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html
@@ -105,9 +106,10 @@ using namespace std::chrono;
 int main(int argc, char **argv) {
     //LearnOpenGL inspired examples:
 //    SimpleSquare target;
-    TexturedSquare target;
+//    TexturedSquare target;
 //    TransformedSquare target;
-    
+        SimpleCube target;
+        
     //Original Creations
 //    squares_original_game();
 //    example_game_3D();

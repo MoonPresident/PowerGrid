@@ -15,6 +15,7 @@ class Window {
 private:
     GLFWwindow* window;
 public:
+    
     Window() {
         srand(time(NULL));
         resetLeftClickFlag();

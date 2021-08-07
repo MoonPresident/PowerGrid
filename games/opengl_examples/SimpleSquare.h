@@ -71,7 +71,7 @@ class SimpleSquare: AbstractSimulation {
         // glfw: terminate, clearing all previously allocated GLFW resources.
         // ------------------------------------------------------------------
         glfwTerminate();
-        return 0;
+        return;
     }
     
 };
