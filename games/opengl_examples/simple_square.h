@@ -3,6 +3,7 @@
 #include "AbstractSimulation.h"
 
 #include "glad/glad.h"
+#include "shaderStore.h"
 
 #ifdef debug_all
 #include <iostream>
@@ -30,23 +31,32 @@ class SimpleSquare: AbstractSimulation {
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         
         static const GLfloat vertexData[] = {
-            -1.f, -1.f, 0.f,
-            1.f, -1.f, 0.f,
-            1.f, 1.f, 0.f,
-            -1.f, 1.f, 0.f,
-            1.f, -1.f, 0.f,
-            1.f, 1.f, 0.f,
+            -0.2f, -0.2f, 0.f,
+            0.2f, -0.2f, 0.f,
+            0.2f, 0.2f, 0.f,
+            -0.2f, 0.2f, 0.f,
+            -0.2f, -0.2f, 0.f,
+            0.2f, 0.2f, 0.f,
         };
         
-
+        ShaderStore shader;
+        shader.addShader("..\\resources\\shaders\\generic_2d_vertex_shader.txt", GL_VERTEX_SHADER);
+        shader.addShader("..\\resources\\shaders\\generic_2d_fragment_shader.txt", GL_FRAGMENT_SHADER);
+        
+        GLuint program = glCreateProgram();
+        shader.linkProgram(program);
+        
         //This captures the escape key.
         glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);
-        while(glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS && 
-                glfwWindowShouldClose(window.getWindow()) == 0) {
+        while(
+            glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS && 
+            glfwWindowShouldClose(window.getWindow()) == 0) 
+        {
+            glUseProgram(program);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glVertexAttribPointer(0, 6, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
             
             glClear(GL_COLOR_BUFFER_BIT);
             glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -54,6 +64,14 @@ class SimpleSquare: AbstractSimulation {
             glfwSwapBuffers(window.getWindow());
             glfwPollEvents();
         }
+        
+        glDeleteVertexArrays(1, &vao);
+        glDeleteBuffers(1, &vbo);
+
+        // glfw: terminate, clearing all previously allocated GLFW resources.
+        // ------------------------------------------------------------------
+        glfwTerminate();
+        return 0;
     }
     
 };

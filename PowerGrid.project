@@ -7,7 +7,8 @@
   </Plugins>
   <VirtualDirectory Name="games">
     <VirtualDirectory Name="opengl_examples">
-      <File Name="games/opengl_examples/simple_square.cpp"/>
+      <File Name="games/opengl_examples/transformed_square.h"/>
+      <File Name="games/opengl_examples/textured_square.h"/>
       <File Name="games/opengl_examples/simple_square.h"/>
     </VirtualDirectory>
     <File Name="games/example_game_3D.h"/>
@@ -33,6 +34,9 @@
     </VirtualDirectory>
     <VirtualDirectory Name="components"/>
     <VirtualDirectory Name="shaders">
+      <File Name="resources/shaders/transform_vertex_shader.txt"/>
+      <File Name="resources/shaders/texture_2d_fragment_shader.txt"/>
+      <File Name="resources/shaders/texture_2d_vertex_shader.txt"/>
       <File Name="resources/shaders/generic_2d_fragment_shader.txt"/>
       <File Name="resources/shaders/generic_2d_vertex_shader.txt"/>
       <File Name="resources/shaders/hud_vertex_shader.txt"/>
@@ -59,6 +63,8 @@
   </VirtualDirectory>
   <VirtualDirectory Name="units"/>
   <VirtualDirectory Name="helpers">
+    <File Name="TextureFactory.cpp"/>
+    <File Name="TextureFactory.h"/>
     <File Name="AbstractSimulation.h"/>
     <File Name="AbstractSimulation.cpp"/>
     <File Name="Window.h"/>

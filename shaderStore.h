@@ -28,6 +28,8 @@ public:
     void attachAll(GLuint program);
     
     GLuint loadShader(const char* shader_path);
+    
+    void linkProgram(GLuint programId);
 };
 
 

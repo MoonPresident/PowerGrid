@@ -48,12 +48,34 @@ void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
         GLint success = 0;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         std::cout << "Compilation: " << success << " for shader " << shader << std::endl;
+        if(!success) {
+            char infoLog[512];
+            glGetShaderInfoLog(shader, 512, NULL, infoLog);
+            std::cout <<"ERROR COMPILING SHADER " << shader << ": " << infoLog << std::endl;
+        }
         #endif
         
         shaders.push_back(shader);
     } else {
         std::cout << "Unable to open file: " << shaderPath.c_str() <<  std::endl;
     }
+}
+
+void ShaderStore::linkProgram(GLuint program) {
+    attachAll(program);
+    glLinkProgram(program);
+    
+    #if defined debug_all || defined debug_shaders
+    GLint success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    std::cout << "Compilation: " << success << " for program " << program << std::endl;
+    if(!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cout <<"ERROR COMPILING PROGRAM " << program << ": " << infoLog << std::endl;
+    }
+    #endif
+    deleteAll();
 }
 
 
