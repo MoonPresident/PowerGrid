@@ -71,8 +71,8 @@ public:
         GLuint tex = texFactory.getTexture("..\\games\\opengl_examples\\fish_eyes.jpg");
         glBindTexture(GL_TEXTURE_2D, tex);
         
-        float x_off[2] = {-0.5f, 0.5f};
-        float y_off[2] = {-0.5f, 0.5f};
+        float x_off[2] = {1.f, -1.};
+        float y_off[2] = {1.f, -1.f};
         int x_dir[2] = {1, 1};
         int y_dir[2] = {1, 1};
         
@@ -89,23 +89,21 @@ public:
             //3D stuff.
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f)); 
             
             glm::mat4 view = glm::mat4(1.0f);
             // note that we're translating the scene in the reverse direction of where we want to move
-            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
             
             glBindTexture(GL_TEXTURE_2D, tex);
             
             glUseProgram(program);
-            model = glm::rotate(model, (float) glfwGetTime() * glm::radians(50.f), glm::vec3(0.5f, 1.f, 0.f));
             
             int modelLoc = glGetUniformLocation(program, "model");
             int viewLoc = glGetUniformLocation(program, "view");
             int projLoc = glGetUniformLocation(program, "projection");
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-            glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+//            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+//            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+//            glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
             
             for(int i = 0; i < 2; i++) {
                 x_off[i] += 0.0001f * x_dir[i];
@@ -118,15 +116,14 @@ public:
                 if(y_off[i] > 0.5f || y_off[i] < -0.5f) {
                     y_dir[i] *= -1;
                 }
-                
-                glm::mat4 trans = glm::mat4(1.0f);
-                trans = glm::translate(trans, glm::vec3(x_off[i], y_off[i], 0.0f));
-                trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-                
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(x_off[i], y_off[i], -1.0f)); 
+                model = glm::rotate(model, (float) glfwGetTime() * glm::radians((i + 1) * 20.f), glm::vec3(0.5f, 1.f, 0.f));
                 
                 
-                unsigned int transformLoc = glGetUniformLocation(program, "transform");
-                glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+                glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+                glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
                 
                 glBindVertexArray(vao);
                 glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
