@@ -1,0 +1,10 @@
+C:/dev/PowerGrid/CMakeFiles/PowerGrid.dir
+C:/dev/PowerGrid/CMakeFiles/GLAD.dir
+C:/dev/PowerGrid/CMakeFiles/INSTALL.dir
+C:/dev/PowerGrid/CMakeFiles/ALL_BUILD.dir
+C:/dev/PowerGrid/CMakeFiles/ZERO_CHECK.dir
+C:/dev/PowerGrid/Dependencies/dep-builds/CMakeFiles/uninstall.dir
+C:/dev/PowerGrid/Dependencies/dep-builds/CMakeFiles/INSTALL.dir
+C:/dev/PowerGrid/Dependencies/dep-builds/CMakeFiles/ALL_BUILD.dir
+C:/dev/PowerGrid/Dependencies/dep-builds/src/CMakeFiles/glfw.dir
+C:/dev/PowerGrid/Dependencies/dep-builds/src/CMakeFiles/INSTALL.dir
