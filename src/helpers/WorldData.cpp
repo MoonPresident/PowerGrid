@@ -3,6 +3,9 @@
 #include "WorldData.h"
 #include <iostream>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 /**
  * @brief Initialise the data about the world.
  * @return 
@@ -33,7 +36,7 @@ void WorldData::initBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
     glBufferData(GL_ARRAY_BUFFER,
                     9*sizeof(float), 
-                    &(this->display_object_coords.front()),//0, 
+                    display_object_coords.data(),//0, 
                     GL_DYNAMIC_DRAW);
     
     glVertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0); //Pointer specifies offset of the first component of the first generic vertex attribute. Jesus.
@@ -243,199 +246,3 @@ float WorldData::getMouseYaw() {
 float WorldData::getMousePitch() {
     return mousePitch;
 }
-
-
-
-
-/********************************************************************************
- *******                             Callbacks                            *******
-********************************************************************************/
-
-
-/**
- * @brief 
- * @param error
- * @param description
-**/
-//void WorldData::basic_error_callback(int error, const char* description){
-//    fputs(description, stderr);
-//}
-//
-//
-//void WorldData::close_on_unfocus(GLFWwindow* window, int focused) {
-//    if(!focused) {
-//        glfwSetWindowShouldClose(window, 1);
-//    }
-//}
-//
-////Options for handling inputs:
-////For Maximum scalability, scancodes are ideal, though it may be expediant 
-////to use a combination of keys, characters and scancodes to optimise processing
-////https://www.glfw.org/docs/3.3/input_guide.html#input_keyboard
-////int keyboardFlags[256];
-////Range: 108 inputs between 32 and 348 inclusive.
-//
-//
-////Key input handling: input of 1 prepares a response, input of 2 adapts the response, input of 0 releases the response.
-////Easiest way to differentiate between handling of since press and a long press: only fire off on the release.
-//
-//void WorldData::general_keyboard_callback(
-//        GLFWwindow* window, 
-//        int key, 
-//        int scancode, 
-//        int action, 
-//        int mods
-//) {
-//    
-//    #ifdef debug_all
-//    std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
-//    std::cout << "Action: " << action << ", mods: " << mods << std::endl;
-//    #endif
-//}
-//
-//
-//void WorldData::mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
-//    if(action) {
-//        #ifdef debug_all
-//        std::cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << std::endl << std::endl;
-//        #endif
-//        if(button == 0) {
-//            leftClickFlag = 1;
-//        } else if(button == 1) {
-//            rightClickFlag = 1;
-//        }
-//    }
-//}
-//
-//int WorldData::getLeftClickFlag() {
-//    return leftClickFlag;
-//}
-//
-//void WorldData::resetLeftClickFlag() {
-//    leftClickFlag = 0;
-//}
-//
-//int WorldData::getRightClickFlag() {
-//    return rightClickFlag;
-//}
-//
-//void WorldData::resetRightClickFlag() {
-//    rightClickFlag = 0;
-//}
-//
-//int WorldData::getScrollFlag() {
-//    return scrollFlag;
-//}
-//
-//void WorldData::setScrollFlag(int val) {
-//    if(val < 1) {
-//        scrollFlag = 1;
-//    } else {
-//        scrollFlag = val;
-//    }
-//}
-//
-//void WorldData::scrollCallback(GLFWwindow* window, double x_offset, double y_offset) {
-//    scrollFlag += y_offset;
-//    if(scrollFlag < 1) scrollFlag = 1;
-//    
-//    #ifdef debug_all
-//    std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
-//    #endif
-//}
-//
-//void WorldData::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-//    offsetMouseX = xpos - lastMouseX;
-//    offsetMouseY = ypos - lastMouseY;
-//};
-
-
-
-
-/********************************************************************************
- *******                        Callbacks Wrappers                        *******
-********************************************************************************/
-
-//void wrapped_basic_error_callback(int error, const char* description){
-//    WorldData::basic_error_callback(error, description);
-//}
-//
-//
-//void wrapped_close_on_unfocus(GLFWwindow* window, int focused) {
-//    WorldData::close_on_unfocus(window, focused);
-//}
-//
-////Options for handling inputs:
-////For Maximum scalability, scancodes are ideal, though it may be expediant 
-////to use a combination of keys, characters and scancodes to optimise processing
-////https://www.glfw.org/docs/3.3/input_guide.html#input_keyboard
-////int keyboardFlags[256];
-////Range: 108 inputs between 32 and 348 inclusive.
-//
-//
-////Key input handling: input of 1 prepares a response, input of 2 adapts the response, input of 0 releases the response.
-////Easiest way to differentiate between handling of since press and a long press: only fire off on the release.
-//
-//void wrapped_general_keyboard_callback(
-//        GLFWwindow* window, 
-//        int key, 
-//        int scancode, 
-//        int action, 
-//        int mods
-//) {
-//    WorldData::general_keyboard_callback(GLFWwindow* window, key, scancode, action, mods);
-//}
-//
-//
-//void wrapped_mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
-//    WorldData::mousebutton_flag_callback(window, button, action, mods);
-//}
-//
-//int wrapped_getLeftClickFlag() {
-//    WorldData::getLeftClickFlag();
-//}
-//
-//void wrapped_resetLeftClickFlag() {
-//    WorldData::resetLeftClickFlag();
-//}
-//
-//int wrapped_getRightClickFlag() {
-//    WorldData::getRightClickFlag();
-//}
-//
-//void wrapped_resetRightClickFlag() {
-//    WorldData::resetRightClickFlag();
-//}
-//
-//int wrapped_getScrollFlag() {
-//    WorldData::getScrollFlag();
-//}
-//
-//void wrapped_setScrollFlag(int val) {
-//    WorldData::setScrollFlag(val);
-//}
-//
-//void wrappedScrollCallback(GLFWwindow* window, double x_offset, double y_offset) {
-//    WorldData::scrollCallback(window, x_offset, y_offset);
-//}
-//
-//void wrappedMouseCallback(GLFWwindow* window, double xpos, double ypos) {
-//    WorldData::mouseCallback(window, xpos, ypos);
-//};
-//
-///**
-// * @brief 
-// * @param frame
-// */
-//void WorldData::setCallbacks() {
-//    glfwMakeContextCurrent(window);
-//    glfwSetWindowFocusCallback(window, wrapped_close_on_unfocus);
-//    glfwSetMouseButtonCallback(window, wrapped_mousebutton_flag_callback);
-//    glfwSetScrollCallback(window, wrappedScrollCallback);
-//    glfwSetKeyCallback(window, wrapped_general_keyboard_callback);
-//    
-//    
-//    //Mouse callback
-//    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//    glfwSetCursorPosCallback(window, wrappedMouseCallback);
-//}

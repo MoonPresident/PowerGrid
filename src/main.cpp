@@ -41,7 +41,7 @@
 #include "my_debug.h"
 
 //Games
-#include "games/squares_original.h"
+// #include "games/squares_original.h"
 #include "games/example_game_3D.h"
 #include "games/opengl_examples/SimpleSquare.h"
 #include "games/opengl_examples/textured_square.h"
@@ -111,11 +111,11 @@ int main(int argc, char **argv) {
 //    TexturedSquare target;
 //    TransformedSquare target;
 //    SimpleCube target;
-   CameraExample target;
-    //Original Creations
+//    CameraExample target;
+    // Original Creations
 //    squares_original_game();
 //    example_game_3D();
-    //ExampleGame3D target;
+    ExampleGame3D target;
 
     target.run();
 }

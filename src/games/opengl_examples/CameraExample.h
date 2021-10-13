@@ -1,6 +1,8 @@
 #ifndef CAMERAEXAMPLE_H
 #define CAMERAEXAMPLE_H
 
+#include "WorldData.h"
+
 bool firstMouse;
 float lastX = 400, lastY = 300;
 
@@ -49,7 +51,7 @@ void example_mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     cameraFront = glm::normalize(direction);
 }
 
-class CameraExample : public AbstractSimulation
+class CameraExample : public WorldData
 {
 public:
     CameraExample() {
@@ -60,7 +62,7 @@ public:
         glfwSetCursorPosCallback(window.getWindow(), example_mouse_callback);  
     }
     
-    void run() {
+    void run() override {
         glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
         
         glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);

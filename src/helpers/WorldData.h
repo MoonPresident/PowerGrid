@@ -29,7 +29,6 @@ public:
     float mouseYaw;
     float mousePitch;
     
-
     //Flags
     int leftClickFlag;
     int rightClickFlag;
@@ -114,7 +113,7 @@ public:
      
     void calculate_timestep();
     
-    void run();
+    void run() override;
     
     //Mouse handler
     void  setMouseYaw(float _x);

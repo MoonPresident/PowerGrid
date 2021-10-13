@@ -10,6 +10,8 @@
 #define INITIAL_X_OFF 800
 #define INITIAL_Y_OFF 50
 
+#define debug
+
 //TODO: Abstract callback information and put it into its own class.
 class Window {
 private:
@@ -25,7 +27,7 @@ public:
         if (!glfwInit()) exit(EXIT_FAILURE);
         
         #ifdef debug
-        cout << "glfw init successful" << endl;
+        std::cout << "glfw init successful" << std::endl;
         #endif
         
         //Set up error callback.

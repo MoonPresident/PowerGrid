@@ -95,8 +95,8 @@ void ShaderStore::deleteAll() {
 
 
 //https://thebookofshaders.com/07/
-#define SHADER_PATH         "..\\resources\\shaders\\"
-#define SHADER_INDEX_FILE   "..\\resources\\shaders\\index.txt"
+#define SHADER_PATH         "C:\\dev\\PowerGrid\\resources\\shaders\\"
+#define SHADER_INDEX_FILE   "C:\\dev\\PowerGrid\\resources\\shaders\\index.txt"
 
 // GLuint loadShader(const char* shader_path) {};
 

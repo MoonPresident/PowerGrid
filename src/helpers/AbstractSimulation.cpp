@@ -2,8 +2,6 @@
 #include "AbstractSimulation.h"
 
 AbstractSimulation::AbstractSimulation() {
-    
-    std::cout << "here";
 }
 AbstractSimulation::~AbstractSimulation() {
     //Nada.
@@ -11,6 +9,7 @@ AbstractSimulation::~AbstractSimulation() {
 
 void AbstractSimulation::init_window() {
     //Set window and scale.
+    
     glfwGetFramebufferSize(window.getWindow(), &width, &height);
     glViewport(0, 0, width, height);
     scale_factor = 1.f;

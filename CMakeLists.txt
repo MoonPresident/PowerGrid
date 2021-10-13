@@ -12,20 +12,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3" "${PROJECT_BINARY_DIR}/dep-builds/glfw")
 
-aux_source_directory(GAMES_DIR "src/games")
-aux_source_directory(HELPERS_DIR "src/helpers")
-aux_source_directory(GRAPHICS_EXAMPLES_DIR "src/games/opengl_examples")
+#TODO: Change this when I decide to actually use a safe implementation.
+aux_source_directory("src/games" GAMES_DIR)
+aux_source_directory("src/helpers" HELPERS_DIR)
+aux_source_directory("src/games/opengl_examples" GRAPHICS_EXAMPLES_DIR)
 
 #Create Executable.
 add_executable(${PROJECT_NAME} 
     "src/main.cpp" 
-    "src/helpers/Shaderstore.cpp"
-    "src/helpers/AbstractSimulation.cpp"
-    "src/helpers/callbacks.cpp"
-    "src/helpers/TextureFactory.cpp"
     ${GAMES_DIR}
     ${HELPERS_DIR}
-    ${GRAPHICS_EXAMPLES_DIR}) 
+    ${GRAPHICS_EXAMPLES_DIR}
+    # "src/helpers/Shaderstore.cpp"
+    # "src/helpers/AbstractSimulation.cpp"
+    # "src/helpers/callbacks.cpp"
+    # "src/helpers/TextureFactory.cpp"
+    # "src/games/example_game_3D.cpp"
+    ) 
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
