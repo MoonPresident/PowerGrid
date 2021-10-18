@@ -121,17 +121,12 @@ void setMouseLastX(float _x)      { mouseLastX    = _x; };
 void setMouseLastY(float _y)      { mouseLastY    = _y; };
 
 //int firstMouse;
-//void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-//    if(!firstMouse) {
-//        mouseLastX = (float) xpos;
-//        mouseLastY = (float) ypos;
-//        firstMouse = 1;
-//    }
-//    mouseOffsetX = mouseLastX - (float) xpos;
-//    mouseOffsetY = mouseLastY - (float) ypos;
-//    mouseLastX = (float) xpos;
-//    mouseLastY = (float) ypos;
-//}
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+   mouseOffsetX = mouseLastX - (float) xpos;
+   mouseOffsetY = mouseLastY - (float) ypos;
+   mouseLastX = (float) xpos;
+   mouseLastY = (float) ypos;
+}
 
 /**
  * @brief 
@@ -148,8 +143,7 @@ void setCallbacks(GLFWwindow* frame) {
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, general_keyboard_callback);
     
-    
     //Mouse callback
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 }

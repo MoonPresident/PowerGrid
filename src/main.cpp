@@ -48,6 +48,7 @@
 #include "games/opengl_examples/transformed_square.h"
 #include "games/opengl_examples/SimpleCube.h"
 #include "games/opengl_examples/CameraExample.h"
+#include "games/opengl_examples/TextRenderingExample.h"
 
 //Freetype kinda sucks to get working
 //https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html
@@ -112,10 +113,11 @@ int main(int argc, char **argv) {
 //    TransformedSquare target;
 //    SimpleCube target;
 //    CameraExample target;
+    TextRenderingExample target;
     // Original Creations
 //    squares_original_game();
 //    example_game_3D();
-    ExampleGame3D target;
+    // ExampleGame3D target;
 
     target.run();
 }
