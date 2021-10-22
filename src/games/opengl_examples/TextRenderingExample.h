@@ -19,16 +19,21 @@ public:
     ~TextRenderingExample() {};
 
     void run() {
+        #ifdef SHADER_PATH
+        std::cout << SHADER_PATH << std::endl;
+        #endif
         Font font("c:/windows/fonts/arial.ttf");
         
         ShaderStore shader;
-        shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\glyph_vertex_shader.txt", GL_VERTEX_SHADER);
-        shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\glyph_fragment_shader.txt", GL_FRAGMENT_SHADER);
+        shader.addShader("glyph_vertex_shader.txt", GL_VERTEX_SHADER);
+        shader.addShader("glyph_fragment_shader.txt", GL_FRAGMENT_SHADER);
         
         GLuint program = glCreateProgram();
         shader.linkProgram(program);
         glUseProgram(program);
 
+        //Enable culling of all front facing shader.
+        //Front facing shader have a 
         glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -47,7 +52,7 @@ public:
         int textColourLocation = glGetUniformLocation(program, "textColor");
         
         
-        glm::mat4 projection = glm::ortho(0.f, 800.f, 0.f, 600.f);
+        glm::mat4 projection = glm::ortho(0.f, 1000.f, 0.f, 1000.f);
         glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         //This captures the escape key.
         glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);

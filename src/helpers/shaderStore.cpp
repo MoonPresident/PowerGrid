@@ -21,10 +21,11 @@ ShaderStore::ShaderStore (){
 
 
 //Add shader to the store.
-void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
+void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
     //Open and read stream
     std::ifstream shaderFile;
-    shaderFile.open(shaderPath.c_str());
+    std::string fullPath = std::string(SHADER_PATH) + shaderFilename;
+    shaderFile.open(fullPath.c_str());
     
     if(shaderFile) {
         //Init shader
@@ -57,7 +58,7 @@ void ShaderStore::addShader(std::string shaderPath, GLenum shaderType) {
         
         shaders.push_back(shader);
     } else {
-        std::cout << "Unable to open file: " << shaderPath.c_str() <<  std::endl;
+        std::cout << "Unable to open file: " << shaderFilename.c_str() <<  std::endl;
     }
 }
 
@@ -95,8 +96,8 @@ void ShaderStore::deleteAll() {
 
 
 //https://thebookofshaders.com/07/
-#define SHADER_PATH         "C:\\dev\\PowerGrid\\resources\\shaders\\"
-#define SHADER_INDEX_FILE   "C:\\dev\\PowerGrid\\resources\\shaders\\index.txt"
+#define SHADER_PATH         "C:/dev/PowerGrid/resources/shaders/"
+#define SHADER_INDEX_FILE   "index.txt"
 
 // GLuint loadShader(const char* shader_path) {};
 

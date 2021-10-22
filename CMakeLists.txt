@@ -6,7 +6,7 @@ set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/freetype/lib/cmake/freetype")
 # set(FREETYPE_DIR "C:/Program Files (x86)/freetype/include/freetype2")
 # set(FREETYPE_ROOT "C:/Program Files (x86)/freetype/include/freetype2")
 
-
+# add_compile_definitions(SHADER_PATH="C:/dev/PowerGrid/resources/shaders/")
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
