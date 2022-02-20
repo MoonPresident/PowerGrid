@@ -50,6 +50,7 @@ void setVertexPointerFloat(std::vector<int> dataLayout) {
     int stride = std::accumulate(dataLayout.begin(), dataLayout.end(), 0);
     int offset = 0;
     int size = stride * sizeof(float);
+    Font times();
     
     #ifdef debug_setVertexPointerFloat
     std::cout << "Stride: " << stride << std::endl;
@@ -93,7 +94,7 @@ void ExampleGame3D::run() {
 
     setMouseOffsetX(0.f);
     setMouseOffsetY(0.f);
-    setMouseLastY(200);
+    setMouseLastY(height / 2.f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glEnable(GL_LINE_SMOOTH);
@@ -200,11 +201,8 @@ void ExampleGame3D::run() {
         setVertexPointerFloat(vboLayout);
     }
     
-    
-    //Apparently OpenGL Core requires a VAO to draw things, though I disagree.
     //A VAO is used to store the Vertex Attrib pointer so you don't have to recall it every time.
     //It lets you simply rebind a VAO instead of redoing a vertexattribpointer call. Cool.
-    
     unsigned int texture;
     TextureFactory texFactory;
     texture = texFactory.getTexture("C:/dev/PowerGrid/resources/textures/stock_images/binocupede.jpg");
@@ -236,7 +234,7 @@ void ExampleGame3D::run() {
             std::cout << "FPS: " << fps << std::endl;
             std::cout << "\t" << camera.cameraPos.x << "\t" << camera.cameraPos.y << "\t" << camera.cameraPos.z <<
                     "\t" << force_vector[2] << std::endl;
-            std::cout << getMouseYaw() << ", " << getMousePitch() << std::endl;
+            std::cout << getMouseYaw() << ", " << getMousePitch() << ", " <<  getMouseOffsetX() << ", " <<  getMouseOffsetY() << std::endl;
         }
         float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;
         float newPitch  = getMousePitch() + getMouseOffsetY() * sensitivity;

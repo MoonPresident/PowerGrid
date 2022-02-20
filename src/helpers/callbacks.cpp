@@ -41,7 +41,7 @@ void general_keyboard_callback(
         int mods
 ) {
     
-    #ifdef debug_all
+    #if defined debug_all || defined debug_mouse
     std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
     std::cout << "Action: " << action << ", mods: " << mods << std::endl;
     #endif
@@ -100,42 +100,47 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
     scrollFlag += y_offset;
     if(scrollFlag < 1) scrollFlag = 1;
     
-    #ifdef debug_all
+    #if defined debug_all || defined debug_mouse
     std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
     #endif
 }
 
-float mouseOffsetX;
-float mouseOffsetY;
-float mouseLastX;
-float mouseLastY;
+double mouseOffsetX;
+double mouseOffsetY;
+double mouseLastX;
+double mouseLastY;
 
-float getMouseOffsetX()   { return mouseOffsetX; };
-float getMouseOffsetY()   { return mouseOffsetY; };
-float getMouseLastX()     { return mouseLastX; };
-float getMouseLastY()     { return mouseLastY; };
+double getMouseOffsetX()   { return mouseOffsetX; };
+double getMouseOffsetY()   { return mouseOffsetY; };
+double getMouseLastX()     { return mouseLastX; };
+double getMouseLastY()     { return mouseLastY; };
 
-void setMouseOffsetX(float _x)    { mouseOffsetX  = _x; };
-void setMouseOffsetY(float _y)    { mouseOffsetY  = _y; };
-void setMouseLastX(float _x)      { mouseLastX    = _x; };
-void setMouseLastY(float _y)      { mouseLastY    = _y; };
+void setMouseOffsetX(double _x)    { mouseOffsetX  = _x; };
+void setMouseOffsetY(double _y)    { mouseOffsetY  = _y; };
+void setMouseLastX(double _x)      { mouseLastX    = _x; };
+void setMouseLastY(double _y)      { mouseLastY    = _y; };
 
-//int firstMouse;
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-   mouseOffsetX = mouseLastX - (float) xpos;
-   mouseOffsetY = mouseLastY - (float) ypos;
-   mouseLastX = (float) xpos;
-   mouseLastY = (float) ypos;
+bool firstMouse;
+void mouse_callback(GLFWwindow* window, double xCoord, double yCoord) {
+    if(!firstMouse) {   
+        firstMouse = true;
+        mouseOffsetX = xCoord;
+        mouseOffsetY = yCoord;
+        mouseLastX = xCoord;
+        mouseLastY = yCoord;
+    }
+    mouseOffsetX = mouseLastX - xCoord;
+    mouseOffsetY = mouseLastY - yCoord;
+    mouseLastX = xCoord;
+    mouseLastY = yCoord;
 }
 
 /**
  * @brief 
  * @param frame
  */
-void setCallbacks(GLFWwindow* frame) {
-//    firstMouse = 0;
-    
-    GLFWwindow* window = frame;
+void setCallbacks(GLFWwindow* window) {
+    firstMouse = false;
     
     glfwMakeContextCurrent(window);
     glfwSetWindowFocusCallback(window, close_on_unfocus);

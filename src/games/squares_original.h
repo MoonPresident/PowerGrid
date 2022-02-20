@@ -13,7 +13,8 @@
 int squares_original_game();
 
 class SquaresOriginal: public AbstractSimulation {
-    
+    SquaresOriginal();
+    ~SquaresOriginal();
 };
 
 #endif /* SQUARES_ORIGINAL_H */

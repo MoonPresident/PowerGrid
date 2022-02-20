@@ -40,6 +40,6 @@ void main ()
 
 
     //Rotate and add offset
-    //gl_Position = scaleMat * (rot_mat * verts[gl_VertexID]) + offset;
-    gl_Position = rot_mat * verts[gl_VertexID] + offset;
+    gl_Position = scaleMat * (rot_mat * verts[gl_VertexID]) + offset;
+    //gl_Position = rot_mat * verts[gl_VertexID] + offset;
 }

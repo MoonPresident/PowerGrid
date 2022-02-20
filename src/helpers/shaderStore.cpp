@@ -6,39 +6,35 @@
  */
 
 //Include this everywhere
+#include "config.h"
 #include "my_debug.h"
 
 #include "shaderStore.h"
+#define SHADER_PATH         "C:/dev/PowerGrid/resources/shaders/"
+#define SHADER_INDEX_FILE   "C:/dev/PowerGrid/resources/shaders/index.txt"
 
-//#define debug
 
 //Setup function
-ShaderStore::ShaderStore (){
-    #if defined debug_all || defined debug_shaders
-    std::cout << "ShaderStore activated" << std::endl;//shaders.data();
+ShaderStore::ShaderStore () {
+    #if defined debug_all || defined debug_flow || defined debug_shaders
+    std::cout << "ShaderStore activated" << std::endl;
     #endif
 }
 
-
-//Add shader to the store.
 void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
-    //Open and read stream
-    std::ifstream shaderFile;
-    std::string fullPath = std::string(SHADER_PATH) + shaderFilename;
-    shaderFile.open(fullPath.c_str());
+    std::ifstream shaderFile(shaderFilename);
     
-    if(shaderFile) {
-        //Init shader
+    if(!shaderFile) {
+        std::cout << "Unable to open file: " << shaderFilename.c_str() <<  std::endl;
+    } else {
         GLuint shader;
         shader = glCreateShader(shaderType);
         
-        //Read in file contents
         std::string fileContents;
         fileContents.assign(
             std::istreambuf_iterator<char>(shaderFile), 
             std::istreambuf_iterator<char>()
         );
-        
         
         const char* shaderSource = fileContents.c_str();
         glShaderSource(shader, 1, &shaderSource, NULL);
@@ -57,8 +53,6 @@ void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
         #endif
         
         shaders.push_back(shader);
-    } else {
-        std::cout << "Unable to open file: " << shaderFilename.c_str() <<  std::endl;
     }
 }
 
@@ -83,7 +77,6 @@ void ShaderStore::linkProgram(GLuint program) {
 //Attach all shaders to the program.
 void ShaderStore::attachAll(GLuint program) {
     for(int i = 0; i < shaders.size(); i++) {
-//        std::cout << i << " : " << shaders.at(i) << std::endl;
         glAttachShader(program, shaders.at(i));
     }
 }
@@ -96,22 +89,16 @@ void ShaderStore::deleteAll() {
 
 
 //https://thebookofshaders.com/07/
-#define SHADER_PATH         "C:/dev/PowerGrid/resources/shaders/"
-#define SHADER_INDEX_FILE   "index.txt"
-
-// GLuint loadShader(const char* shader_path) {};
 
 //Load in shaders
 std::vector<Program> loadPrograms() {
-//    loadPrograms(SHADER_INDEX_FILE);
-//}
-//    
-//std::vector<Program> loadPrograms(const char* index_path) {
     ShaderStore shaderStore;
     std::vector<Program> programs;
-    std::string line, path, index(SHADER_INDEX_FILE);//index_path);
+    std::string line, path, index(SHADER_INDEX_FILE);
     std::ifstream shaderIndex;
     shaderIndex.open(index);
+
+    if(shaderIndex.fail()) std::cout << "BAD INDEX";
     
     //Debug information to confirm the shaders have loaded correctly.
     #if defined debug_all || defined debug_shaders
@@ -125,9 +112,9 @@ std::vector<Program> loadPrograms() {
     
     while(getline(shaderIndex, line)) {
         #if defined debug_all || defined debug_shaders
-//        std::cout << "Line in: " << line << std::endl;
         std::cout << "Program size: " << programs.size() << std::endl;
         #endif
+
         path.assign(SHADER_PATH).append(line.substr(2));
         char shaderType = line.at(0);
         switch(shaderType) {

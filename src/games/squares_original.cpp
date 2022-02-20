@@ -13,6 +13,8 @@
 #include "WorldData.h"
 #include "Camera.h"
 
+#include "squares_original.h"
+
 
 #define SQRT_2 1.4142
 
@@ -37,6 +39,14 @@ bool bullet_lifecycle_condition(DisplayObject& bullet) {
         return true;
     }
     return false;
+}
+
+SquaresOriginal::SquaresOriginal() {
+
+}
+
+SquaresOriginal::~SquaresOriginal() {
+
 }
 
 int squares_original_game() {
@@ -148,11 +158,15 @@ int squares_original_game() {
             bullet.real_location[1] = world.display_objects.at(0).real_location[1];
             world.display_objects.push_back(bullet);
             
-            for(int i = 0; i < 100; i++) {
-            basic_enemy.real_location[0] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
-            basic_enemy.real_location[1] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+            for (int k = 0; k < 9; k++) world.display_object_coords.push_back(0.f);
             
-            world.display_objects.push_back(basic_enemy);
+            for(int i = 0; i < 100; i++) {
+                basic_enemy.real_location[0] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+                basic_enemy.real_location[1] = ((float)rand()/(float)(RAND_MAX)) * 2 - 1;
+                
+                world.display_objects.push_back(basic_enemy);
+                
+                for (int k = 0; k < 9; k++) world.display_object_coords.push_back(0.f);
             }
             resetLeftClickFlag();
             std::cout << "Enemies: " << world.display_objects.size() - 2 << std::endl;

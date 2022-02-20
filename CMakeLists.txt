@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.17)
 project(PowerGrid VERSION 1.0)
 
 set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/freetype/lib/cmake/freetype")
-# set(FREETYPE_DIR "C:/Program Files (x86)/freetype/include/freetype2")
-# set(FREETYPE_ROOT "C:/Program Files (x86)/freetype/include/freetype2")
 
 # add_compile_definitions(SHADER_PATH="C:/dev/PowerGrid/resources/shaders/")
 
@@ -13,6 +11,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #TODO: Change this when I decide to actually use a safe implementation.
+aux_source_directory("src/components" COMPONENTS_DIR)
 aux_source_directory("src/games" GAMES_DIR)
 aux_source_directory("src/helpers" HELPERS_DIR)
 aux_source_directory("src/games/opengl_examples" GRAPHICS_EXAMPLES_DIR)
@@ -23,21 +22,13 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3" "${PROJECT_BINARY
 #Create Executable.
 add_executable(${PROJECT_NAME} 
     "src/main.cpp" 
+    ${COMPONENTS_DIR}
     ${GAMES_DIR}
     ${HELPERS_DIR}
     ${GRAPHICS_EXAMPLES_DIR}
-    # "src/helpers/Shaderstore.cpp"
-    # "src/helpers/AbstractSimulation.cpp"
-    # "src/helpers/callbacks.cpp"
-    # "src/helpers/TextureFactory.cpp"
-    # "src/games/example_game_3D.cpp"
-    ) 
-
+)
 
 #FreeType
-# find_package(Freetype REQUIRED) 
-# message("FREETYPE_INCLUDES: ${FREETYPE_INCLUDE_DIRS}")
-
 set(FREETYPE_PATH "C:/Program Files (x86)/freetype")
 target_link_libraries(${PROJECT_NAME} PUBLIC "${FREETYPE_PATH}/lib/freetyped.lib")
 
@@ -69,6 +60,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
                            "${PROJECT_SOURCE_DIR}/src"
                            "${PROJECT_SOURCE_DIR}/src/helpers"
                            "${PROJECT_SOURCE_DIR}/src/games"
+                           "${PROJECT_SOURCE_DIR}/src/components"
                            "${FREETYPE_PATH}/include/freetype2"
                            "${FREETYPE_PATH}/include/freetype2/freetype"
                            "${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3/include/GLFW"

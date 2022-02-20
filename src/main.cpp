@@ -50,6 +50,8 @@
 #include "games/opengl_examples/CameraExample.h"
 #include "games/opengl_examples/TextRenderingExample.h"
 
+#include "squares_original.h"
+
 //Freetype kinda sucks to get working
 //https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html
 //Idk tho
@@ -107,17 +109,20 @@ using namespace std::chrono;
  */
 int main(int argc, char **argv) {
     //LearnOpenGL inspired examples:
+    #if defined debug_all || defined debug_flow
     std::cout << "Starting program..." << std::endl;
+    #endif
+
     // SimpleSquare target;
-//    TexturedSquare target;
-//    TransformedSquare target;
-//    SimpleCube target;
-//    CameraExample target;
-    TextRenderingExample target;
+    // TexturedSquare target;
+    // TransformedSquare target;
+    // SimpleCube target;
+    // CameraExample target;
+    // TextRenderingExample target;
+
     // Original Creations
-//    squares_original_game();
-//    example_game_3D();
+    squares_original_game();
     // ExampleGame3D target;
 
-    target.run();
+    // target.run();
 }

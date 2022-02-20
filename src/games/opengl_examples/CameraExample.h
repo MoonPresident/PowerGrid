@@ -3,7 +3,7 @@
 
 #include "WorldData.h"
 
-bool firstMouse;
+bool exampleFirstMouse;
 float lastX = 400, lastY = 300;
 
 float yaw = -90.0f;
@@ -20,11 +20,11 @@ glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
 
 void example_mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    if (firstMouse)
+    if (exampleFirstMouse)
     {
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+        exampleFirstMouse = false;
     }
   
     float xoffset = xpos - lastX;
