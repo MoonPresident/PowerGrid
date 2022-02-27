@@ -1,19 +1,8 @@
 //Lines that start with '/' are ignored.
 //The starting character sets the type of shader (e.g. 'v' for vertex, 'f' for fragment)
-//p indicates a new program
-//
-//v;sb7_basic_input_vertex.txt
+//p indicates a new program, t = triangles, l = lines
 pt
 v;pc_basic_vertex.txt
 f;sb7_basic_fragment.txt
 pl
 v;forward_facing_line.txt
-pf
-v;char_vertex_shader.txt
-f;char_fragment_shader.txt
-pt
-v;hud_vertex_shader.txt
-f;hud_fragment_shader.txt
-pt
-v;single_vertex_shader.txt
-f;single_fragment_shader.txt

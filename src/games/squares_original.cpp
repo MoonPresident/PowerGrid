@@ -96,7 +96,8 @@ int squares_original_game() {
     std::cout << "Done." << std::endl;
     #endif
     
-    while(!glfwWindowShouldClose(world.window.getWindow())) {
+    while(!glfwWindowShouldClose(world.window.getWindow()) && 
+            glfwGetKey(world.window.getWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS) {
         world.calculate_timestep();
         
         //Track FPS.

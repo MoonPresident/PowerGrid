@@ -3,7 +3,6 @@
 #include "AbstractSimulation.h"
 
 #include "glad/glad.h"
-#include "shaderStore.h"
 
 #ifdef debug_all
 #include <iostream>
@@ -39,12 +38,26 @@ class SimpleSquare: AbstractSimulation {
             0.2f, 0.2f, 0.f,
         };
         
-        ShaderStore shader;
-        shader.addShader("..\\resources\\shaders\\generic_2d_vertex_shader.txt", GL_VERTEX_SHADER);
-        shader.addShader("..\\resources\\shaders\\generic_2d_fragment_shader.txt", GL_FRAGMENT_SHADER);
+        GLuint vertShader, fragShader;
+        vertShader = glCreateShader(GL_VERTEX_SHADER);
+        fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+        
+        const char* vertShaderSource = "#version 330 core"
+            "layout (location = 0) in vec3 aPos;"
+            "void main() {gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);}";
+        const char* fragShaderSource = "#version 330 core"
+            "out vec4 FragColor;"
+            "void main() {FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);}";
+        glShaderSource(vertShader, 1, &vertShaderSource, NULL);
+        glShaderSource(fragShader, 1, &fragShaderSource, NULL);
+        glCompileShader(vertShader);
+        glCompileShader(fragShader);
         
         GLuint program = glCreateProgram();
-        shader.linkProgram(program);
+
+        glAttachShader(program, vertShader);
+        glAttachShader(program, fragShader);
+        glLinkProgram(program);
         
         //This captures the escape key.
         glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);

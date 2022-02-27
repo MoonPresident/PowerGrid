@@ -113,16 +113,14 @@ int main(int argc, char **argv) {
     std::cout << "Starting program..." << std::endl;
     #endif
 
-    // SimpleSquare target;
-    // TexturedSquare target;
-    // TransformedSquare target;
-    // SimpleCube target;
-    // CameraExample target;
-    // TextRenderingExample target;
+    SimpleSquare simpleSquare; simpleSquare.run(); std::cout << "\n";
+    TexturedSquare texturedSquare; texturedSquare.run(); std::cout << "\n";
+    TransformedSquare transformedSquare; transformedSquare.run(); std::cout << "\n";
+    SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
+    CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
+    TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
 
     // Original Creations
-    squares_original_game();
-    // ExampleGame3D target;
-
-    // target.run();
+    squares_original_game(); std::cout << "\n";
+    ExampleGame3D target; target.run(); std::cout << "\n";
 }

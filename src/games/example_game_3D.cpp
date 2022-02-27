@@ -10,6 +10,8 @@
 
 #include "TextureFactory.h"
 
+#include "Shader.h"
+
 // #ifndef STB_IMAGE_IMPLEMENTATION
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "stb_image.h"
@@ -100,7 +102,10 @@ void ExampleGame3D::run() {
     glEnable(GL_LINE_SMOOTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    std::vector<Program> programs = loadPrograms();
+    const char* vertShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\transform_3d_vertex_shader.txt";
+    const char* fragShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_fragment_shader.txt";
+    std::vector<Shader> programs = { Shader(vertShaderPath, fragShaderPath) };
+    
     
     // float textVertices[] = {
     //     0.f,   0.f,   0.f,    times.q.s0, times.q.t1,
@@ -230,12 +235,7 @@ void ExampleGame3D::run() {
         //Track FPS.
         auto fps = check_fps();
         //Things to be done once a second.
-        if(fps) {
-            std::cout << "FPS: " << fps << std::endl;
-            std::cout << "\t" << camera.cameraPos.x << "\t" << camera.cameraPos.y << "\t" << camera.cameraPos.z <<
-                    "\t" << force_vector[2] << std::endl;
-            std::cout << getMouseYaw() << ", " << getMousePitch() << ", " <<  getMouseOffsetX() << ", " <<  getMouseOffsetY() << std::endl;
-        }
+        if(fps) { std::cout << "FPS: " << fps << std::endl; }
         float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;
         float newPitch  = getMousePitch() + getMouseOffsetY() * sensitivity;
         if(newPitch < -89.0f) newPitch = -89.f;

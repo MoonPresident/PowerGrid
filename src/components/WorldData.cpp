@@ -97,22 +97,8 @@ void WorldData::draw_objects() {
             #endif  
 
             offset += 9;
-
-            // unsigned int indices[] = {
-            //     0 + vertex_offset, 1 + vertex_offset, 3 + vertex_offset,
-            //     1 + vertex_offset, 2 + vertex_offset, 3 + vertex_offset
-            // };
-            // for(int i = 0; i < 8; i++) std::cout << vertices[i] << ", ";
-            // std::cout << vertices[8] << std::endl;
-            
-
         }
-        std::cout << 5 << std::endl;
 
-//        glBindVertexArray(worldVAO);
-        
-//        for(int i = 0; i < 2; i++) {
-        // std::cout << "SIZE: " << display_objects.size() << std::endl;
         for(int i = 0; i < display_objects.size(); i++) {
             glUseProgram(display_objects.at(i).program.ID);
             

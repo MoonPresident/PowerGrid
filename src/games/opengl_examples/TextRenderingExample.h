@@ -25,8 +25,8 @@ public:
         Font font("c:/windows/fonts/arial.ttf");
         
         ShaderStore shader;
-        shader.addShader("glyph_vertex_shader.txt", GL_VERTEX_SHADER);
-        shader.addShader("glyph_fragment_shader.txt", GL_FRAGMENT_SHADER);
+        shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\glyph_vertex_shader.txt", GL_VERTEX_SHADER);
+        shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\glyph_fragment_shader.txt", GL_FRAGMENT_SHADER);
         
         GLuint program = glCreateProgram();
         shader.linkProgram(program);

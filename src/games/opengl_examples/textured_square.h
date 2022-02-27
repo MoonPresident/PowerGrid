@@ -54,14 +54,14 @@ public:
         glEnableVertexAttribArray(2);
         
         ShaderStore shader;
-        shader.addShader("..\\resources\\shaders\\texture_2d_vertex_shader.txt", GL_VERTEX_SHADER);
-        shader.addShader("..\\resources\\shaders\\texture_2d_fragment_shader.txt", GL_FRAGMENT_SHADER);
+        shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_vertex_shader.txt", GL_VERTEX_SHADER);
+        shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_fragment_shader.txt", GL_FRAGMENT_SHADER);
         
         GLuint program = glCreateProgram();
         shader.linkProgram(program);
         
         TextureFactory texFactory;
-        GLuint tex = texFactory.getTexture("..\\games\\opengl_examples\\fish_eyes.jpg");
+        GLuint tex = texFactory.getTexture("C:\\dev\\PowerGrid\\src\\games\\opengl_examples\\fish_eyes.jpg");
         glBindTexture(GL_TEXTURE_2D, tex);
         
         //This captures the escape key.
