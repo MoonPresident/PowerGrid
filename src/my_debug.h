@@ -9,6 +9,7 @@
 // #define debug_mouse
 // #define debug_shaders
 
-#define check_error() (std::cout << "ERROR: " << glGetError() << std::endl)
+#define check_error() (std::cout << "ERROR: " << glGetError() << "\n")
+#define check_error_prefixed(prefix) (std::cout << prefix << "ERROR: " << glGetError() << "\n")
 
 #endif /* DEBUG_H */

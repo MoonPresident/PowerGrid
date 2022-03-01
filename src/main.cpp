@@ -49,6 +49,7 @@
 #include "games/opengl_examples/SimpleCube.h"
 #include "games/opengl_examples/CameraExample.h"
 #include "games/opengl_examples/TextRenderingExample.h"
+#include "games/opengl_examples/LightingExample.h"
 
 #include "squares_original.h"
 
@@ -113,14 +114,15 @@ int main(int argc, char **argv) {
     std::cout << "Starting program..." << std::endl;
     #endif
 
-    SimpleSquare simpleSquare; simpleSquare.run(); std::cout << "\n";
-    TexturedSquare texturedSquare; texturedSquare.run(); std::cout << "\n";
-    TransformedSquare transformedSquare; transformedSquare.run(); std::cout << "\n";
-    SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
-    CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
-    TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
+    // SimpleSquare simpleSquare; simpleSquare.run(); std::cout << "\n";
+    // TexturedSquare texturedSquare; texturedSquare.run(); std::cout << "\n";
+    // TransformedSquare transformedSquare; transformedSquare.run(); std::cout << "\n";
+    // SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
+    // CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
+    // TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
+    LightingExample lightingExample; lightingExample.run(); std::cout << "\n";
+    // ExampleGame3D target; target.run(); std::cout << "\n";
 
     // Original Creations
-    squares_original_game(); std::cout << "\n";
-    ExampleGame3D target; target.run(); std::cout << "\n";
+    // squares_original_game(); std::cout << "\n";
 }

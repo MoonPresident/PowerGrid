@@ -42,7 +42,14 @@ bool bullet_lifecycle_condition(DisplayObject& bullet) {
 }
 
 SquaresOriginal::SquaresOriginal() {
+    GLuint vao, vbo;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+    
 }
 
 SquaresOriginal::~SquaresOriginal() {
