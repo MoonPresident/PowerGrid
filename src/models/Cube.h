@@ -12,11 +12,13 @@ public:
     GLuint vao, vbo, ebo, tex;
     Shader shader;
     glm::mat4 proj, model, view;
+    GLfloat ambientLight;
 
     Cube(): shader(
             "C:\\dev\\PowerGrid\\resources\\shaders\\transform_3d_vertex_shader.txt",
-            "C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_fragment_shader.txt"
+            "C:\\dev\\PowerGrid\\resources\\shaders\\phong_texture_fragment_shader.txt"
         ) {
+        ambientLight = 0.9f;
         glGenVertexArrays(1, &vao);        
         glGenBuffers(1, &vbo);
         glGenBuffers(1, &ebo);
@@ -69,6 +71,8 @@ public:
         glBindTexture(GL_TEXTURE_2D, tex);
     }
 
+    void setAmbientLight(float _a) { ambientLight = _a; }
+
     void setMats(glm::mat4 _model, glm::mat4 _view, glm::mat4 _proj) { model = _model; view = _view; proj = _proj;}
 
     void draw() {
@@ -79,6 +83,9 @@ public:
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+
+        int ambientLightLoc = glGetUniformLocation(shader.ID, "ambientLight");
+        glUniform1f(ambientLightLoc, ambientLight);
 
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

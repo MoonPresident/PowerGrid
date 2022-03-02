@@ -51,7 +51,7 @@
 #include "games/opengl_examples/TextRenderingExample.h"
 #include "games/opengl_examples/LightingExample.h"
 
-#include "squares_original.h"
+// #include "squares_original.h"
 
 //Freetype kinda sucks to get working
 //https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html

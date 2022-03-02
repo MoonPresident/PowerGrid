@@ -1,20 +1,20 @@
-/**
- * Author: MoonPresident
- * Date: August 31st 2021
- * 
- * Game sequence for squares.
- */
+// /**
+//  * Author: MoonPresident
+//  * Date: August 31st 2021
+//  * 
+//  * Game sequence for squares.
+//  */
 
-#include "WorldData.h"
+// #include "WorldData.h"
 
-#ifndef SQUARES_ORIGINAL_H
-#define SQUARES_ORIGINAL_H
+// #ifndef SQUARES_ORIGINAL_H
+// #define SQUARES_ORIGINAL_H
 
-int squares_original_game();
+// int squares_original_game();
 
-class SquaresOriginal: public AbstractSimulation {
-    SquaresOriginal();
-    ~SquaresOriginal();
-};
+// class SquaresOriginal: public AbstractSimulation {
+//     SquaresOriginal();
+//     ~SquaresOriginal();
+// };
 
-#endif /* SQUARES_ORIGINAL_H */
+// #endif /* SQUARES_ORIGINAL_H */

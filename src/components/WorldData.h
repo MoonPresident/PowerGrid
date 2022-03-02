@@ -49,10 +49,6 @@ public:
     //Cursor
     double cursor_position[2];
     
-    std::vector<DisplayObject> display_objects;
-    std::vector<GLfloat> display_object_coords;
-    
-    
     /**
      * @brief Initialise the data about the world.
      * @return 
@@ -60,15 +56,6 @@ public:
     WorldData();
     
     virtual ~WorldData();
-    
-    void initBuffers();
-    
-    
-    /**
-     * @brief Render all of the objects.
-    **/
-    void draw_objects();
-    
     
     /**
      * @brief Set the World Data
