@@ -17,16 +17,18 @@ public:
     float pc_z_pos;
 
     TiledFloor floor;
+    bool floorEnabled;
 
-    ExplorableSimulation(): force_vector(0.f, 0.f, 0.f) {};
+    ExplorableSimulation():
+          floorEnabled(true)
+        , moveSpeed(5.f)
+        , jumpVelocity(2.8f)
+        , pc_z_pos(1.f)
+        , force_vector(0.f, 0.f, 0.f) 
+    {};
     ~ExplorableSimulation() {};
 
     void initExplorableSimulation() {
-        moveSpeed = 5.f;
-        jumpVelocity = 2.8f;
-
-        pc_z_pos = 1.f;
-        
         glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);
         setCallbacks(window.getWindow());
 
@@ -45,7 +47,7 @@ public:
         calculate_timestep();
         
         float delta_t = get_delta_t()  / 1000000.f;
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         scale_factor = (float) getScrollFlag() * 0.1f;
@@ -95,9 +97,11 @@ public:
         
         camera.view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFront, camera.cameraUp);
 
-        floor.setMats(glm::mat4(1.0f), camera.view, camera.projection);
-        floor.setAmbientLight(1.f);
-        floor.draw();
+        if(floorEnabled) {
+            floor.setMats(glm::mat4(1.0f), camera.view, camera.projection);
+            floor.setAmbientLight(1.f);
+            floor.draw();
+        }
     }
 };
 

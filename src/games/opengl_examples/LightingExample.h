@@ -12,10 +12,16 @@ public:
 
     void run() {
         Cube cube;
+        Cube light(
+            "C:\\dev\\PowerGrid\\resources\\shaders\\simple_colorable.vs",
+            "C:\\dev\\PowerGrid\\resources\\shaders\\simple_colorable.fs"
+        );
+        light.setAmbientLight(1.f);
+        floorEnabled = false;
 
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
         float x_off = 0.f;
@@ -30,7 +36,7 @@ public:
 
 
             if(glfwGetKey(window.getWindow(), GLFW_KEY_SPACE) != GLFW_PRESS) {
-                glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+                // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
             stepThrough();
@@ -57,6 +63,14 @@ public:
             cube.setMats(model, camera.view, proj);
             cube.setAmbientLight(0.4f);
             cube.draw();
+
+            glm::mat4 lModel = glm::mat4(1.0f);
+            
+            lModel = glm::translate(lModel, glm::vec3(1.2, 1.f, 2.f));
+            light.setMats(lModel, camera.view, proj);
+            light.setAmbientLight(1.f);
+            light.draw();
+
             glfwSwapBuffers(window.getWindow());
             glfwPollEvents();
         }
