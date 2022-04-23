@@ -51,83 +51,77 @@ public:
         int offLoc = glGetUniformLocation(shader.ID, "aOffset");
 
         //This works but chugs the framerate, either make it small or put it into a shader.
-        int sideLength = 4;
+        int sideLength = 100;
         
         //Length is 2 * sideLength, 2 triangles per squares, only half in each colour
         // triCount * sideLength * sideLength = 2 * (2 * sideLength) * (2 * sideLength) / 2
-        int triangleCount = 6 * sideLength * sideLength;
+        int triangleCount = 4 * sideLength * sideLength;
 
         int squareStride = 36;
-        std::vector<GLfloat> verts(squareStride * triangleCount);
+        std::vector<GLfloat> verts(9 * triangleCount);
 
         glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
         glUniform3fv(offLoc, 1, glm::value_ptr(glm::vec3(0.f, 0.f, 0.f)));
         for(int i = 0; i < sideLength;  ++i) {
-            static const int columnOffset = i * sideLength * squareStride;
+            int columnOffset = i * sideLength * squareStride;
             for(int j = 0; j < sideLength; ++j) {
-                float xBase = 2.f * i - sideLength;
-                float zBase = 2.f * j - sideLength;
-                std::cout << "(" << xBase << ", " << zBase << ") \t";
-                static const GLfloat vertexDataA[] = {
+                float xBase = 1.f * (2 * i - sideLength);
+                float zBase = 1.f * (2 * j - sideLength);
+                GLfloat vertexData[] = {
                     xBase,       0.f, zBase,
-                    xBase,       0.f, zBase + 1.f,
                     xBase + 1.f, 0.f, zBase,
                     xBase,       0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase,
-                    ++xBase,     0.f, ++zBase,
-                    xBase,       0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase,
                     xBase,       0.f, zBase + 1.f,
                     xBase + 1.f, 0.f, zBase + 1.f,
                     xBase + 1.f, 0.f, zBase,
+                    xBase + 1.f, 0.f, zBase + 1.f,
+                    xBase + 2.f, 0.f, zBase + 1.f,
+                    xBase + 1.f, 0.f, zBase + 2.f,
+                    xBase + 1.f, 0.f, zBase + 2.f,
+                    xBase + 2.f, 0.f, zBase + 2.f,
+                    xBase + 2.f, 0.f, zBase + 1.f,
                 };
-                verts.insert(verts.begin() + j * squareStride + columnOffset, &vertexDataA[0], &vertexDataA[squareStride]);
+                
+                for(int k = 0; k < squareStride; ++k) {
+                    verts.at(k + columnOffset + j * squareStride) = vertexData[k];
+                }
+                
             }
-            std::cout << std::endl;
         }
-        for(int i = 0; i <squareStride*sideLength; i+=3) {
-            std::cout << verts.at(i) << ", " << verts.at(i + 1) << ", " << verts.at(i+2) << std::endl;
-        }
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), &verts[0], GL_STATIC_DRAW);
 
+        glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(GLfloat), &verts[0], GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-        glEnableVertexAttribArray(0);
-        glDrawArrays(GL_TRIANGLES, 0, 6 *triangleCount);
+        glDrawArrays(GL_TRIANGLES, 0, 12 * triangleCount);
 
         glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(0.f, 0.f, 0.f, 1.f)));
-        for(int i = 0; i < 2 * sideLength;  ++i) {
-            for(int j = 0; j < 2 * sideLength; ++j) {
-                float xBase = 2.f * i - sideLength + 1;
-                float zBase = 2.f * j - sideLength;
-                std::cout << "(" << xBase << ", " << zBase << ")  \t";
-                static const GLfloat vertexDataA[] = {
+        for(int i = 0; i < sideLength;  ++i) {
+            int columnOffset = i * sideLength * squareStride;
+            for(int j = 0; j < sideLength; ++j) {
+                float xBase = 1.f * (1 + 2 * i - sideLength);
+                float zBase = 1.f * (2 * j - sideLength);
+                GLfloat vertexData[] = {
                     xBase,       0.f, zBase,
-                    xBase,       0.f, zBase + 1.f,
                     xBase + 1.f, 0.f, zBase,
                     xBase,       0.f, zBase + 1.f,
+                    xBase,       0.f, zBase + 1.f,
+                    xBase + 1.f, 0.f, zBase,
                     xBase + 1.f, 0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase,
-                    ++xBase,     0.f, ++zBase,
-                    xBase,       0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase,
-                    xBase,       0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase + 1.f,
-                    xBase + 1.f, 0.f, zBase,
+                    xBase - 1.f, 0.f, zBase + 1.f,
+                    xBase      , 0.f, zBase + 1.f,
+                    xBase - 1.f, 0.f, zBase + 2.f,
+                    xBase - 1.f, 0.f, zBase + 2.f,
+                    xBase      , 0.f, zBase + 1.f,
+                    xBase      , 0.f, zBase + 2.f,
                 };
-                verts.insert(verts.begin() + 2 * i * squareStride, &vertexDataA[0], &vertexDataA[squareStride]);
+                for(int k = 0; k < squareStride; k++) {
+                    verts.at(k + columnOffset + j * squareStride) = vertexData[k];
+                }
             }
-            std::cout << std::endl;
         }
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), &verts[0], GL_STATIC_DRAW);
-
+        
+        glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(GLfloat), &verts[0], GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-        glEnableVertexAttribArray(0);
-
-        glDrawArrays(GL_TRIANGLES, 0, 6 *triangleCount);
+        glDrawArrays(GL_TRIANGLES, 0, 12 * triangleCount);
     }
 };
 
