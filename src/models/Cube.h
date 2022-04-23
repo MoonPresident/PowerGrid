@@ -34,43 +34,59 @@ public:
 
         
         static const GLfloat vertexData[] = {
-             0.5f,  0.5f,  0.5f,   1.0f, 1.0f, // front top right
-             0.5f, -0.5f,  0.5f,   1.0f, 0.0f, // front bottom right
-            -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, // front bottom left
-            -0.5f,  0.5f,  0.5f,   0.0f, 1.0f, // front top left 
-             0.5f,  0.5f, -0.5f,   1.0f, 1.0f, // back  top right
-             0.5f, -0.5f, -0.5f,   1.0f, 0.0f, // back  bottom right
-            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, // back  bottom left
-            -0.5f,  0.5f, -0.5f,   0.0f, 1.0f, // back  top left 
-        };
-        
-        unsigned int indices[] = {
-            0, 1, 3, // 0, 0, 1
-            1, 2, 3, // 0, 0, 1
-            4, 5, 7, // 0, 0, -1
-            5, 6, 7, // 0, 0, -1
+            -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,      0.f, 0.f, 1.f,// front bottom left
+             0.5f, -0.5f,  0.5f,   1.0f, 0.0f,      0.f, 0.f, 1.f,// front bottom right
+             0.5f,  0.5f,  0.5f,   1.0f, 1.0f,      0.f, 0.f, 1.f,// front top right
+            -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,      0.f, 0.f, 1.f,// front top left
+            -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,      0.f, 0.f, 1.f,// front bottom left
+             0.5f,  0.5f,  0.5f,   1.0f, 1.0f,      0.f, 0.f, 1.f,// front top right
+             
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,      0.f, 0.f, -1.f,// back  bottom left
+            -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,      0.f, 0.f, -1.f,// back  top left 
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f,      0.f, 0.f, -1.f,// back  top right
+             0.5f, -0.5f, -0.5f,   1.0f, 0.0f,      0.f, 0.f, -1.f,// back  bottom right
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,      0.f, 0.f, -1.f,// back  bottom left
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f,      0.f, 0.f, -1.f,// back  top right
+             
+             0.5f,  0.5f,  0.5f,   1.0f, 0.0f,      0.f, 1.f, 0.f,// front top right
+            -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,      0.f, 1.f, 0.f,// front top left
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f,      0.f, 1.f, 0.f,// back  top right
+            -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,      0.f, 1.f, 0.f,// back  top left 
+            -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,      0.f, 1.f, 0.f,// front top left
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f,      0.f, 1.f, 0.f,// back  top right
+             
+             0.5f, -0.5f,  0.5f,   1.0f, 1.0f,      0.f, -1.f, 0.f,// front bottom right
+             0.5f, -0.5f, -0.5f,   1.0f, 0.0f,      0.f, -1.f, 0.f,// back  bottom right
+            -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,      0.f, -1.f, 0.f,// front bottom left
+            -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,      0.f, -1.f, 0.f,// front bottom left
+             0.5f, -0.5f, -0.5f,   1.0f, 0.0f,      0.f, -1.f, 0.f,// back  bottom right
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,      0.f, -1.f, 0.f,// back  bottom left
             
-            0, 4, 3, // 0, 1, 0
-            4, 7, 3, // 0, 1, 0
-            1, 5, 2, // 0, -1, 0
-            5, 2, 6, // 0, -1, 0
-            
-            0, 4, 1, // 1, 0, 0
-            4, 5, 1, // 1, 0, 0
-            3, 7, 2, // -1, 0, 0
-            7, 6, 2, // -1, 0, 0
+             0.5f,  0.5f,  0.5f,   0.0f, 1.0f,      1.f, 0.f, 0.f,// front top right
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f,      1.f, 0.f, 0.f,// back  top right
+             0.5f, -0.5f,  0.5f,   0.0f, 0.0f,      1.f, 0.f, 0.f,// front bottom right
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f,      1.f, 0.f, 0.f,// back  top right
+             0.5f, -0.5f,  0.5f,   0.0f, 0.0f,      1.f, 0.f, 0.f,// front bottom right
+             0.5f, -0.5f, -0.5f,   1.0f, 0.0f,      1.f, 0.f, 0.f,// back  bottom right
+             
+            -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,      -1.f, 0.f, 0.f,// back  top left 
+            -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,      -1.f, 0.f, 0.f,// front top left
+            -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,      -1.f, 0.f, 0.f,// front bottom left
+            -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,      -1.f, 0.f, 0.f,// back  top left 
+            -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,      -1.f, 0.f, 0.f,// front bottom left
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,      -1.f, 0.f, 0.f,// back  bottom left
         };
         
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
         
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3 * sizeof(float)));
         glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (5 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+
         
         TextureFactory texFactory;
         tex = texFactory.getTexture("C:\\dev\\PowerGrid\\src\\games\\opengl_examples\\fish_eyes.jpg");
@@ -100,7 +116,7 @@ public:
         glUniform3fv(offsetLoc, 1, glm::value_ptr(glm::vec3(0.f, 0.f, 0.f)));
 
         glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 };
 

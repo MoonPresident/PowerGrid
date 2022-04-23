@@ -17,12 +17,12 @@ aux_source_directory("src/games/opengl_examples" GRAPHICS_EXAMPLES_DIR)
 
 #Create Executable.
 add_executable(${PROJECT_NAME} 
-"src/main.cpp" 
-${COMPONENTS_DIR}
-${MODELS_DIR}
-${GAMES_DIR}
-${HELPERS_DIR}
-${GRAPHICS_EXAMPLES_DIR}
+    "src/main.cpp" 
+    ${COMPONENTS_DIR}
+    ${MODELS_DIR}
+    ${GAMES_DIR}
+    ${HELPERS_DIR}
+    ${GRAPHICS_EXAMPLES_DIR}
 )
 
 #FreeType

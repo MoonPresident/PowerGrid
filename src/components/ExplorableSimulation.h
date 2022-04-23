@@ -66,11 +66,11 @@ public:
         setMouseOffsetY(0.f);
         
         
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(mouseYaw)) * cos(glm::radians(mousePitch));
-        direction.y = sin(glm::radians(mousePitch));
-        direction.z = sin(glm::radians(mouseYaw)) * cos(glm::radians(mousePitch));
-        camera.cameraFront = glm::normalize(direction);
+        camera.cameraFront = glm::normalize(glm::vec3(
+            cos(glm::radians(mouseYaw)) * cos(glm::radians(mousePitch)),
+            sin(glm::radians(mousePitch)),
+            sin(glm::radians(mouseYaw)) * cos(glm::radians(mousePitch))
+        ));
 
         check_window();
      
