@@ -1,12 +1,12 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
-uniform vec3 aOffset;
-uniform vec4 colorIn;
 out vec4 color;
   
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 aOffset;
+uniform vec4 colorIn;
 
 void main()
 {
