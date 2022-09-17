@@ -88,10 +88,7 @@ public:
             offsetLoc = glGetUniformLocation(program, "aOffset");
             
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(lModel));
-
-            // check_error();
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
-            // check_error();
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
             glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
             glUniform3fv(offsetLoc, 1, glm::value_ptr(glm::vec3(10.f, 0.f, 0.f)));
