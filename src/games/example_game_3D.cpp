@@ -4,7 +4,7 @@
 
 #include "Camera.h"
 
-#include "Font.h"
+#include "Text.h"
 
 #include <numeric>
 
@@ -52,7 +52,7 @@ void setVertexPointerFloat(std::vector<int> dataLayout) {
     int stride = std::accumulate(dataLayout.begin(), dataLayout.end(), 0);
     int offset = 0;
     int size = stride * sizeof(float);
-    Font times();
+
     
     #ifdef debug_setVertexPointerFloat
     std::cout << "Stride: " << stride << std::endl;
@@ -82,55 +82,17 @@ ExampleGame3D::ExampleGame3D() {}
 ExampleGame3D::~ExampleGame3D() {}
 
 void ExampleGame3D::run() {
-    
+    floorEnabled = false;
+    initExplorableSimulation();
     std::cout << "Starting..." << std::endl;
     GLuint VAO, VBO, VAO1, VBO1, EBO, EBO1;
 
     float moveSpeed = 5.f;
     float jumpVelocity = 2.8f;
 
-    Camera camera;
-    
-    glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);
-    setCallbacks(window.getWindow());
-
-    setMouseOffsetX(0.f);
-    setMouseOffsetY(0.f);
-    setMouseLastY(height / 2.f);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glEnable(GL_LINE_SMOOTH);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     const char* vertShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\transform_3d_vertex_shader.txt";
     const char* fragShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_fragment_shader.txt";
     std::vector<Shader> programs = { Shader(vertShaderPath, fragShaderPath) };
-    
-    
-    // float textVertices[] = {
-    //     0.f,   0.f,   0.f,    times.q.s0, times.q.t1,
-    //     0.f,   0.05f, 0.f,    times.q.s0, times.q.t0,
-    //     0.05f, 0.f,   0.f,    times.q.s1, times.q.t1,
-    //     0.05f, 0.05f, 0.f,    times.q.s1, times.q.t0,
-    // };
-    // unsigned int textIndices[] = { 0, 1, 2,     1, 2, 3, };
-    
-    // GLuint textVAO, textVBO;
-    // unsigned int textEBO;
-    // glGenVertexArrays(1, &textVAO);
-    // glBindVertexArray(textVAO);
-    
-    // glGenBuffers(1, &textVBO);
-    // glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(textVertices), textVertices, GL_STATIC_DRAW);
-    
-    // glGenBuffers(1, &textEBO);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, textEBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(textIndices), textIndices, GL_STATIC_DRAW);
-    
-    // std::vector<int> layout = {3, 2};
-    // setVertexPointerFloat(layout);
-    
     
 
     /**
@@ -219,76 +181,27 @@ void ExampleGame3D::run() {
     float yaw = -90.f;
     float pitch = 0.f;
     
+    
     glm::vec3 force_vector(0.f, 0.f, 0.f); //x, y, z
     float pc_z_pos = 0.f;
     while(glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS && 
             glfwWindowShouldClose(window.getWindow()) == 0) {
-        //Trigger new timestep
-        calculate_timestep();
-        
-        float delta_t = get_delta_t()  / 1000000.f;
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        scale_factor = (float) getScrollFlag() * 0.1f;
-        
-        //Track FPS.
-        auto fps = check_fps();
-        //Things to be done once a second.
-        if(fps) { std::cout << "FPS: " << fps << std::endl; }
-        float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;
-        float newPitch  = getMousePitch() + getMouseOffsetY() * sensitivity;
-        if(newPitch < -89.0f) newPitch = -89.f;
-        else if (newPitch > 89.0f) newPitch = 89.f;
-        setMouseYaw(newYaw);
-        setMousePitch(newPitch);
-        setMouseOffsetX(0.f);
-        setMouseOffsetY(0.f);
-        
-        
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(mouseYaw)) * cos(glm::radians(mousePitch));
-        direction.y = sin(glm::radians(mousePitch));
-        direction.z = sin(glm::radians(mouseYaw)) * cos(glm::radians(mousePitch));
-        camera.cameraFront = glm::normalize(direction);
 
-        check_window();
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        stepThrough();
         
         glBindTexture(GL_TEXTURE_2D, texture);
-//        glBindTexture(GL_TEXTURE_2D, ftex);        
-        const float cameraSpeed = moveSpeed * delta_t; // adjust accordingly
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
-            camera.cameraPos += cameraSpeed * glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z);
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
-            camera.cameraPos -= cameraSpeed * glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z);
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
-            camera.cameraPos -= glm::normalize(glm::cross( glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z), camera.cameraUp)) * cameraSpeed;
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
-            camera.cameraPos += glm::normalize(glm::cross( glm::vec3(camera.cameraFront.x, 0.f, camera.cameraFront.z), camera.cameraUp)) * cameraSpeed;
-        if(glfwGetKey(window.getWindow(), GLFW_KEY_SPACE) && force_vector.z == 0.f) {
-            force_vector.z = jumpVelocity;// m/s
-        }
-        camera.cameraPos = glm::vec3(camera.cameraPos.x, pc_z_pos, camera.cameraPos.z);
-        
-        force_vector.z -= 9.8f * delta_t;
-        pc_z_pos += force_vector.z * delta_t;
-        if(pc_z_pos < 0.f) {
-            pc_z_pos = 0.f;
-            force_vector.z = 0.f;
-        }
-        
-        camera.view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFront, camera.cameraUp);
-        
-        glUseProgram(programs.back().ID);
+
+        glUseProgram(programs.front().ID);
         
         // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(0.01f), glm::vec3(0.5f, 1.0f, 0.f));
-        int modelLoc = glGetUniformLocation(programs.back().ID, "model");
+        int modelLoc = glGetUniformLocation(programs.front().ID, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
         
-        int viewLoc = glGetUniformLocation(programs.back().ID, "view");
+        int viewLoc = glGetUniformLocation(programs.front().ID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
 
-        int projectionLoc = glGetUniformLocation(programs.back().ID, "projection");
+        int projectionLoc = glGetUniformLocation(programs.front().ID, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
 
         //The last element buffer object that gets bound while a VAO is bound gets stred as that VAO's element
@@ -297,19 +210,12 @@ void ExampleGame3D::run() {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), &vertices);
 
-        
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         
         glBindVertexArray(VAO1);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        
-        
-        // glBindTexture(GL_TEXTURE_2D, times.ftex);
-        // glUseProgram(programs.at(programs.size() - 2).ID);
-        
-        // glBindVertexArray(textVAO);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        
+
+
         glfwSwapBuffers(window.getWindow());
         glfwPollEvents();
     }  

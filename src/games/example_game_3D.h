@@ -5,12 +5,12 @@
  * Game sequence for squares.
  */
  
-#include "WorldData.h"
+#include "ExplorableSimulation.h"
 
 #ifndef EXAMPLE_GAME_3D_H
 #define EXAMPLE_GAME_3D_H
 
-class ExampleGame3D: public WorldData {
+class ExampleGame3D: public ExplorableSimulation {
 public:
     ExampleGame3D();
     ~ExampleGame3D();

@@ -120,8 +120,8 @@ int main(int argc, char **argv) {
     // SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
     // CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
     // TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
-    LightingExample lightingExample; lightingExample.run(); std::cout << "\n";
-    // ExampleGame3D target; target.run(); std::cout << "\n";
+    // LightingExample lightingExample; lightingExample.run(); std::cout << "\n";
+    ExampleGame3D target; target.run(); std::cout << "\n";
 
     // Original Creations
     // squares_original_game(); std::cout << "\n";

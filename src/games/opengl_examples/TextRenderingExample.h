@@ -5,7 +5,7 @@
 #include "ShaderStore.h"
 
 #include "glad/glad.h"
-#include "Font.h"
+#include "Text.h"
 
 //Debug
 #define debug_textured_squares
@@ -22,7 +22,8 @@ public:
         #ifdef SHADER_PATH
         std::cout << SHADER_PATH << std::endl;
         #endif
-        Font font("c:/windows/fonts/arial.ttf");
+        // Font font("c:/windows/fonts/arial.ttf");
+        Text text;
         
         ShaderStore shader;
         shader.addShader("C:\\dev\\PowerGrid\\resources\\shaders\\glyph_vertex_shader.txt", GL_VERTEX_SHADER);
@@ -49,7 +50,6 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0); 
 
-        int textColourLocation = glGetUniformLocation(program, "textColor");
         
         
         glm::mat4 projection = glm::ortho(0.f, 1000.f, 0.f, 1000.f);
@@ -63,8 +63,7 @@ public:
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            font.renderText(program, textColourLocation,
-                VAO, VBO,
+            text.renderText(
                 "Example text.", 300.0f, 470.0f, 1.0f,
                 glm::vec3(0.5, 0.2f, 0.2f));
 

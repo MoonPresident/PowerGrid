@@ -4,6 +4,7 @@
 // #include "AbstractSimulation.h"
 #include "WorldData.h"
 #include "Camera.h"
+#include "Text.h"
 
 #include "TiledFloor.h"
 
@@ -11,6 +12,7 @@ class ExplorableSimulation: public WorldData {
 public:
 
     Camera camera;
+    Text text;
     float moveSpeed;
     float jumpVelocity;
     glm::vec3 force_vector; //x, y, z
@@ -18,6 +20,8 @@ public:
 
     TiledFloor floor;
     bool floorEnabled;
+
+    char fps_string[20];
 
     ExplorableSimulation():
           floorEnabled(true)
@@ -40,6 +44,9 @@ public:
         glEnable(GL_LINE_SMOOTH);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         camera.model = glm::translate(camera.model, glm::vec3(0.f, 1.f, 0.f));
+
+        
+        sprintf(fps_string, "FPS: %i", check_fps());
     }
 
     void stepThrough() {
@@ -55,7 +62,11 @@ public:
         //Track FPS.
         auto fps = check_fps();
         //Things to be done once a second.
-        if(fps) { std::cout << "FPS: " << fps << std::endl; }
+        if(fps) { sprintf(fps_string, "FPS: %i", fps); }
+        
+        text.renderText(fps_string, 4.f, 590.f, 0.2f, glm::vec3(1.f, 1.f, 1.f));
+
+    
         float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;
         float newPitch  = getMousePitch() + getMouseOffsetY() * sensitivity;
         if(newPitch < -89.0f) newPitch = -89.f;
