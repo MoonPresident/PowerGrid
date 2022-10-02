@@ -1,11 +1,9 @@
 
 #include "AbstractSimulation.h"
 
-AbstractSimulation::AbstractSimulation() {
-}
-AbstractSimulation::~AbstractSimulation() {
-    //Nada.
-}
+AbstractSimulation::AbstractSimulation() {}
+
+AbstractSimulation::~AbstractSimulation() {}
 
 void AbstractSimulation::init_window() {
     //Set window and scale.

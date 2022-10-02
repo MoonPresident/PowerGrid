@@ -13,6 +13,8 @@ aux_source_directory("src/components" COMPONENTS_DIR)
 aux_source_directory("src/models" MODELS_DIR)
 aux_source_directory("src/games" GAMES_DIR)
 aux_source_directory("src/helpers" HELPERS_DIR)
+aux_source_directory("src/graphics" GRAPHICS_DIR)
+aux_source_directory("src/gui" GUI_DIR)
 aux_source_directory("src/games/opengl_examples" GRAPHICS_EXAMPLES_DIR)
 
 #Create Executable.
@@ -22,6 +24,8 @@ add_executable(${PROJECT_NAME}
     ${MODELS_DIR}
     ${GAMES_DIR}
     ${HELPERS_DIR}
+    ${GRAPHICS_DIR}
+    ${GUI_DIR}
     ${GRAPHICS_EXAMPLES_DIR}
 )
 
@@ -60,6 +64,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
                            "${PROJECT_SOURCE_DIR}/src/games"
                            "${PROJECT_SOURCE_DIR}/src/components"
                            "${PROJECT_SOURCE_DIR}/src/models"
+                           "${PROJECT_SOURCE_DIR}/src/gui"
+                           "${PROJECT_SOURCE_DIR}/src/graphics"
                            "${FREETYPE_PATH}/include/freetype2"
                            "${FREETYPE_PATH}/include/freetype2/freetype"
                            "${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3/include/GLFW"

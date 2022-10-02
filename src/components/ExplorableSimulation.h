@@ -64,7 +64,7 @@ public:
         //Things to be done once a second.
         if(fps) { sprintf(fps_string, "FPS: %i", fps); }
         
-        text.renderText(fps_string, 4.f, 590.f, 0.2f, glm::vec3(1.f, 1.f, 1.f));
+        text.renderText(fps_string, 0.f, 942.f, 1.f, glm::vec3(1.f, 1.f, 1.f));
 
     
         float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;
@@ -84,6 +84,7 @@ public:
         ));
 
         check_window();
+        text.setPerspective(width, height);
      
         const float cameraSpeed = moveSpeed * delta_t; // adjust accordingly
         if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS)

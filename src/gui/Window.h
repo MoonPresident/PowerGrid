@@ -42,8 +42,8 @@ public:
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         
         window = glfwCreateWindow(
-            960,
-            960,
+            INITIAL_WIDTH,
+            INITIAL_HEIGHT,
             WINDOW_TITLE,
             NULL, //glfwGetPrimaryMonitor(), //<- does fullscreen
             NULL
@@ -65,6 +65,11 @@ public:
         #ifdef debug
         std::cout << "Glad loaded." << std::endl;
         #endif
+    }
+
+    Window::~Window() {
+        glfwDestroyWindow(window);
+        glfwTerminate();
     }
     
     GLFWwindow* getWindow() {

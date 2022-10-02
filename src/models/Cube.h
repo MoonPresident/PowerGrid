@@ -90,6 +90,7 @@ public:
     void draw() {
         glUseProgram(shader.ID);
         glBindVertexArray(vao);
+        glBindTexture(GL_TEXTURE_2D, tex);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 };

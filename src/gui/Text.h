@@ -3,6 +3,7 @@
 
 #include "Font.h"
 #include "glm.hpp"
+//TODO: Add setfont function
 
 class Text {
 private:
@@ -39,12 +40,15 @@ public:
 
     void setPerspective(int width, int height) {
         int projectionL = glGetUniformLocation(textShader.ID, "projection");
-        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
+        glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(height), 0.0f, static_cast<float>(width));
         glUseProgram(textShader.ID);
         glUniformMatrix4fv(projectionL, 1, GL_FALSE, glm::value_ptr(projection));
+        
     }
 
 
+    //TODO:
+    //void renderMultiline
 
     void renderText(std::string text, 
                     float x, float y, float scale, 
@@ -67,7 +71,10 @@ public:
 
             float xpos = x + ch.Bearing.x * scale;
             float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-
+            if(i == 0) {
+                i++;
+                std::cout << "W: " << ch.Size.x << ", H: " << (ch.Size.y) << "\n";
+            }
             float w = ch.Size.x * scale;
             float h = ch.Size.y * scale;
             // update VBO for each character

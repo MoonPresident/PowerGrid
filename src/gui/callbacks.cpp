@@ -18,7 +18,7 @@ void basic_error_callback(int error, const char* description){
 
 void close_on_unfocus(GLFWwindow* window, int focused) {
     if(!focused) {
-        glfwSetWindowShouldClose(window, 1);
+        // glfwSetWindowShouldClose(window, 1);
     }
 }
 

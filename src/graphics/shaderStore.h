@@ -26,12 +26,8 @@ public:
     void addShader(std::string shaderPath, GLenum shaderType); 
     void deleteAll();
     void attachAll(GLuint program);
-    
-    // GLuint loadShader(const char* shader_path);
-    
     void linkProgram(GLuint programId);
 };
-
 
 struct Program {
     GLuint ID;
@@ -39,8 +35,6 @@ struct Program {
     ShaderStore shaderStore;
 };
 
-
 std::vector<Program> loadPrograms();
-//std::vector<Program> loadPrograms(const char* index_path);
 
 #endif /* SHADER_STORE_H */

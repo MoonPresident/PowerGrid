@@ -12,6 +12,8 @@
 
 #include "Shader.h"
 
+#include "Cube.h"
+
 // #ifndef STB_IMAGE_IMPLEMENTATION
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "stb_image.h"
@@ -84,7 +86,6 @@ ExampleGame3D::~ExampleGame3D() {}
 void ExampleGame3D::run() {
     floorEnabled = false;
     initExplorableSimulation();
-    std::cout << "Starting..." << std::endl;
     GLuint VAO, VBO, VAO1, VBO1, EBO, EBO1;
 
     float moveSpeed = 5.f;
@@ -93,6 +94,21 @@ void ExampleGame3D::run() {
     const char* vertShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\transform_3d_vertex_shader.txt";
     const char* fragShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_fragment_shader.txt";
     std::vector<Shader> programs = { Shader(vertShaderPath, fragShaderPath) };
+    
+    Cube cub;
+    glm::mat4 mod = glm::mat4(1.0f);
+    mod = glm::translate(mod, glm::vec3(1.f, 1.f, 1.f));
+    mod = glm::rotate(mod, glm::radians(45.f), glm::vec3(0.f, 1.f, 0.f));
+    glUseProgram(cub.shader.ID);
+    int mLoc = glGetUniformLocation(cub.shader.ID, "model");
+    int vLoc = glGetUniformLocation(cub.shader.ID, "view");
+    int pLoc = glGetUniformLocation(cub.shader.ID, "projection");
+    int ambientLightLoc = glGetUniformLocation(cub.shader.ID, "ambientLight");
+    int colorLoc = glGetUniformLocation(cub.shader.ID, "colorIn");
+    int offsetLoc = glGetUniformLocation(cub.shader.ID, "aOffset");
+    int lightPosLoc = glGetUniformLocation(cub.shader.ID, "lightPos");
+    int lightColorLoc = glGetUniformLocation(cub.shader.ID, "lightColor");
+    int viewPosLoc = glGetUniformLocation(cub.shader.ID, "viewPos");
     
 
     /**
@@ -196,12 +212,10 @@ void ExampleGame3D::run() {
         
         // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(0.01f), glm::vec3(0.5f, 1.0f, 0.f));
         int modelLoc = glGetUniformLocation(programs.front().ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
-        
         int viewLoc = glGetUniformLocation(programs.front().ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
-
         int projectionLoc = glGetUniformLocation(programs.front().ID, "projection");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
 
         //The last element buffer object that gets bound while a VAO is bound gets stred as that VAO's element
@@ -214,6 +228,18 @@ void ExampleGame3D::run() {
         
         glBindVertexArray(VAO1);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glUseProgram(cub.shader.ID);
+        glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(mod));
+        glUniformMatrix4fv(vLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
+        glUniformMatrix4fv(pLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
+        glUniform1f(ambientLightLoc, 0.1f);
+        glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
+        glUniform3fv(offsetLoc, 1, glm::value_ptr(glm::vec3(0.f, 0.f, 0.f)));
+        glUniform3fv(lightPosLoc, 1, glm::value_ptr(glm::vec3(1.2, 1.f, 2.f)));
+        glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(1.f, 1.f, 1.0f)));
+        glUniform3fv(viewPosLoc, 1, glm::value_ptr(camera.cameraPos));
+        cub.draw();
 
 
         glfwSwapBuffers(window.getWindow());
