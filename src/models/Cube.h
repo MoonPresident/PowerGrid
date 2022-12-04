@@ -83,7 +83,8 @@ public:
 
         
         TextureFactory texFactory;
-        tex = texFactory.getTexture("C:\\dev\\PowerGrid\\src\\games\\opengl_examples\\fish_eyes.jpg");
+        std::cout << "GRABBING FROM \"resources\"\n";
+        tex = texFactory.getTexture("resources\\textures\\stock_images\\fish_eyes.jpg");
         glBindTexture(GL_TEXTURE_2D, tex);
     }
 

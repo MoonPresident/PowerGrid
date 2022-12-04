@@ -1,4 +1,9 @@
-
+/**
+ * Author: MoonPresident
+ * Date: November 30th 2022
+ * 
+ * Short term memory for logging. Might enhance later with logging to a text document.
+ */
 
 
 #ifndef TERMINAL_H
@@ -7,47 +12,18 @@
 #include "Text.h"
 #include <vector>
 
+const int lineSize = 128;
+const int maxIndex = 1000;
+
 class Terminal {
 public:
     Text text;
-    
     std::vector<std::string> textLines;
     int index;
     bool wrapped;
 
-    Terminal():
-        wrapped(false),
-        index(0)
-     {
-        //Set up terminal
-        textLines.reserve(1000);
-    }
-
-    ~Terminal() {
-        textLines.clear();
-    }
-
-    void log(const char* newLine) {
-        //Redraw including and update to the logs.
-        std::string line(newLine);
-        if(line.size() > 1000) {
-            line = line.substr(1000);
-        }
-        textLines[index++] = line;
-        if(index >= maxIndex) {
-            index = 0;
-            wrapped = true;
-        }
-    }
-
-    void draw() {
-        //Draw.
-        
-
-        //Handle height
-        //handle scroll? Maybe.
-        text.renderText();
-    }
+    void log(const char* newLine);
+    void draw();
 };
 
 #endif /* TERMINAL_H */

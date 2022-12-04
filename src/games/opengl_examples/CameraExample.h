@@ -138,7 +138,7 @@ public:
         shader.linkProgram(program);
         
         TextureFactory texFactory;
-        GLuint tex = texFactory.getTexture("C:\\dev\\PowerGrid\\src\\games\\opengl_examples\\fish_eyes.jpg");
+        GLuint tex = texFactory.getTexture(".\\resources\\textures\\stock_images\\fish_eyes.jpg");
         glBindTexture(GL_TEXTURE_2D, tex);
         
         float x_off[2] = {0.f, -1.};

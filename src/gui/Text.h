@@ -43,13 +43,14 @@ public:
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(height), 0.0f, static_cast<float>(width));
         glUseProgram(textShader.ID);
         glUniformMatrix4fv(projectionL, 1, GL_FALSE, glm::value_ptr(projection));
-        
     }
 
 
     //TODO:
     //void renderMultiline
-
+    
+    //TODO: Gives options on rendering from the top or the bottom, from the left or the right.
+    //Alignment options I suppose.
     void renderText(std::string text, 
                     float x, float y, float scale, 
                     glm::vec3 color)
@@ -63,18 +64,12 @@ public:
         
         // iterate through all characters
         std::string::const_iterator c;
-        int i = 0;
         for (c = text.begin(); c != text.end(); c++)
         {
-            
             Font::Character ch = font.Characters[*c];
 
             float xpos = x + ch.Bearing.x * scale;
             float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-            if(i == 0) {
-                i++;
-                std::cout << "W: " << ch.Size.x << ", H: " << (ch.Size.y) << "\n";
-            }
             float w = ch.Size.x * scale;
             float h = ch.Size.y * scale;
             // update VBO for each character
@@ -86,6 +81,7 @@ public:
                 { xpos + w, ypos,       1.0f, 1.0f },
                 { xpos + w, ypos + h,   1.0f, 0.0f }           
             };
+
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
             // update content of VBO memory

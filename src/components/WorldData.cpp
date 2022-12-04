@@ -1,5 +1,3 @@
-    
-    
 #include "WorldData.h"
 #include <iostream>
 
