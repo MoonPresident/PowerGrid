@@ -64,7 +64,7 @@ public:
         //Things to be done once a second.
         if(fps) { sprintf(fps_string, "FPS: %i", fps); }
         
-        text.renderText(fps_string, 0.f, 942.f, 1.f, glm::vec3(1.f, 1.f, 1.f));
+        text.renderText(fps_string, 0.f, 925.f, 0.5f, glm::vec3(1.f, 1.f, 1.f));
 
     
         float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;

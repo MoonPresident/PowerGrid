@@ -17,8 +17,6 @@
 #include "glfw3.h"
 #include "glm.hpp"
 
-#include "DisplayObject.h"
-
 #include "AbstractSimulation.h"
 
 using namespace std::chrono;

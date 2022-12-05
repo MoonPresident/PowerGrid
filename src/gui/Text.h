@@ -2,7 +2,9 @@
 #define TEXT_H
 
 #include "Font.h"
-#include "glm.hpp"
+// #include "glm.hpp"
+// #include "ext.hpp"
+#include "Shader.h"
 //TODO: Add setfont function
 
 class Text {
