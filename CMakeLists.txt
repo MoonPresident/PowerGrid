@@ -6,8 +6,6 @@ project(PowerGrid VERSION 1.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-
-
 #TODO: Change this when I decide to actually use a safe implementation.
 aux_source_directory("src/components" COMPONENTS_DIR)
 aux_source_directory("src/models" MODELS_DIR)
@@ -36,6 +34,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC "${FREETYPE_PATH}/lib/freetyped.lib
 
 #Get prebuilt packages first
 find_package(OpenGL REQUIRED)
+
+##GLM Stuff
+#FindPackage Module path:
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmakeFinders/")
+# find_package(GLM REQUIRED)
+# target_link_libraries(${PROJECT_NAME} PUBLIC GLM)
 
 #GLFW config
 add_subdirectory("${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3" "${PROJECT_BINARY_DIR}/dep-builds/glfw")

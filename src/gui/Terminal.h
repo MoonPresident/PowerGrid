@@ -17,22 +17,22 @@ const int maxIndex = 1000;
 
 class Terminal {
 public:
-//     // Text text;
-//     std::vector<std::string> textLines;
-//     int index;
-//     bool wrapped;
-//     bool isVisible;
+    Text text;
+    std::vector<std::string> textLines;
+    int index;
+    bool wrapped;
+    bool isVisible;
 
-//     unsigned int backgroundVAO, backgroundVBO;
+    unsigned int backgroundVAO, backgroundVBO;
 
-//     //Graphical elements
-//     Shader backgroundShader;
+    //Graphical elements
+    Shader backgroundShader;
 
-//     Terminal();
-//     ~Terminal();
+    Terminal();
+    ~Terminal();
 
-//     void log(const char* newLine);
-//     void draw();
+    void log(const char* newLine);
+    void draw();
 };
 
 #endif /* TERMINAL_H */

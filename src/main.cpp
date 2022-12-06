@@ -85,6 +85,7 @@ using namespace std::chrono;
 //  Bullets shooting, object addition implemented.
 //  Passing lifecycle and movement behaviour around as std::functions.
 //  Print Character Bitmaps
+//  Good text rendering from a TTF.
 
 //NEXT STEP:
 //  Implement a Resource Manager
@@ -94,11 +95,19 @@ using namespace std::chrono;
 
 //  Get a menu going.
 
+// Convert everything to h and cpp instead of header only.
+
 //  Engine makes the actual game take years to design. This was expected, but jesus.
 //  Get Terminal Working
 //  Get an input interface
 //  Work out model for state machine
 
+
+// glm stuff:
+//These are other important includes for when it goes nutty.
+// #include <gtc/matrix_transform.hpp>
+// #include <gtc/type_ptr.hpp>
+// #include <ext.hpp>
 
 /**
  * @brief Main function for Powergrid program
