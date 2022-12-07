@@ -1,9 +1,4 @@
-
-
-#ifndef DEBUG_H
-#define DEBUG_H
-
-#include <iostream>
+#include "my_debug.h"
 #include "callbacks.h"
 // GL_NO_ERROR 	                        0 	    No user error reported since the last call to glGetError.
 // GL_INVALID_ENUM 	                    1280 	Set when an enumeration parameter is not legal.
@@ -27,8 +22,3 @@ void check_error() {
     default:        std::cout << "GL_NO_ERROR\n";
     }
 }
-
-// #define check_error() ( << "ERROR: " (glGetError()) << "\n")
-#define check_error_prefixed(prefix) (std::cout << prefix; check_error())
-
-#endif /* DEBUG_H */

@@ -84,7 +84,7 @@ public:
         
         TextureFactory texFactory;
         std::cout << "GRABBING FROM \"resources\"\n";
-        tex = texFactory.getTexture("C:/dev/PowerGrid/resources/textures/stock_images/fish_eyes.jpg");
+        tex = texFactory.getTexture("C:\\dev\\PowerGrid\\resources\\textures\\stock_images\\fish_eyes.jpg");
         glBindTexture(GL_TEXTURE_2D, tex);
     }
 

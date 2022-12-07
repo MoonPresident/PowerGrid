@@ -36,6 +36,7 @@ public:
 
 
             if(glfwGetKey(window.getWindow(), GLFW_KEY_SPACE) != GLFW_PRESS) {
+                //This is not working because the lower level function now clears the buffer first.
                 // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
@@ -54,7 +55,7 @@ public:
             lModel = glm::translate(lModel, lightPos);
 
             GLint program = cube.shader.ID;
-            glm::vec3 lightColor(1.f, 1.f, 1.0f);
+            glm::vec3 lightColor(0.5f, 0.f, 1.0f);
             glUseProgram(program);
             int modelLoc = glGetUniformLocation(program, "model");
             int viewLoc = glGetUniformLocation(program, "view");
@@ -71,7 +72,7 @@ public:
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
             glUniform1f(ambientLightLoc, 0.1f);
-            glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
+            glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 0.f, 1.f)));
             glUniform3fv(offsetLoc, 1, glm::value_ptr(glm::vec3(0.f, 0.f, 0.f)));
             glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
             glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
@@ -93,6 +94,8 @@ public:
             glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
             glUniform3fv(offsetLoc, 1, glm::value_ptr(glm::vec3(10.f, 0.f, 0.f)));
             light.draw();
+
+            finalFunctions();
 
             glfwSwapBuffers(window.getWindow());
             glfwPollEvents();

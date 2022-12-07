@@ -43,6 +43,7 @@ public:
         glEnable(GL_BLEND);
         glEnable(GL_LINE_SMOOTH);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
         camera.model = glm::translate(camera.model, glm::vec3(0.f, 1.f, 0.f));
 
         
@@ -114,6 +115,10 @@ public:
             floor.setAmbientLight(1.f);
             floor.draw();
         }
+    }
+
+    void finalFunctions() {
+        terminal.draw();
     }
 };
 

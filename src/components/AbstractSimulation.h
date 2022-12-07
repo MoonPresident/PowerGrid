@@ -12,6 +12,8 @@
 #include "glfw3.h"
 #include "glm.hpp"
 
+#include "Terminal.h"
+
 class AbstractSimulation {
 public:
 //    float mouseYaw;
@@ -40,6 +42,7 @@ public:
 //    
     //Window information
     Window window;
+    Terminal terminal;
     int width;
     int height;
     
@@ -60,6 +63,9 @@ public:
     
     AbstractSimulation();
     virtual ~AbstractSimulation();
+
+    void log(const char* text);
+    void log(std::string text);
     
 //    void calculate_timestep();
     
