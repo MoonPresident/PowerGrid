@@ -5,8 +5,7 @@
 #include <math.h>
 
 /**
- * @brief Initialise the data about the world.
- * @return 
+ * @brief constructor
  */
 WorldData::WorldData() {
     //Set up time step and fps timestamp
@@ -20,12 +19,15 @@ WorldData::WorldData() {
     sensitivity = 0.1f;
 };
 
+/**
+ * @brief destructor
+ */
 WorldData::~WorldData() {
     glDeleteBuffers(1, &worldVAO);
 };
 
 /**
- * @brief Set the World Data
+ * @brief Set current time stamp
  */
 void WorldData::set_timer() {
     current_timestamp = steady_clock::now();

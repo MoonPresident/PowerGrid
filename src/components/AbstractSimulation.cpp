@@ -41,3 +41,9 @@ void AbstractSimulation::log(const char* text) {
 void AbstractSimulation::log(std::string text) {
     log(text.c_str());
 }
+
+void AbstractSimulation::handleKeyboardInput() {
+    if(glfwGetKey(window.getWindow(), GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS) {
+        terminal.toggleVisible();
+    }
+}

@@ -43,6 +43,7 @@ public:
     //Window information
     Window window;
     Terminal terminal;
+    //Camera camera;
     int width;
     int height;
     
@@ -66,6 +67,8 @@ public:
 
     void log(const char* text);
     void log(std::string text);
+
+    void handleKeyboardInput();
     
 //    void calculate_timestep();
     

@@ -20,4 +20,5 @@ public:
     Window();
     Window::~Window();
     GLFWwindow* getWindow();
+    // void handleInputs();
 };

@@ -40,10 +40,13 @@ void general_keyboard_callback(
         int action, 
         int mods
 ) {
-    
     #if defined debug_all || defined debug_mouse
     std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
     std::cout << "Action: " << action << ", mods: " << mods << std::endl;
+
+    const char* keyname = glfwGetKeyName(key, scancode);
+    if(keyname == null)
+        std::cout << keyname << "\n";
     #endif
 }
 

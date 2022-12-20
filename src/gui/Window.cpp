@@ -1,10 +1,12 @@
 #include "Window.h"
 
 Window::Window() {
+    //TODO relocate.
     srand(time(NULL));
     resetLeftClickFlag();
     resetRightClickFlag();
     setScrollFlag(10);
+    //END TODO
     
     if (!glfwInit()) exit(EXIT_FAILURE);
     

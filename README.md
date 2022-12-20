@@ -13,3 +13,6 @@ This is a test document for a Git readme.
 * Consider dividing low level code up into Visual elements and Logic elements.
 * Remove all hardcoded paths for shaders and textures. (Note, this appears trivial, but is not actually trivial, it requires some thought.)
 * Make a fallback texture for a failed texture call that says something like "uWu u dwid a fwucky wucky"
+* Make button and slider on gui.
+* Consider usung Conan
+* Develop install packaging, test on new dev machine

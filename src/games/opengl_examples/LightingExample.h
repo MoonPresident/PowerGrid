@@ -18,14 +18,12 @@ public:
         );
         floorEnabled = false;
 
+        glm::mat4 cubeModel = glm::mat4(1.0f);
+        glm::vec3 cubeOffset = glm::vec3(8.f, 2.f, 8.f);
+        glm::vec3 cubeScale = glm::vec3(4.f, 4.f, 4.f);
+        cubeModel = glm::translate(cubeModel, cubeOffset);
+        cubeModel = glm::scale(cubeModel, cubeScale);
 
-        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-        float x_off = 8.f;
-        float y_off = 2.f;
-        float z_off = 8.f;
         int x_dir = 1;
         int y_dir = 1;
 
@@ -44,10 +42,10 @@ public:
 
             glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f); 
 
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(x_off, y_off, z_off));
-            model = glm::scale(model, glm::vec3(4.f, 4.f, 4.f));
-            model = glm::rotate(model, (float) glfwGetTime() * glm::radians(60.f), glm::vec3(0.5f, 1.f, 0.f));
+            //Scaling and offset are permanent so do them outside of the loop.
+            // cubeModel = glm::translate(cubeModel, cubeOffset);
+            // cubeModel = glm::scale(cubeModel, cubeScale);
+            glm::mat4 model = glm::rotate(cubeModel, (float) glfwGetTime() * glm::radians(60.f), glm::vec3(0.5f, 1.f, 0.f));
 
             glm::vec3 lightPos(1.2, 1.f, 2.f);
             glm::mat4 lModel = glm::mat4(1.0f);
@@ -72,7 +70,7 @@ public:
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
             glUniform1f(ambientLightLoc, 0.1f);
-            glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 0.f, 1.f)));
+            glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(1.f, 1.f, 1.f, 1.f)));
             glUniform3fv(offsetLoc, 1, glm::value_ptr(glm::vec3(0.f, 0.f, 0.f)));
             glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
             glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));

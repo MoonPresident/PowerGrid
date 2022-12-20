@@ -43,6 +43,7 @@ public:
         glEnable(GL_BLEND);
         glEnable(GL_LINE_SMOOTH);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
         glEnable(GL_LINE_SMOOTH);
         camera.model = glm::translate(camera.model, glm::vec3(0.f, 1.f, 0.f));
 
@@ -51,11 +52,14 @@ public:
     }
 
     void stepThrough() {
+        // glFinish();
+
         //Trigger new timestep
         calculate_timestep();
         
         float delta_t = get_delta_t()  / 1000000.f;
         // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         scale_factor = (float) getScrollFlag() * 0.1f;
@@ -64,8 +68,6 @@ public:
         auto fps = check_fps();
         //Things to be done once a second.
         if(fps) { sprintf(fps_string, "FPS: %i", fps); }
-        
-        text.renderText(fps_string, 0.f, 925.f, 0.5f, glm::vec3(1.f, 1.f, 1.f));
 
     
         float newYaw    = getMouseYaw() - getMouseOffsetX() * sensitivity;
@@ -115,9 +117,12 @@ public:
             floor.setAmbientLight(1.f);
             floor.draw();
         }
-    }
+
+        handleKeyboardInput();
+    }   
 
     void finalFunctions() {
+        text.renderText(fps_string, 0.f, 925.f, 0.5f, glm::vec3(1.f, 1.f, 1.f));
         terminal.draw();
     }
 };
