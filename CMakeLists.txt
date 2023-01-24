@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17)
 project(PowerGrid VERSION 1.0)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #TODO: Change this when I decide to actually use a safe implementation.
@@ -13,6 +13,7 @@ aux_source_directory("src/games" GAMES_DIR)
 aux_source_directory("src/helpers" HELPERS_DIR)
 aux_source_directory("src/graphics" GRAPHICS_DIR)
 aux_source_directory("src/gui" GUI_DIR)
+aux_source_directory("src/inputs" INPUTS_DIR)
 aux_source_directory("src/games/opengl_examples" GRAPHICS_EXAMPLES_DIR)
 
 #Create Executable.
@@ -24,6 +25,7 @@ add_executable(${PROJECT_NAME}
     ${HELPERS_DIR}
     ${GRAPHICS_DIR}
     ${GUI_DIR}
+    ${INPUTS_DIR}
     ${GRAPHICS_EXAMPLES_DIR}
 )
 
@@ -69,6 +71,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
                            "${PROJECT_SOURCE_DIR}/src/components"
                            "${PROJECT_SOURCE_DIR}/src/models"
                            "${PROJECT_SOURCE_DIR}/src/gui"
+                           "${PROJECT_SOURCE_DIR}/src/inputs"
                            "${PROJECT_SOURCE_DIR}/src/graphics"
                            "${FREETYPE_PATH}/include/freetype2"
                            "${FREETYPE_PATH}/include/freetype2/freetype"

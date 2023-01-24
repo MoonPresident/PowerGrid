@@ -35,7 +35,6 @@ void AbstractSimulation::check_window() {
 
 void AbstractSimulation::log(const char* text) {
     terminal.log(text);
-    // system.log();
 }
 
 void AbstractSimulation::log(std::string text) {
