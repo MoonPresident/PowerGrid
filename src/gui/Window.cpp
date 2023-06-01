@@ -1,4 +1,27 @@
+/**
+ * @file Window.cpp
+ * @author MoonPresident
+ * @date December 21st 2022
+ * 
+ * Window for simulation
+ */
+
 #include "Window.h"
+
+#include "callbacks.h"
+#include "my_debug.h"
+
+#include <iostream>
+#include <time.h>
+
+//Initial setup for window.
+#define WINDOW_TITLE "PowerGrid"
+enum INITIAL {
+    WIDTH = 960,
+    HEIGHT = 960,
+    X_OFF = 800,
+    Y_OFF = 50
+};
 
 Window::Window() {
     //TODO relocate.
@@ -26,14 +49,14 @@ Window::Window() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     
     window = glfwCreateWindow(
-        INITIAL_WIDTH,
-        INITIAL_HEIGHT,
+        INITIAL::WIDTH,
+        INITIAL::HEIGHT,
         WINDOW_TITLE,
-        NULL, //glfwGetPrimaryMonitor(), //<- does fullscreen
-        NULL
+        nullptr, //glfwGetPrimaryMonitor(), //<- does fullscreen
+        nullptr
     );
     
-    glfwSetWindowPos(window, INITIAL_X_OFF, INITIAL_Y_OFF);
+    glfwSetWindowPos(window, INITIAL::X_OFF, INITIAL::Y_OFF);
     if(!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);

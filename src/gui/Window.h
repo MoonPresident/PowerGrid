@@ -1,16 +1,14 @@
-#include "callbacks.h"
-#include "my_debug.h"
+/**
+ * @file Window.h
+ * @author MoonPresident
+ * @date December 21st 2022
+ * 
+ * Window for simulation
+ */
 
-#include <iostream>
+#ifndef WINDOW_H
 
-//Initial setup for window.
-#define WINDOW_TITLE "PowerGrid"
-#define INITIAL_WIDTH 960
-#define INITIAL_HEIGHT INITIAL_WIDTH
-#define INITIAL_X_OFF 800
-#define INITIAL_Y_OFF 50
-
-#define debug
+struct GLFWwindow;
 
 //TODO: Abstract callback information and put it into its own class.
 class Window {
@@ -18,7 +16,9 @@ private:
     GLFWwindow* window;
 public:
     Window();
-    Window::~Window();
+    ~Window();
     GLFWwindow* getWindow();
     // void handleInputs();
 };
+
+#endif /* WINDOW */

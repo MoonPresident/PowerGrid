@@ -1,0 +1,7 @@
+[submodule "Dependencies/freetype"]
+	path = Dependencies/freetype
+	url = https://github.com/freetype/freetype.git
+
+[submodule "Dependencies/glfw"]
+	path = Dependencies/glfw
+	url = https://github.com/glfw/glfw.git

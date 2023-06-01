@@ -68,7 +68,7 @@ void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int m
     }
 }
 
-int getLeftClickFlag() {
+auto getLeftClickFlag() -> int {
     return leftClickFlag;
 }
 
@@ -76,7 +76,7 @@ void resetLeftClickFlag() {
     leftClickFlag = 0;
 }
 
-int getRightClickFlag() {
+auto getRightClickFlag() -> int {
     return rightClickFlag;
 }
 
@@ -87,7 +87,7 @@ void resetRightClickFlag() {
 
 int scrollFlag;
 
-int getScrollFlag() {
+auto getScrollFlag() -> int {
     return scrollFlag;
 }
 
@@ -113,10 +113,10 @@ double mouseOffsetY;
 double mouseLastX;
 double mouseLastY;
 
-double getMouseOffsetX()   { return mouseOffsetX; };
-double getMouseOffsetY()   { return mouseOffsetY; };
-double getMouseLastX()     { return mouseLastX; };
-double getMouseLastY()     { return mouseLastY; };
+auto getMouseOffsetX() -> double   { return mouseOffsetX; };
+auto getMouseOffsetY() -> double   { return mouseOffsetY; };
+auto getMouseLastX() -> double     { return mouseLastX; };
+auto getMouseLastY() -> double     { return mouseLastY; };
 
 void setMouseOffsetX(double _x)    { mouseOffsetX  = _x; };
 void setMouseOffsetY(double _y)    { mouseOffsetY  = _y; };

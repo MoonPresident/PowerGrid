@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 3.17)
 project(PowerGrid VERSION 1.0)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+list(APPEND CMAKE_MODULE_PATH "C:/dev-tools//freetype-2.13.0")
 
 #TODO: Change this when I decide to actually use a safe implementation.
 aux_source_directory("src/components" COMPONENTS_DIR)
@@ -29,10 +31,20 @@ add_executable(${PROJECT_NAME}
     ${GRAPHICS_EXAMPLES_DIR}
 )
 
+find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*")
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+
+
 #FreeType
-# set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/freetype/lib/cmake/freetype")
-set(FREETYPE_PATH "C:/Program Files (x86)/freetype")
-target_link_libraries(${PROJECT_NAME} PUBLIC "${FREETYPE_PATH}/lib/freetyped.lib")
+set(FREETYPE_DIRECTORY Dependencies/freetype-2.13.0)
+add_subdirectory(${FREETYPE_DIRECTORY})
+# find_package(Freetype REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_DIRECTORY}/include ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC freetype)
+
+message(DEBUG ${FREETYPE_LIBRARY})
+message(DEBUG ${FREETYPE_INCLUDE_DIRS})
 
 #Get prebuilt packages first
 find_package(OpenGL REQUIRED)
@@ -43,42 +55,47 @@ find_package(OpenGL REQUIRED)
 # find_package(GLM REQUIRED)
 # target_link_libraries(${PROJECT_NAME} PUBLIC GLM)
 
-#GLFW config
-add_subdirectory("${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3" "${PROJECT_BINARY_DIR}/dep-builds/glfw")
-
-set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
+#GLFW config and GLAD Library
+# set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-set(GLFW_LIB_PATH "${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug/")
+add_subdirectory(${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3)# ${PROJECT_BINARY_DIR}/dep-builds/glfw)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
+
+
+set(GLFW_LIB_PATH "${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug")
+
+add_subdirectory(Dependencies/glad/)
+add_library(GLAD STATIC "Dependencies/GLAD/src/glad.c" "Dependencies/GLAD/include/glad/glad.h")
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${GLFW_LIB_PATH}")
-target_link_libraries(${PROJECT_NAME} PUBLIC "${GLFW_LIB_PATH}/glfw3.lib")
-target_link_libraries(${PROJECT_NAME} PUBLIC OpenGL::GL)
-
-#GLAD Library
-add_library(GLAD STATIC "Dependencies/GLAD/src/glad.c" "Dependencies/GLAD/include/glad/glad.h" "${GLFW_LIB_PATH}/glfw3.lib")
 target_include_directories(GLAD PRIVATE "${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include" "${GLFW_LIB_PATH}")
-target_link_libraries(${PROJECT_NAME} PUBLIC GLAD)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC OpenGL::GL GLAD)
 
 #include header files.
-target_include_directories(${PROJECT_NAME} PUBLIC
-                           "${PROJECT_BINARY_DIR}"
-                           "${PROJECT_SOURCE_DIR}/src"
-                           "${PROJECT_SOURCE_DIR}/src/helpers"
-                           "${PROJECT_SOURCE_DIR}/src/games"
-                           "${PROJECT_SOURCE_DIR}/src/components"
-                           "${PROJECT_SOURCE_DIR}/src/models"
-                           "${PROJECT_SOURCE_DIR}/src/gui"
-                           "${PROJECT_SOURCE_DIR}/src/inputs"
-                           "${PROJECT_SOURCE_DIR}/src/graphics"
-                           "${FREETYPE_PATH}/include/freetype2"
-                           "${FREETYPE_PATH}/include/freetype2/freetype"
-                           "${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3/include/GLFW"
-                           "C:/dev-builds/PowerGrid/dep-builds/glfw/src/Debug/"
-                           "${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include"
-                           "${PROJECT_SOURCE_DIR}/Dependencies/glm-stable/glm"
-                           "${PROJECT_SOURCE_DIR}/Dependencies/stb-master"
-                           "${FREETYPE_INCLUDE_DIRS}"
-                           )
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+        "${PROJECT_BINARY_DIR}"
+        "${PROJECT_SOURCE_DIR}/src"
+        "${PROJECT_SOURCE_DIR}/src/helpers"
+        "${PROJECT_SOURCE_DIR}/src/games"
+        "${PROJECT_SOURCE_DIR}/src/components"
+        "${PROJECT_SOURCE_DIR}/src/models"
+        "${PROJECT_SOURCE_DIR}/src/gui"
+        "${PROJECT_SOURCE_DIR}/src/inputs"
+        "${PROJECT_SOURCE_DIR}/src/graphics"
+        "${FREETYPE_PATH}/include/freetype2"
+        "${FREETYPE_PATH}/include/freetype2/freetype"
+        "${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3/include/GLFW"
+        ${FREETYPE_DIRECTORY}/include
+        ${FREETYPE_DIRECTORY}/include/freetype
+        ${FREETYPE_INCLUDE_DIRS}
+        "${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug/"
+        "${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include"
+        "${PROJECT_SOURCE_DIR}/Dependencies/glm-stable/glm"
+        "${PROJECT_SOURCE_DIR}/Dependencies/stb-master"
+        "${FREETYPE_INCLUDE_DIRS}"
+)

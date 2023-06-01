@@ -34,7 +34,7 @@ class MessageBus {
         auto it = subscriberMapping.find(messageType);
         if (it == subscriberMapping.end()) {
             std::vector<Subscriber> newSubscriptionService();
-            subscriberMapping.insert({messageType, newSubscriptionService});
+            subscriberMapping.emplace_back({messageType, newSubscriptionService});
         }
     }
 
