@@ -37,7 +37,7 @@ void WorldData::set_timer() {
  * @brief Calculate timestep.
  * @return Timestep
  */
-int WorldData::get_delta_t() {
+auto WorldData::get_delta_t() -> int {
     previous_timestamp = current_timestamp;
     current_timestamp = steady_clock::now();
     
@@ -49,7 +49,7 @@ int WorldData::get_delta_t() {
  * @brief Triggers fps handling
  * @return fps if its available, 0 otherwise.
  */
-int WorldData::check_fps() {
+auto WorldData::check_fps() -> int {
     auto delta_fps = duration_cast<seconds>(current_timestamp - fps_timestamp).count();
     auto fps_output = 0;
     
@@ -82,7 +82,7 @@ void WorldData::getCursorPosition() {
  * @return 
  */
 //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-float WorldData::getBearingToCursor(float location[]) {
+auto WorldData::getBearingToCursor(float location[]) -> float {
     float x_span = cursor_position[1] + location[1] * x_scale;
     float y_span = cursor_position[0] - location[0] * y_scale;
     
@@ -92,7 +92,7 @@ float WorldData::getBearingToCursor(float location[]) {
 
 
 
-float WorldData::getBearing2D(float source[], float target[]) {
+auto WorldData::getBearing2D(float source[], float target[]) -> float {
     float x_span = 0 - (target[1] - source[1]) * x_scale;
     float y_span = (target[0] - source[0]) * y_scale;
     
@@ -120,10 +120,10 @@ void WorldData::setMousePitch(float _y) {
     mousePitch = _y;
 }
 
-float WorldData::getMouseYaw() {
+auto WorldData::getMouseYaw() -> float {
     return mouseYaw;
 }
 
-float WorldData::getMousePitch() {
+auto WorldData::getMousePitch() -> float {
     return mousePitch;
 }

@@ -37,7 +37,7 @@ void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
         );
         
         const char* shaderSource = fileContents.c_str();
-        glShaderSource(shader, 1, &shaderSource, NULL);
+        glShaderSource(shader, 1, &shaderSource, nullptr);
         glCompileShader(shader);
         
         
@@ -47,7 +47,7 @@ void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
         std::cout << "Compilation: " << success << " for shader " << shader << std::endl;
         if(!success) {
             char infoLog[512];
-            glGetShaderInfoLog(shader, 512, NULL, infoLog);
+            glGetShaderInfoLog(shader, 512, nullptr, infoLog);
             std::cout <<"ERROR COMPILING SHADER " << shader << ": " << infoLog << std::endl;
         }
         #endif
@@ -66,7 +66,7 @@ void ShaderStore::linkProgram(GLuint program) {
     std::cout << "Compilation: " << success << " for program " << program << std::endl;
     if(!success) {
         char infoLog[512];
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        glGetProgramInfoLog(program, 512, nullptr, infoLog);
         std::cout <<"ERROR COMPILING PROGRAM " << program << ": " << infoLog << std::endl;
     }
     #endif

@@ -25,7 +25,7 @@ enum INITIAL {
 
 Window::Window() {
     //TODO relocate.
-    srand(time(NULL));
+    srand(time(nullptr));
     resetLeftClickFlag();
     resetRightClickFlag();
     setScrollFlag(10);
@@ -79,6 +79,6 @@ Window::~Window() {
     glfwTerminate();
 }
 
-GLFWwindow* Window::getWindow() {
+auto Window::getWindow() -> GLFWwindow* {
     return window;
 }

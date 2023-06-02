@@ -6,8 +6,6 @@ project(PowerGrid VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-list(APPEND CMAKE_MODULE_PATH "C:/dev-tools//freetype-2.13.0")
-
 #TODO: Change this when I decide to actually use a safe implementation.
 aux_source_directory("src/components" COMPONENTS_DIR)
 aux_source_directory("src/models" MODELS_DIR)
@@ -37,9 +35,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_CO
 
 
 #FreeType
-set(FREETYPE_DIRECTORY Dependencies/freetype-2.13.0)
+set(FREETYPE_DIRECTORY Dependencies/freetype)
 add_subdirectory(${FREETYPE_DIRECTORY})
-# find_package(Freetype REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_DIRECTORY}/include ${FREETYPE_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC freetype)
 
@@ -61,41 +58,41 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3)# ${PROJECT_BINARY_DIR}/dep-builds/glfw)
+add_subdirectory(${PROJECT_SOURCE_DIR}/Dependencies/glfw)
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
 
 
-set(GLFW_LIB_PATH "${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug")
+set(GLFW_LIB_PATH ${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug)
 
 add_subdirectory(Dependencies/glad/)
-add_library(GLAD STATIC "Dependencies/GLAD/src/glad.c" "Dependencies/GLAD/include/glad/glad.h")
+add_library(GLAD STATIC Dependencies/GLAD/src/glad.c Dependencies/GLAD/include/glad/glad.h)
 
-target_include_directories(${PROJECT_NAME} PUBLIC "${GLFW_LIB_PATH}")
-target_include_directories(GLAD PRIVATE "${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include" "${GLFW_LIB_PATH}")
+target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_LIB_PATH})
+target_include_directories(GLAD PRIVATE ${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC OpenGL::GL GLAD)
 
 #include header files.
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
-        "${PROJECT_BINARY_DIR}"
-        "${PROJECT_SOURCE_DIR}/src"
-        "${PROJECT_SOURCE_DIR}/src/helpers"
-        "${PROJECT_SOURCE_DIR}/src/games"
-        "${PROJECT_SOURCE_DIR}/src/components"
-        "${PROJECT_SOURCE_DIR}/src/models"
-        "${PROJECT_SOURCE_DIR}/src/gui"
-        "${PROJECT_SOURCE_DIR}/src/inputs"
-        "${PROJECT_SOURCE_DIR}/src/graphics"
-        "${FREETYPE_PATH}/include/freetype2"
-        "${FREETYPE_PATH}/include/freetype2/freetype"
-        "${PROJECT_SOURCE_DIR}/Dependencies/glfw-3.3/include/GLFW"
+        ${PROJECT_BINARY_DIR}
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/src/helpers
+        ${PROJECT_SOURCE_DIR}/src/games
+        ${PROJECT_SOURCE_DIR}/src/components
+        ${PROJECT_SOURCE_DIR}/src/models
+        ${PROJECT_SOURCE_DIR}/src/gui
+        ${PROJECT_SOURCE_DIR}/src/inputs
+        ${PROJECT_SOURCE_DIR}/src/graphics
+        ${FREETYPE_PATH}/include/freetype2
+        ${FREETYPE_PATH}/include/freetype2/freetype
+        ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include/GLFW
         ${FREETYPE_DIRECTORY}/include
         ${FREETYPE_DIRECTORY}/include/freetype
         ${FREETYPE_INCLUDE_DIRS}
-        "${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug/"
-        "${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include"
-        "${PROJECT_SOURCE_DIR}/Dependencies/glm-stable/glm"
-        "${PROJECT_SOURCE_DIR}/Dependencies/stb-master"
-        "${FREETYPE_INCLUDE_DIRS}"
+        ${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug/
+        ${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include
+        ${PROJECT_SOURCE_DIR}/Dependencies/glm-stable/glm
+        ${PROJECT_SOURCE_DIR}/Dependencies/stb-master
+        ${FREETYPE_INCLUDE_DIRS}
 )

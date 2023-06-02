@@ -40,7 +40,7 @@ public:
             glGetProgramiv(ID, GL_LINK_STATUS, &success);
             if(!success)
             {
-                glGetProgramInfoLog(ID, 1024, NULL, infoLog);
+                glGetProgramInfoLog(ID, 1024, nullptr, infoLog);
                 std::cout << "Error Linking Program:" << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
             }
         }
@@ -64,7 +64,7 @@ public:
             std::istreambuf_iterator<char>()
         );
         const char* shaderSource = fileContents.c_str();
-        glShaderSource(shader, 1, &shaderSource, NULL);
+        glShaderSource(shader, 1, &shaderSource, nullptr);
 
         glCompileShader(shader);
         
@@ -74,7 +74,7 @@ public:
         std::cout << "Compilation for shader type " << shaderType << ": " << success << " for shader " << shader << "\n";
         if(!success) {
             char infoLog[512];
-            glGetShaderInfoLog(shader, 512, NULL, infoLog);
+            glGetShaderInfoLog(shader, 512, nullptr, infoLog);
             std::cout <<"ERROR COMPILING SHADER " << shader << " OF TYPE " << shaderType << ": " << infoLog << "\n";
         }
         #endif

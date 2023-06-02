@@ -16,7 +16,7 @@ TextureFactory::TextureFactory () {
 };
 
 
-unsigned int TextureFactory::getTexture(const char* image_path) {
+auto TextureFactory::getTexture(const char* image_path) -> unsigned int {
     int width, height, nrChannels;
     unsigned char* data = stbi_load(image_path, &width, &height, &nrChannels, 0);
 

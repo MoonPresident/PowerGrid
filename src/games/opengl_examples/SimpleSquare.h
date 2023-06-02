@@ -48,8 +48,8 @@ class SimpleSquare: AbstractSimulation {
         const char* fragShaderSource = "#version 330 core"
             "out vec4 FragColor;"
             "void main() {FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);}";
-        glShaderSource(vertShader, 1, &vertShaderSource, NULL);
-        glShaderSource(fragShader, 1, &fragShaderSource, NULL);
+        glShaderSource(vertShader, 1, &vertShaderSource, nullptr);
+        glShaderSource(fragShader, 1, &fragShaderSource, nullptr);
         glCompileShader(vertShader);
         glCompileShader(fragShader);
         

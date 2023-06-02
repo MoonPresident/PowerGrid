@@ -45,7 +45,7 @@ void general_keyboard_callback(
     std::cout << "Action: " << action << ", mods: " << mods << std::endl;
 
     const char* keyname = glfwGetKeyName(key, scancode);
-    if(keyname == null)
+    if(keyname == NULL)
         std::cout << keyname << "\n";
     #endif
 }
