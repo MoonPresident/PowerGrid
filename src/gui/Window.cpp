@@ -12,7 +12,7 @@
 #include "my_debug.h"
 
 #include <iostream>
-#include <time.h>
+#include <ctime>
 
 //Initial setup for window.
 #define WINDOW_TITLE "PowerGrid"

@@ -131,5 +131,5 @@ int main(int argc, char **argv) {
 
     // Original Creations
     // squares_original_game(); std::cout << "\n";
-    // ExampleGame3D target; target.run(); std::cout << "\n";
+    ExampleGame3D target; target.run(); std::cout << "\n";
 }

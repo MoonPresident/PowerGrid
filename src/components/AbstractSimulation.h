@@ -5,14 +5,15 @@
 
 
 #include <chrono>
+#include <unordered_map>
 
 #include "Window.h"
+#include "Terminal.h"
 
 #include "glad/glad.h"
 #include "glfw3.h"
 #include "glm.hpp"
 
-#include "Terminal.h"
 
 class AbstractSimulation {
 public:
@@ -43,6 +44,8 @@ public:
     void log(std::string text);
 
     void handleKeyboardInput();
+
+    std::unordered_map<int, int> m_keyStates;
 };
 
 #endif /* ABSTRACT_SIMULATION_H */

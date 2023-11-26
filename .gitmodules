@@ -5,3 +5,12 @@
 [submodule "Dependencies/glfw"]
 	path = Dependencies/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "Dependencies/assimp"]
+	path = Dependencies/assimp
+	url = https://github.com/assimp/assimp
+[submodule "Dependencies/stb"]
+	path = Dependencies/stb
+	url = https://github.com/nothings/stb
+[submodule "Dependencies/glm"]
+	path = Dependencies/glm
+	url = https://github.com/g-truc/glm

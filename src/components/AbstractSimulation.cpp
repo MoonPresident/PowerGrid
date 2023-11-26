@@ -3,7 +3,7 @@
 
 AbstractSimulation::AbstractSimulation(): terminal() {}
 
-AbstractSimulation::~AbstractSimulation() {}
+AbstractSimulation::~AbstractSimulation() = default;
 
 void AbstractSimulation::init_window() {
     //Set window and scale.
@@ -43,6 +43,11 @@ void AbstractSimulation::log(std::string text) {
 
 void AbstractSimulation::handleKeyboardInput() {
     if(glfwGetKey(window.getWindow(), GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS) {
-        terminal.toggleVisible();
+        if(m_keyStates[GLFW_KEY_GRAVE_ACCENT] == 0) {
+            terminal.toggleVisible();
+            m_keyStates[GLFW_KEY_GRAVE_ACCENT] = 1;
+        }
+    } else {
+        m_keyStates[GLFW_KEY_GRAVE_ACCENT] = 0;
     }
 }

@@ -16,3 +16,5 @@ This is a test document for a Git readme.
 * Make button and slider on gui.
 * Consider using Conan
 * Develop install packaging, test on new dev machine
+* Add precompiled headers
+* Modernise cmake usage

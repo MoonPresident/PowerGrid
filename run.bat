@@ -1,2 +1,2 @@
-..\..\dev-builds\PowerGrid\Debug\PowerGrid.exe
+..\..\dev-builds\PowerGrid\src\PowerGrid.exe
 @REM pause
