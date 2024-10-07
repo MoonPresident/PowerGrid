@@ -7,6 +7,7 @@
 #include "Text.h"
 
 #include <numeric>
+#include <array>
 
 #include "TextureFactory.h"
 
@@ -80,8 +81,8 @@ void setVertexPointerFloat(std::vector<int> dataLayout) {
 }
 
 
-ExampleGame3D::ExampleGame3D() {}
-ExampleGame3D::~ExampleGame3D() {}
+ExampleGame3D::ExampleGame3D() = default;
+ExampleGame3D::~ExampleGame3D() = default;
 
 void ExampleGame3D::run() {
     floorEnabled = false;
@@ -91,12 +92,12 @@ void ExampleGame3D::run() {
     float moveSpeed = 5.f;
     float jumpVelocity = 2.8f;
 
-    const char* vertShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\transform_3d_vertex_shader.txt";
-    const char* fragShaderPath = "C:\\dev\\PowerGrid\\resources\\shaders\\texture_2d_fragment_shader.txt";
+    const char* vertShaderPath = R"(C:\dev\PowerGrid\resources\shaders\transform_3d_vertex_shader.txt)";
+    const char* fragShaderPath = R"(C:\dev\PowerGrid\resources\shaders\texture_2d_fragment_shader.txt)";
     std::vector<Shader> programs = { Shader(vertShaderPath, fragShaderPath) };
     
     Cube cub;
-    glm::mat4 mod = glm::mat4(1.0f);
+    auto mod = glm::mat4(1.0f);
     mod = glm::translate(mod, glm::vec3(1.f, 1.f, 1.f));
     mod = glm::rotate(mod, glm::radians(45.f), glm::vec3(0.f, 1.f, 0.f));
     glUseProgram(cub.shader.ID);
@@ -124,7 +125,7 @@ void ExampleGame3D::run() {
     
     float scale = 0.7f;
     float rot = 0.1f;
-    float vertices[] = {
+    std::array<float, 48> vertices = {
         0.f, 0.f, 0.f,      1.f, 1.f, rot,
         0.f, 0.f, 0.f,      1.f, 0.f, rot,
         0.f, 0.f, 0.f,      0.f, 1.f, rot,
@@ -134,16 +135,16 @@ void ExampleGame3D::run() {
         0.f, 0.f, 0.f,      0.f, 1.f, rot,
         0.f, 0.f, 0.f,      0.f, 0.f, rot,
     };
-    getCube(vertices, scale, 6);
+    getCube(vertices.data(), scale, 6);
     
     float offset = 0.7f;
-    float vertices1[] = {
+    std::array<float, 24> vertices1 = {
         0.3f + offset,  0.3f + offset, 0.f,       0.f, 0.f, rot,
         0.3f + offset,  0.2f + offset, 0.f,       1.f, 0.f, rot,
         0.2f + offset,  0.2f + offset, 0.f,       1.f, 1.f, rot,
         0.2f + offset,  0.3f + offset, 0.f,       0.f, 1.f, rot,
     };
-    unsigned int indices[] = { 
+    std::array<unsigned int, 36> indices = { 
         0, 1, 2,    1, 2, 3,    4, 5, 6,    5, 6, 7,
         0, 1, 4,    1, 4, 5,    2, 3, 6,    3, 6, 7,
         0, 2, 4,    2, 4, 6,    1, 3, 5,    3, 5, 7
@@ -156,12 +157,12 @@ void ExampleGame3D::run() {
     
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 0, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), nullptr, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), &vertices);
     
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices.data(), GL_STATIC_DRAW);
     
     {
         std::vector<int> vboLayout = {3, 2, 1};
@@ -173,11 +174,11 @@ void ExampleGame3D::run() {
     
     glGenBuffers(1, &VBO1);
     glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1.data(), GL_STATIC_DRAW);
     
     glGenBuffers(1, &EBO1);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO1);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices.data(), GL_STATIC_DRAW);
     
     {
         std::vector<int> vboLayout = {3, 2, 1};
@@ -224,10 +225,10 @@ void ExampleGame3D::run() {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), &vertices);
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
         
         glBindVertexArray(VAO1);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glUseProgram(cub.shader.ID);
         glUniformMatrix4fv(mLoc, 1, GL_FALSE, glm::value_ptr(mod));

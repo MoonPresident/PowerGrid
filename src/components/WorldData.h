@@ -89,9 +89,6 @@ public:
     //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
     float getBearingToCursor(float location[]);
     
-    
-    
-    
     float getBearing2D(float source[], float target[]);
     
     void setScale(float source[]);

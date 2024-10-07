@@ -5,29 +5,8 @@ project(PowerGrid VERSION 1.0)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-#TODO: Change this when I decide to actually use a safe implementation.
-# aux_source_directory("src/components" COMPONENTS_DIR)
-# aux_source_directory("src/models" MODELS_DIR)
-# aux_source_directory("src/games" GAMES_DIR)
-# aux_source_directory("src/helpers" HELPERS_DIR)
-# aux_source_directory("src/graphics" GRAPHICS_DIR)
-# aux_source_directory("src/gui" GUI_DIR)
-# aux_source_directory("src/inputs" INPUTS_DIR)
-# aux_source_directory("src/games/opengl_examples" GRAPHICS_EXAMPLES_DIR)
-
-#Create Executable.
-# add_executable(${PROJECT_NAME} 
-#     "src/main.cpp" 
-#     ${COMPONENTS_DIR}
-#     ${MODELS_DIR}
-#     ${GAMES_DIR}
-#     ${HELPERS_DIR}
-#     ${GRAPHICS_DIR}
-#     ${GUI_DIR}
-#     ${INPUTS_DIR}
-#     ${GRAPHICS_EXAMPLES_DIR}
-# )
 add_subdirectory("src")
 
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
@@ -47,14 +26,8 @@ message(DEBUG ${FREETYPE_INCLUDE_DIRS})
 #Get prebuilt packages first
 find_package(OpenGL REQUIRED)
 
-##GLM Stuff
-#FindPackage Module path:
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmakeFinders/")
-# find_package(GLM REQUIRED)
-# target_link_libraries(${PROJECT_NAME} PUBLIC GLM)
-
 #GLFW config and GLAD Library
-# set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
+#set(GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -105,3 +78,7 @@ target_include_directories(
         ${PROJECT_SOURCE_DIR}/Dependencies/stb
         ${FREETYPE_INCLUDE_DIRS}
 )
+
+
+#https://www.foonathan.net/2018/10/cmake-warnings/
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)

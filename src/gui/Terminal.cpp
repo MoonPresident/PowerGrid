@@ -37,7 +37,7 @@ Terminal::Terminal():
     
     //TODO: Abstract and link to line length by perspective. 
     //(I assume this will present itself as screen height determining terminal width.)
-    float vertices[18] = {
+    std::array<float, 18> vertices = {
             -1.0f, -1.0f,  -0.99f,
              0.2f, -1.0f,  -0.99f,
              0.2f,  0.2f,  -0.99f,
@@ -45,9 +45,9 @@ Terminal::Terminal():
             -1.0f, -1.0f,  -0.99f,
              0.2f,  0.2f,  -0.99f,
     };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.data()), vertices.data(), GL_STATIC_DRAW); 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) nullptr);
 
     //unbind buffer to prevent overwriting.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -55,16 +55,16 @@ Terminal::Terminal():
 
 
     for(int i = 0; i < 10; i++) {
-        char buffer[30];
-        sprintf(buffer, "Terminal: Pre init %i.", i);
-        log(buffer);
+        std::array<char, 30> buffer;
+        sprintf(buffer.data(), "Terminal: Pre init %i.", i);
+        log(buffer.data());
     }
     log("Terminal: Initialised.");
     log("Terminal: Logging...");
     for(int i = 0; i < 10; i++) {
-        char buffer[30];
-        sprintf(buffer, "Terminal: %i.", i);
-        log(buffer);
+        std::array<char, 30> buffer;
+        sprintf(buffer.data(), "Terminal: %i.", i);
+        log(buffer.data());
     }
     
 }

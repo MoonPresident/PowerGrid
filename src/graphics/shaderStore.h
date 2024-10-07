@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <array>
 
 
 class ShaderStore {
@@ -35,6 +36,6 @@ struct Program {
     ShaderStore shaderStore;
 };
 
-std::vector<Program> loadPrograms();
+auto loadPrograms() -> std::vector<Program>;
 
 #endif /* SHADER_STORE_H */

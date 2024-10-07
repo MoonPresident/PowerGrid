@@ -10,6 +10,7 @@
 
 #include "Text.h"
 #include <vector>
+#include <array>
 
 class Terminal {
 private:

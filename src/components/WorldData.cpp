@@ -1,8 +1,7 @@
 #include "WorldData.h"
 #include <iostream>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <numbers>
 
 /**
  * @brief constructor
@@ -86,7 +85,7 @@ auto WorldData::getBearingToCursor(float location[]) -> float {
     float x_span = cursor_position[1] + location[1] * x_scale;
     float y_span = cursor_position[0] - location[0] * y_scale;
     
-    return (float) atan(x_span / y_span) + (y_span < 0) * M_PI;
+    return (float) atan(x_span / y_span) + (y_span < 0) * std::numbers::pi;
 };
 
 
@@ -96,7 +95,7 @@ auto WorldData::getBearing2D(float source[], float target[]) -> float {
     float x_span = 0 - (target[1] - source[1]) * x_scale;
     float y_span = (target[0] - source[0]) * y_scale;
     
-    return (float) atan(x_span / y_span) + (y_span < 0) * M_PI;
+    return (float) atan(x_span / y_span) + (y_span < 0) * std::numbers::pi;
 };
 
 void WorldData::setScale(float source[]) {

@@ -4,6 +4,7 @@
 #include "Font.h"
 #include "ext.hpp"
 #include "Shader.h"
+#include <array>
 //TODO: Add setfont function
 
 class Text {

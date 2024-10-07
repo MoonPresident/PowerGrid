@@ -7,33 +7,6 @@
  * Get GLM installed. Or make your own vector math, up to you.
  */
 
-//https://www.glprogramming.com/red/chapter02.html
-//https://nccastaff.bournemouth.ac.uk/jmacey/RobTheBloke/www/opengl_programming.html
-//https://www.toptal.com/game/video-game-physics-part-ii-collision-detection-for-solid-objects
-
-//https://www.haroldserrano.com/articles
-
-//http://www-cs-students.stanford.edu/%7Eamitp/gameprog.html
-
-//https://www.gamasutra.com/blogs/MichaelKissner/20151027/257369/Writing_a_Game_Engine_from_Scratch__Part_1_Messaging.php
-
-//https://www.youtube.com/watch?v=Cfe3sO_L0fM&feature=share
-
-
-
-//Working out the difference between using a VAO and using VertexAttrib/Uniforms
-//https://www.reddit.com/r/opengl/comments/4e9jmw/is_it_better_to_separate_the_vbo_update_from_the/d1ydon0/
-
-//https://teaching.csse.uwa.edu.au/units/CITS3003/lectures/04-OpenGL-Example-Program.pdf
-
-
-
-
-/**
- * THIS!!! https://docs.gl/gl4/glBufferData
-**/
-
-
 /********************************************************************************
  *******                             Includes                             *******
  *******************************************************************************/
@@ -53,7 +26,7 @@
 
 //Freetype kinda sucks to get working
 //https://www.gregwessels.com/dev/2017/05/02/freetype-harfbuzz.html
-//Idk tho
+
 /********************************************************************************
  *******                           Namespaces                             *******
 ********************************************************************************/
@@ -67,12 +40,9 @@ using namespace std::chrono;
  * DEBUG DEFINES
  * debug_all
  * debug_shaders
+ * debug_flow
+ * debug_mouse
 **/
-
-
-
-//https://thebookofshaders.com/07/
-
 
 /********************************************************************************
 *******                              Startup                              *******
@@ -92,16 +62,14 @@ using namespace std::chrono;
 //  Implement key mapping
 //  Look into how passing 3D models works. That will answers a lot of questions.
 //  Get buttons working.
-
 //  Get a menu going.
-
 // Convert everything to h and cpp instead of header only.
-
-//  Engine makes the actual game take years to design. This was expected, but jesus.
 //  Get Terminal Working
 //  Get an input interface
 //  Work out model for state machine
 
+//Do some shader toy and PBR stuff, or something fun a la this:
+//https://thebookofshaders.com/07/
 
 // glm stuff:
 //These are other important includes for when it goes nutty.
@@ -115,21 +83,45 @@ using namespace std::chrono;
  * @param argv
  * @return Error value
  */
-int main(int argc, char **argv) {
+auto main(int argc, char **argv) -> int {
     //LearnOpenGL inspired examples:
     #if defined debug_all || defined debug_flow
     std::cout << "Starting program..." << std::endl;
     #endif
 
-    // SimpleSquare simpleSquare; simpleSquare.run(); std::cout << "\n";
-    // TexturedSquare texturedSquare; texturedSquare.run(); std::cout << "\n";
-    // TransformedSquare transformedSquare; transformedSquare.run(); std::cout << "\n";
-    // SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
-    // CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
-    // TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
-    auto lightingExample = new LightingExample; lightingExample->run(); delete lightingExample; std::cout << "\n";
+    //Might be nice to turn this into a CLI
+    //Also would be nice to be able to have this running and choose via gui or
+    //tui which demo to run.
+    if(argc > 1) {
+        //testcases = argv[1...]
+        for(size_t i = 1; i < argc; i++) {
+            const char* demo = argv[i];
+            
+            std::cout << "demo: \"" << demo << "\"\n";
 
-    // Original Creations
-    // squares_original_game(); std::cout << "\n";
-    ExampleGame3D target; target.run(); std::cout << "\n";
+            if (demo == "simple") {
+                SimpleSquare simpleSquare; simpleSquare.run(); std::cout << "\n";
+            } else if (demo == "textured") {
+                TexturedSquare texturedSquare; texturedSquare.run(); std::cout << "\n";
+            } else if (demo == "transformed") {
+                TransformedSquare transformedSquare; transformedSquare.run(); std::cout << "\n";
+            } else if (demo == "cube") {
+                SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
+            } else if (demo == "camera") {
+                CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
+            } else if (demo == "text") {
+                TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
+            } else if (demo == "lighting") {
+                auto lightingExample = new LightingExample; lightingExample->run(); delete lightingExample; std::cout << "\n";
+            } else if (demo == "sandbox") {
+                ExampleGame3D target; target.run(); std::cout << "\n";
+            } else if (demo == "squaregame") {
+                // squares_original_game(); std::cout << "\n";
+            } else if (demo == "-h" || demo == "help" || demo == "--help") {
+                std::cout << "Programs are: simple, textured, transformed, cube, camera, text, lighting, sandbox, squaregame\n";
+            }
+        }
+    } else {
+        ExampleGame3D target; target.run(); std::cout << "\n";
+    }
 }

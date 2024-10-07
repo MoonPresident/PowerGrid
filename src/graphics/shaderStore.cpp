@@ -21,6 +21,39 @@ ShaderStore::ShaderStore () {
     #endif
 }
 
+//Todo: place these boilerplace debug functions somewhere sensible
+void debugShaderCreation(GLuint shader) {
+
+    #if defined debug_all || defined debug_shaders
+    
+    GLint success = 0;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    std::cout << "Compilation: " << success << " for shader " << shader << std::endl;
+    if(!success) {
+        std::array<char, 512> infoLog;
+        glGetShaderInfoLog(shader, 512, nullptr, infoLog.data());
+        std::cout <<"ERROR COMPILING SHADER " << shader << ": " << infoLog.data() << std::endl;
+    }
+    
+    #endif
+}
+
+void debugProgramCreation(GLuint program) {
+ 
+    #if defined debug_all || defined debug_shaders
+ 
+    GLint success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    std::cout << "Compilation: " << success << " for program " << program << std::endl;
+    if(!success) {
+        std::array<char, 512> infoLog;
+        glGetProgramInfoLog(program, 512, nullptr, infoLog.data());
+        std::cout <<"ERROR COMPILING PROGRAM " << program << ": " << infoLog.data() << std::endl;
+    }
+ 
+    #endif
+}
+
 void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
     std::ifstream shaderFile(shaderFilename);
     
@@ -35,22 +68,15 @@ void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
             std::istreambuf_iterator<char>(shaderFile), 
             std::istreambuf_iterator<char>()
         );
+
+        debugShaderCreation(shader);
         
         const char* shaderSource = fileContents.c_str();
         glShaderSource(shader, 1, &shaderSource, nullptr);
         glCompileShader(shader);
         
         
-        #if defined debug_all || defined debug_shaders
-        GLint success = 0;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        std::cout << "Compilation: " << success << " for shader " << shader << std::endl;
-        if(!success) {
-            char infoLog[512];
-            glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-            std::cout <<"ERROR COMPILING SHADER " << shader << ": " << infoLog << std::endl;
-        }
-        #endif
+        
         
         shaders.push_back(shader);
     }
@@ -60,24 +86,15 @@ void ShaderStore::linkProgram(GLuint program) {
     attachAll(program);
     glLinkProgram(program);
     
-    #if defined debug_all || defined debug_shaders
-    GLint success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    std::cout << "Compilation: " << success << " for program " << program << std::endl;
-    if(!success) {
-        char infoLog[512];
-        glGetProgramInfoLog(program, 512, nullptr, infoLog);
-        std::cout <<"ERROR COMPILING PROGRAM " << program << ": " << infoLog << std::endl;
-    }
-    #endif
+    debugProgramCreation(program);
+
     deleteAll();
 }
 
-
 //Attach all shaders to the program.
 void ShaderStore::attachAll(GLuint program) {
-    for(int i = 0; i < shaders.size(); i++) {
-        glAttachShader(program, shaders.at(i));
+    for(auto shader: shaders) {
+        glAttachShader(program, shader);
     }
 }
 
@@ -87,11 +104,8 @@ void ShaderStore::deleteAll() {
     shaders.clear();
 }
 
-
-//https://thebookofshaders.com/07/
-
-//Load in shaders
-std::vector<Program> loadPrograms() {
+//Load in shaders shader index file (this is an automation function that belongs elsewhere)
+auto loadPrograms() -> std::vector<Program> {
     ShaderStore shaderStore;
     std::vector<Program> programs;
     std::string line, path, index(SHADER_INDEX_FILE);
@@ -119,6 +133,10 @@ std::vector<Program> loadPrograms() {
         char shaderType = line.at(0);
         switch(shaderType) {
             case 'p': {
+                if(!programs.empty()) {
+                    programs.back().shaderStore.linkProgram(programs.back().ID);
+                }
+
                 Program program;
                 program.ID = glCreateProgram();
                 program.drawType =  (line.at(1) == 'l') * GL_LINES + 
@@ -140,13 +158,6 @@ std::vector<Program> loadPrograms() {
                 std::cout << "ShaderType not recognised: " << shaderType << std::endl;
             #endif
         }
-    }
-    
-    //Compile the shader programs, 1 program at a time
-    for(auto program: programs) {
-        program.shaderStore.attachAll(program.ID);
-        glLinkProgram(program.ID);
-        program.shaderStore.deleteAll();
     }
     return programs;
 }

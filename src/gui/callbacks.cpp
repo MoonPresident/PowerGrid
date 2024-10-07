@@ -8,17 +8,18 @@
 #include "glad/glad.h"
 #include "glfw3.h"
 #include <iostream>
+#include <tuple>
 
 #include "my_debug.h"
 
 
 void basic_error_callback(int error, const char* description){
-    fputs(description, stderr);
+    fprintf(stderr, "%i: %s", error, description);
 }
 
 void close_on_unfocus(GLFWwindow* window, int focused) {
     if(!focused) {
-        // glfwSetWindowShouldClose(window, 1);
+        glfwSetWindowShouldClose(window, 1);
     }
 }
 
@@ -34,30 +35,32 @@ void close_on_unfocus(GLFWwindow* window, int focused) {
 //Easiest way to differentiate between handling of since press and a long press: only fire off on the release.
 
 void general_keyboard_callback(
-        GLFWwindow* window, 
+        GLFWwindow* /*window*/, 
         int key, 
         int scancode, 
         int action, 
         int mods
 ) {
-    #if defined debug_all || defined debug_mouse
     std::cout << "Key: " << key << (char) key << ", Scancode: " << scancode << std::endl;
     std::cout << "Action: " << action << ", mods: " << mods << std::endl;
 
     const char* keyname = glfwGetKeyName(key, scancode);
-    if(keyname == NULL)
+    
+    if(keyname != nullptr) {
         std::cout << keyname << "\n";
-    #endif
+    }
 }
 
 
 //Flags
-int leftClickFlag;
-int rightClickFlag;
+static int leftClickFlag;
+static int rightClickFlag;
 
-void mousebutton_flag_callback(GLFWwindow* window, int button, int action, int mods) {
+void mousebutton_flag_callback(GLFWwindow* /*window*/, int button, int action, int mods) {
     if(action) {
-        #ifdef debug_all
+        (void) mods;
+
+        #if defined debug_all
         std::cout  << "Button: " << button << "Action: " << action  << "Mods: " <<  mods << std::endl << std::endl;
         #endif
         if(button == 0) {
@@ -85,7 +88,7 @@ void resetRightClickFlag() {
 }
 
 
-int scrollFlag;
+static int scrollFlag;
 
 auto getScrollFlag() -> int {
     return scrollFlag;
@@ -99,32 +102,38 @@ void setScrollFlag(int val) {
     }
 }
 
-void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
+void scroll_callback(GLFWwindow* /*window*/, double x_offset, double y_offset) {
     scrollFlag += y_offset;
     if(scrollFlag < 1) scrollFlag = 1;
+
+    (void) x_offset;
+    (void) y_offset;
     
     #if defined debug_all || defined debug_mouse
     std::cout << "XY: " << x_offset << " " << y_offset << std::endl;
     #endif
 }
 
-double mouseOffsetX;
-double mouseOffsetY;
-double mouseLastX;
-double mouseLastY;
+//These are file scope, not global scope, so perhaps they should go in their
+//own file so they are better isolated.
+static double mouseOffsetX;
+static double mouseOffsetY;
+static double mouseLastX;
+static double mouseLastY;
 
-auto getMouseOffsetX() -> double   { return mouseOffsetX; };
-auto getMouseOffsetY() -> double   { return mouseOffsetY; };
-auto getMouseLastX() -> double     { return mouseLastX; };
-auto getMouseLastY() -> double     { return mouseLastY; };
+auto getMouseOffsetX() -> double   { return mouseOffsetX; }
+auto getMouseOffsetY() -> double   { return mouseOffsetY; }
+auto getMouseLastX() -> double     { return mouseLastX; }
+auto getMouseLastY() -> double     { return mouseLastY; }
 
-void setMouseOffsetX(double _x)    { mouseOffsetX  = _x; };
-void setMouseOffsetY(double _y)    { mouseOffsetY  = _y; };
-void setMouseLastX(double _x)      { mouseLastX    = _x; };
-void setMouseLastY(double _y)      { mouseLastY    = _y; };
+void setMouseOffsetX(double _x)    { mouseOffsetX  = _x; }
+void setMouseOffsetY(double _y)    { mouseOffsetY  = _y; }
+void setMouseLastX(double _x)      { mouseLastX    = _x; }
+void setMouseLastY(double _y)      { mouseLastY    = _y; }
 
-bool firstMouse;
-void mouse_callback(GLFWwindow* window, double xCoord, double yCoord) {
+static bool firstMouse;
+
+void mouse_callback(GLFWwindow* /*window*/, double xCoord, double yCoord) {
     if(!firstMouse) {   
         firstMouse = true;
         mouseOffsetX = xCoord;
@@ -146,10 +155,14 @@ void setCallbacks(GLFWwindow* window) {
     firstMouse = false;
     
     glfwMakeContextCurrent(window);
+
+    #if defined debug_all || defined debug_mouse
     glfwSetWindowFocusCallback(window, close_on_unfocus);
+    glfwSetKeyCallback(window, general_keyboard_callback);
+    #endif
+
     glfwSetMouseButtonCallback(window, mousebutton_flag_callback);
     glfwSetScrollCallback(window, scroll_callback);
-    glfwSetKeyCallback(window, general_keyboard_callback);
     
     //Mouse callback
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
