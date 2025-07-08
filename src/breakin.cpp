@@ -1,10 +1,8 @@
 #include "glad/glad.h"
 #include "glfw3.h"
-#include <stdlib.h>
 #include <iostream>
 #include <chrono>
 #include <array>
-#include <thread>
 
 #include "my_debug.h"
 
@@ -23,10 +21,11 @@ void basic_error_callback(int error, const char* description){
 
 using namespace std::chrono;
 
-int main(int argc, char** argv) {
-    auto metric_startInit = steady_clock::now();
+auto main(int argc, char** argv) -> int {
     //Init OpenGL
-    if (!glfwInit()) exit(EXIT_FAILURE);
+    if (!glfwInit()) {
+        exit(EXIT_FAILURE);
+    }
 
     glfwSetErrorCallback(basic_error_callback);
     glfwWindowHint(GLFW_SAMPLES, 8); //Set up multisampling
@@ -35,12 +34,11 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    
-    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-
     glfwWindowHint(GLFW_REFRESH_RATE, 120);
+
     GLFWwindow* window;
-    if(/*fullscreen*/ 0) {
+    if(/*fullscreen*/ false) {
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode * mode = glfwGetVideoMode(monitor);
         window = glfwCreateWindow(
             mode->width,
@@ -81,14 +79,13 @@ int main(int argc, char** argv) {
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
     
-    GLuint vertShader, fragShader;
-    vertShader = glCreateShader(GL_VERTEX_SHADER);
-    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
     GLuint program = glCreateProgram();
     
     const char* vertShaderSource = "#version 430 core\n"
@@ -121,27 +118,24 @@ int main(int argc, char** argv) {
     * Initialise data 
     *****************************/
     //Data:
-    //6 vertices for the paddle
-    //6 vertices for the ball
-    //6 vertices per brick
     constexpr size_t rows = 6;
     constexpr size_t cols = 10;
-    uint64_t bricks[1 + (rows * cols) / 64]; 
+    constexpr size_t verticesPerBlock = 5 * 6;
+
     //5 floats per vertex, 6 vertices per item, paddle + ball + row * cols
-    constexpr size_t vertices = 5 * 6 * (2 + rows * cols);
-    GLfloat vertexData[vertices];
+    constexpr size_t vertices = verticesPerBlock * (2 + rows * cols);
+    std::array<GLfloat, vertices> vertexData;
 
     auto memcpySquare = [&vertexData](size_t v, GLfloat* data) {
-        constexpr size_t vertices = 5 * 6;
-        constexpr size_t bytes = vertices * sizeof(float); 
-        memcpy(vertexData + vertices * v, data, bytes);
+        constexpr size_t bytes = verticesPerBlock * sizeof(float); 
+        memcpy(vertexData.data() + verticesPerBlock * v, data, bytes);
     };
     
 
     // Ball values
     constexpr GLfloat ballWidth = 0.025f;
-    GLfloat ballVector[] = { 0.f, -0.03f };
-    GLfloat ballCoords[] = { 0.f, 0.f };
+    std::pair<GLfloat, GLfloat>  ballVec = { 0.f, -0.03f };
+    std::pair<GLfloat, GLfloat>  ballLoc = { 0.f, 0.f };
 
     //Paddle values
     GLfloat paddleX = 0.0f;
@@ -149,7 +143,7 @@ int main(int argc, char** argv) {
     constexpr GLfloat paddleHalfHeight = 0.025f;
     constexpr GLfloat paddleTop = paddleY + paddleHalfHeight;
     constexpr GLfloat paddleBottom = paddleY - paddleHalfHeight;
-    constexpr GLfloat paddleRGB[] = { 1.f, 0.5f, 0.f };
+    constexpr auto paddleRGB = std::to_array<GLfloat>({ 1.f, 0.5f, 0.f });
     constexpr GLfloat paddleHalfWidth = 0.15f;
 
     //Block values
@@ -160,31 +154,33 @@ int main(int argc, char** argv) {
     constexpr GLfloat xInterval = 0.2f;
     constexpr GLfloat squareWidth = 0.15f;
 
-    GLfloat top[rows];
-    GLfloat bottom[rows];
-    GLfloat left[cols];
-    GLfloat right[cols];
+    std::array<GLfloat, rows> top;
+    std::array<GLfloat, rows> bottom;
+    std::array<GLfloat, cols> left;
+    std::array<GLfloat, cols> right;
 
     for(size_t i = 0; i < rows; i++) {
-        GLfloat offsetY = i * yInterval;
-        top[i] = yBase - offsetY;
-        bottom[i] = yBase - squareHeight - offsetY;
+        top[i] = yBase - i * yInterval;
+        bottom[i] = top[i] - squareHeight;
+    }
 
+    for(size_t j = 0; j < cols; j++) {
+        left[j] = xBase - j * xInterval;
+        right[j] = left[j] + squareWidth;
+    }
+    
+    for(size_t i = 0; i < rows; i++) {
         for(size_t j = 0; j < cols; j++) {
-            GLfloat offsetX = j * xInterval;
-            left[j] = xBase - offsetX;
-            right[j] = xBase + squareWidth - offsetX;
-
-
-            GLfloat square[] = {
+            auto square = std::to_array<GLfloat>({
                 right[j], top[i],    0.2f, 0.4f, 0.2f,
                 left[j],  top[i],    0.2f, 0.4f, 0.2f,
                 right[j], bottom[i], 0.2f, 0.4f, 0.2f,
                 right[j], bottom[i], 0.2f, 0.4f, 0.2f,
                 left[j],  top[i],    0.2f, 0.4f, 0.2f,
                 left[j],  bottom[i], 0.2f, 0.4f, 0.2f,
-            };
-            memcpySquare(i * cols + j, square);
+            });
+
+            memcpySquare(i * cols + j, square.data());
         }
     }
 
@@ -209,14 +205,11 @@ int main(int argc, char** argv) {
     double yScale = 1.0 * winWidth / winHeight;
 
     if(xScale > yScale) {
-        xScale = 1.f;
+        xScale = 1.0;
     } else {
-        yScale = 1.f;
+        yScale = 1.0;
     }
-    
-    auto metric_endInit = steady_clock::now();
 
-    
     std::array<microseconds, 3> metrics;
     metrics.fill(milliseconds(0));
     int metricDivisor = 1;
@@ -239,9 +232,7 @@ int main(int argc, char** argv) {
         } else {
             frameTimestamp = steady_clock::now();
             std::cout << "fps: " << fps << "\n";
-            fps = 0; 
-
-            std::cout << "x: " << ballCoords[0] << ", \ty: " << ballCoords[1] << "\n";
+            fps = 0;
         }
 
         //Poll inputs
@@ -254,50 +245,40 @@ int main(int argc, char** argv) {
         
         GLfloat paddleLeft = paddleX - paddleHalfWidth;
         GLfloat paddleRight = paddleX + paddleHalfWidth;
-        // paddle[ 0] = paddleLeft;
-        // paddle[ 5] = paddleRight;
-        // paddle[10] = paddleLeft;
-        // paddle[15] = paddleLeft;
-        // paddle[20] = paddleRight;
-        // paddle[25] = paddleRight;
 
-        GLfloat paddle[] = {
+        auto paddle = std::to_array<GLfloat>({
             paddleLeft,  paddleBottom, paddleRGB[0], paddleRGB[1], paddleRGB[2],
             paddleRight, paddleBottom, paddleRGB[0], paddleRGB[1], paddleRGB[2],
             paddleLeft,  paddleTop,    paddleRGB[0], paddleRGB[1], paddleRGB[2],
             paddleLeft,  paddleTop,    paddleRGB[0], paddleRGB[1], paddleRGB[2],
             paddleRight, paddleBottom, paddleRGB[0], paddleRGB[1], paddleRGB[2],
             paddleRight, paddleTop,    paddleRGB[0], paddleRGB[1], paddleRGB[2],
-        };
+        });
 
         //update ball
-        auto prevX = ballCoords[0];
-        auto prevY = ballCoords[1];
-        ballCoords[0] = ballCoords[0] + ballVector[0];
-        ballCoords[1] = ballCoords[1] + ballVector[1];
+        auto prevX = ballLoc.first;
+        auto prevY = ballLoc.second;
+        ballLoc.first = ballLoc.first + ballVec.first;
+        ballLoc.second = ballLoc.second + ballVec.second;
         
-        bool paddleCollision = ballCoords[1] < paddleTop 
-            && ballCoords[0] < paddleRight 
-            && ballCoords[0] > paddleLeft;
-        bool sideWallCollision = ballCoords[0] > 1.f || ballCoords[0] < -1.f; 
-        bool backWallCollision = ballCoords[1] > 1.f;
-        bool gameOver = ballCoords[1] < -1.f;
-
+        bool paddleCollision = ballLoc.second < paddleTop 
+            && ballLoc.first < paddleRight 
+            && ballLoc.first > paddleLeft;
+        bool sideWallCollision = ballLoc.first > 1.f || ballLoc.first < -1.f; 
+        bool backWallCollision = ballLoc.second > 1.f;
+        bool gameOver = ballLoc.second < -1.f;
 
         //Collision checks
         if(paddleCollision) {
-            std::cout << "PADDLE\n";
-            auto angle = (ballCoords[0] - paddleLeft) / (paddleHalfWidth);
-            ballVector[0] = 0.024f * (angle - 1.f);
-            ballVector[1] = 0.006f + 0.024f * (1.f - std::abs(1.f - angle));
+            auto angle = (ballLoc.first - paddleLeft) / (paddleHalfWidth);
+            ballVec.first = 0.024f * (angle - 1.f);
+            ballVec.second = 0.006f + 0.024f * (1.f - std::abs(1.f - angle));
         } else if(sideWallCollision) {
-            std::cout << "SIDE\n";
-            ballVector[0] = -ballVector[0];
+            ballVec.first = -ballVec.first;
         } else if (backWallCollision) {
-            std::cout << "BACK\n";
-            ballVector[1] = -ballVector[1];
+            ballVec.second = -ballVec.second;
         } else if (gameOver) {
-            ballVector[1] = -ballVector[1];
+            ballVec.second = -ballVec.second;
             //GAME OVER!
             std::cout << "GAME OVER\n";
             break;
@@ -306,87 +287,65 @@ int main(int argc, char** argv) {
             //Check for collision with block
             int rowOverlap = -1;
             int colOverlap = -1;
-            auto top = yBase + ballWidth + yInterval;
-            auto height = 2 * ballWidth + squareHeight;
-            auto bottom = yBase - ballWidth - squareHeight + yInterval;
-            auto left = xBase - ballWidth + xInterval;
-            auto width = 2 * ballWidth + squareWidth;
-            auto right = xBase + ballWidth + squareWidth + xInterval;
 
             for(size_t i = 0; rowOverlap == -1 && i < rows; i++) {
-                top -= yInterval;
-                bottom -= yInterval;
-
-                if(ballCoords[1] < top && ballCoords[1] > top - height) {
+                if(ballLoc.second - ballWidth < top[i] 
+                        && ballLoc.second + ballWidth > bottom[i]) {
                     rowOverlap = i;
                 }
             }
 
             for(size_t i = 0; colOverlap == -1 && i < cols; i++) {
-                left -= xInterval;
-                right -= xInterval;
-
-                if(ballCoords[0] > left && ballCoords[0] < left + width) {
+                if(ballLoc.first - ballWidth < right[i] 
+                        && ballLoc.first + ballWidth > left[i]) {
                     colOverlap = i;
                 }
             }
 
-            if(rowOverlap > -1 && colOverlap > -1 
-                    && blockExists[rowOverlap * cols + colOverlap]) {
-                std::cout << "BLOCK: " << rowOverlap << ", " << colOverlap << "\n";
-                blockExists[rowOverlap * cols + colOverlap] = false;
+            auto offset = rowOverlap * cols + colOverlap;
 
-                GLfloat m = ballVector[1] / ballVector[0];
-                GLfloat c = ballCoords[1] - m * ballCoords[0];
+            if(rowOverlap > -1 && colOverlap > -1 && blockExists[offset]) {
+                blockExists[offset] = false;
 
-                //y = mx + c
-                auto leftInt = m * left + c;
-                auto rightInt = m * right + c;
-
-                if((ballVector[0] > 0.f && left < ballCoords[0]  && left > prevX) ||
-                        (ballVector[0] < 0.f && right < prevX && right > ballCoords[0])) {
-                    ballVector[0] = -ballVector[0];
-                } else {
-                    ballVector[1] = -ballVector[1];
-                }
-
+                auto rightCollision = ballVec.first < 0.f 
+                        && right[colOverlap] < prevX - ballWidth 
+                        && right[colOverlap] > ballLoc.first - ballWidth;
+                auto leftCollision = ballVec.first > 0.f 
+                        && left[colOverlap] < ballLoc.first + ballWidth
+                        && left[colOverlap] > prevX + ballWidth;
                 
-                std::cout << ballVector[0] << ", " << ballVector[1] << "\n";
-                std::cout << top << ", " << bottom << ", " << prevX << ", " << ballCoords[0] << "\n";
-                std::cout << leftInt << ", " << rightInt << ", " << m << ", " << c << "\n";
-
-
-                GLfloat square[] = {
-                    -100.f, -100.f, 0.2f, 0.4f, 0.2f,
-                    -100.f, -100.f, 0.2f, 0.4f, 0.2f,
-                    -100.f, -100.f, 0.2f, 0.4f, 0.2f,
-                    -100.f, -100.f, 0.2f, 0.4f, 0.2f,
-                    -100.f, -100.f, 0.2f, 0.4f, 0.2f,
-                    -100.f, -100.f, 0.2f, 0.4f, 0.2f,
-                };
-
-                memcpySquare(rowOverlap * cols + colOverlap, square);
+                if(rightCollision || leftCollision) {
+                    ballVec.first = -ballVec.first;
+                } else {
+                    ballVec.second = -ballVec.second;
+                }
+                
+                for(int i = offset * verticesPerBlock; 
+                        i < (offset + 1) * verticesPerBlock; 
+                        i += 5) {
+                    vertexData[i] = -100.f;
+                    vertexData[i + 1] = -100.f;
+                }
             }
         }
 
-         
-        GLfloat ball[] = {
-            ballCoords[0] - ballWidth, ballCoords[1] + ballWidth, 1.f, 0.5f, 0.f,
-            ballCoords[0] + ballWidth, ballCoords[1] + ballWidth, 1.f, 0.5f, 0.f,
-            ballCoords[0] - ballWidth, ballCoords[1] - ballWidth, 1.f, 0.5f, 0.f,
-            ballCoords[0] - ballWidth, ballCoords[1] - ballWidth, 1.f, 0.5f, 0.f,
-            ballCoords[0] + ballWidth, ballCoords[1] + ballWidth, 1.f, 0.5f, 0.f,
-            ballCoords[0] + ballWidth, ballCoords[1] - ballWidth, 1.f, 0.5f, 0.f,
-        };
+        auto ball = std::to_array<GLfloat>({
+            ballLoc.first - ballWidth, ballLoc.second + ballWidth, 1.f, 0.5f, 0.f,
+            ballLoc.first + ballWidth, ballLoc.second + ballWidth, 1.f, 0.5f, 0.f,
+            ballLoc.first - ballWidth, ballLoc.second - ballWidth, 1.f, 0.5f, 0.f,
+            ballLoc.first - ballWidth, ballLoc.second - ballWidth, 1.f, 0.5f, 0.f,
+            ballLoc.first + ballWidth, ballLoc.second + ballWidth, 1.f, 0.5f, 0.f,
+            ballLoc.first + ballWidth, ballLoc.second - ballWidth, 1.f, 0.5f, 0.f,
+        });
 
-        memcpySquare(rows * cols, paddle);
-        memcpySquare(rows * cols + 1, ball);
+        memcpySquare(rows * cols, paddle.data());
+        memcpySquare(rows * cols + 1, ball.data());
 
         //draw triangles.
         glClearColor(0.0f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData.data(), GL_DYNAMIC_DRAW);
         glUniform1f(2, xScale);
         glUniform1f(3, yScale);
         
@@ -396,12 +355,8 @@ int main(int argc, char** argv) {
         glfwSwapBuffers(window);
         stamp(3);
 
-        auto duration = [&](size_t i) {
-            return duration_cast<microseconds>(perf[i + 1] - perf[i]);
-        };
-
         for(int i = 0; i < 3; i++) {
-            metrics[i] += duration(i);
+            metrics[i] += duration_cast<microseconds>(perf[i + 1] - perf[i]);
         }
 
         metricDivisor++;

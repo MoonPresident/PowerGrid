@@ -83,6 +83,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 add_executable(Breakin "src/breakin.cpp")
 target_sources(Breakin PUBLIC "src/my_debug.cpp")
 
+set_target_properties(Breakin PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+
 target_link_libraries(Breakin PUBLIC glfw OpenGL::GL GLAD)
 
 #include header files.
