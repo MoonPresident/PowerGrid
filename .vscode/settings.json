@@ -85,6 +85,7 @@
         "thread": "cpp",
         "unordered_set": "cpp",
         "variant": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "internal.h": "c"
     }
 }

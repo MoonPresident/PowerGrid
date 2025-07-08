@@ -6,7 +6,6 @@
 
 #include "my_debug.h"
 
-#include <vector>
 #include "callbacks.h"
 
 #include <ratio>
@@ -87,11 +86,11 @@ public:
      * @return 
      */
     //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-    float getBearingToCursor(float location[]);
+    float getBearingToCursor(std::array<float, 2> location);
     
-    float getBearing2D(float source[], float target[]);
+    float getBearing2D(std::array<float, 2> source, std::array<float, 2> target);
     
-    void setScale(float source[]);
+    void setScale(std::array<float, 2> source);
      
     void calculate_timestep();
     

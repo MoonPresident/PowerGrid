@@ -11,6 +11,7 @@
 // #define debug_shaders
 
 const char* gl_sane_error();
+void check_program(unsigned int program);
 
 #define check_error() ( std::cout << "ERROR: " << gl_sane_error() << "\n")
 #define check_error_prefixed(prefix) std::cout << prefix; check_error()

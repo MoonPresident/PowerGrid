@@ -1,7 +1,6 @@
 #include "my_debug.h"
 #include "callbacks.h"
 
-
 // GL_NO_ERROR 	                        0 	    No user error reported since the last call to glGetError.
 // GL_INVALID_ENUM 	                    1280 	Set when an enumeration parameter is not legal.
 // GL_INVALID_VALUE 	                1281 	Set when a value parameter is not legal.
@@ -22,5 +21,16 @@ const char* gl_sane_error() {
     case 1285:      return "GL_OUT_OF_MEMORY\n";
     case 1286:      return "GL_INVALID_FRAMEBUFFER_OPERATION\n";
     default:        return "GL_NO_ERROR\n";
+    }
+}
+
+void check_program(unsigned int program) {
+    GLint success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    std::cout << "Compilation: " << success << " for program " << program << std::endl;
+    if(!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(program, 512, nullptr, infoLog);
+        std::cout <<"ERROR COMPILING PROGRAM " << program << ": " << infoLog << std::endl;
     }
 }

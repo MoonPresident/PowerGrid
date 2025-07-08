@@ -68,17 +68,11 @@ public:
         glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
         
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); 
-        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-        
         glm::mat4 view;
         
         view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), 
                    glm::vec3(0.0f, 0.0f, 0.0f), 
                    glm::vec3(0.0f, 1.0f, 0.0f));
-        
-        
-
         
         GLuint vao, vbo, ebo;
         glGenVertexArrays(1, &vao);        

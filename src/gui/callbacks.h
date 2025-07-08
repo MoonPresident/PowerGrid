@@ -33,18 +33,6 @@ int getScrollFlag();
 
 void setScrollFlag(int val);
 
-
-//Mouse callbacks
-double getMouseOffsetX();
-double getMouseOffsetY();
-double getMouseLastX();
-double getMouseLastY();
-
-void setMouseOffsetX(double _x);
-void setMouseOffsetY(double _y);
-void setMouseLastX(double _x);
-void setMouseLastY(double _y);
-
 //void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 

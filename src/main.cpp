@@ -94,30 +94,30 @@ auto main(int argc, char **argv) -> int {
     //tui which demo to run.
     if(argc > 1) {
         //testcases = argv[1...]
-        for(size_t i = 1; i < argc; i++) {
+        for(int i = 1; i < argc; i++) {
             const char* demo = argv[i];
             
             std::cout << "demo: \"" << demo << "\"\n";
 
-            if (demo == "simple") {
+            if (strcmp(demo, "simple") == 0) {
                 SimpleSquare simpleSquare; simpleSquare.run(); std::cout << "\n";
-            } else if (demo == "textured") {
+            } else if (strcmp(demo, "textured") == 0) {
                 TexturedSquare texturedSquare; texturedSquare.run(); std::cout << "\n";
-            } else if (demo == "transformed") {
+            } else if (strcmp(demo, "transformed") == 0) {
                 TransformedSquare transformedSquare; transformedSquare.run(); std::cout << "\n";
-            } else if (demo == "cube") {
+            } else if (strcmp(demo, "cube") == 0) {
                 SimpleCube simpleCube; simpleCube.run(); std::cout << "\n";
-            } else if (demo == "camera") {
+            } else if (strcmp(demo, "camera") == 0) {
                 CameraExample cameraExample; cameraExample.run(); std::cout << "\n";
-            } else if (demo == "text") {
+            } else if (strcmp(demo, "text") == 0) {
                 TextRenderingExample textRenderingExample; textRenderingExample.run(); std::cout << "\n";
-            } else if (demo == "lighting") {
+            } else if (strcmp(demo, "lighting") == 0) {
                 auto lightingExample = new LightingExample; lightingExample->run(); delete lightingExample; std::cout << "\n";
-            } else if (demo == "sandbox") {
+            } else if (strcmp(demo, "sandbox") == 0) {
                 ExampleGame3D target; target.run(); std::cout << "\n";
-            } else if (demo == "squaregame") {
+            } else if (strcmp(demo, "squaregame") == 0) {
                 // squares_original_game(); std::cout << "\n";
-            } else if (demo == "-h" || demo == "help" || demo == "--help") {
+            } else if (strcmp(demo, "-h") == 0 || strcmp(demo, "help") == 0 || strcmp(demo, "--help") == 0) {
                 std::cout << "Programs are: simple, textured, transformed, cube, camera, text, lighting, sandbox, squaregame\n";
             }
         }

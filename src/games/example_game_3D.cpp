@@ -21,9 +21,9 @@
 // #endif
 
 #define debug_getSquare
-void getSquare(float square[], float width, int stride, int z_const = 0.f) {
+void getSquare(std::array<float, 12> square, float width, int stride, int z_const = 0.f) {
     float half_width = width / 2;
-    for(int i = 0; i < 4; i++) {
+    for(size_t i = 0; i < 4; i++) {
         square[stride * i    ] = half_width * ((i < 2) - (i >= 2));
         square[stride * i + 1] = half_width * (2 * (i % 2) - 1);
         square[stride * i + 2] = z_const;
@@ -31,9 +31,9 @@ void getSquare(float square[], float width, int stride, int z_const = 0.f) {
 }
 
 //#define debug_getCube
-void getCube(float square[], float width, int stride) {
+void getCube(std::array<float, 48> square, float width, int stride) {
     float half_width = width / 2;
-    for(int i = 0; i < 8; i++) {
+    for(size_t i = 0; i < 8; i++) {
         square[stride * i    ] = half_width * ((i < 4) - (i >= 4));
         square[stride * i + 1] = half_width * ((i % 4 < 2) - (i % 4 >= 2));
         square[stride * i + 2] = half_width * (2 * (i % 2) - 1);
@@ -62,7 +62,7 @@ void setVertexPointerFloat(std::vector<int> dataLayout) {
     #endif
     
     //Loop
-    for(int i = 0; i < dataLayout.size(); i++) {
+    for(size_t i = 0; i < dataLayout.size(); i++) {
         int step = dataLayout.at(i);
         
         #ifdef debug_setVertexPointerFloat
@@ -88,9 +88,6 @@ void ExampleGame3D::run() {
     floorEnabled = false;
     initExplorableSimulation();
     GLuint VAO, VBO, VAO1, VBO1, EBO, EBO1;
-
-    float moveSpeed = 5.f;
-    float jumpVelocity = 2.8f;
 
     const char* vertShaderPath = R"(C:\dev\PowerGrid\resources\shaders\transform_3d_vertex_shader.txt)";
     const char* fragShaderPath = R"(C:\dev\PowerGrid\resources\shaders\texture_2d_fragment_shader.txt)";
@@ -135,7 +132,7 @@ void ExampleGame3D::run() {
         0.f, 0.f, 0.f,      0.f, 1.f, rot,
         0.f, 0.f, 0.f,      0.f, 0.f, rot,
     };
-    getCube(vertices.data(), scale, 6);
+    getCube(vertices, scale, 6);
     
     float offset = 0.7f;
     std::array<float, 24> vertices1 = {
@@ -191,16 +188,10 @@ void ExampleGame3D::run() {
     TextureFactory texFactory;
     texture = texFactory.getTexture("C:/dev/PowerGrid/resources/textures/stock_images/binocupede.jpg");
     
-    if(texture)  {} else {
+    if(texture) {} else {
         std::cout << "Image loading gone wrong" << std::endl;
     }
     
-    float yaw = -90.f;
-    float pitch = 0.f;
-    
-    
-    glm::vec3 force_vector(0.f, 0.f, 0.f); //x, y, z
-    float pc_z_pos = 0.f;
     while(glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS && 
             glfwWindowShouldClose(window.getWindow()) == 0) {
 

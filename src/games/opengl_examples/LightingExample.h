@@ -24,9 +24,6 @@ public:
         cubeModel = glm::translate(cubeModel, cubeOffset);
         cubeModel = glm::scale(cubeModel, cubeScale);
 
-        int x_dir = 1;
-        int y_dir = 1;
-
         initExplorableSimulation();
 
         while(glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS && 

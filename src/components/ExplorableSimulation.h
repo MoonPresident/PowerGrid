@@ -24,11 +24,11 @@ public:
     char fps_string[20];
 
     ExplorableSimulation():
-          floorEnabled(true)
-        , moveSpeed(5.f)
+          moveSpeed(5.f)
         , jumpVelocity(2.8f)
-        , pc_z_pos(1.f)
         , force_vector(0.f, 0.f, 0.f) 
+        , pc_z_pos(1.f)
+        , floorEnabled(true)
     {};
     ~ExplorableSimulation() {};
 

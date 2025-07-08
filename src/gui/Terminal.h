@@ -14,11 +14,11 @@
 
 class Terminal {
 private:
-    const int lineSize = 128;
-    const int maxIndex = 1000;
+    const size_t lineSize = 128;
+    const size_t maxIndex = 1000;
 
-    int index;
     bool wrapped;
+    int index;
     bool isVisible;
 
     //Shader target

@@ -41,10 +41,8 @@ public:
             0, 1, 3,
             1, 2, 3,
         };
-        
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        
         
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0);
         glEnableVertexAttribArray(0);
@@ -61,7 +59,7 @@ public:
         shader.linkProgram(program);
         
         TextureFactory texFactory;
-        GLuint tex = texFactory.getTexture("C:\\dev\\PowerGrid\\src\\games\\opengl_examples\\fish_eyes.jpg");
+        GLuint tex = texFactory.getTexture("C:\\dev\\PowerGrid\\src\\games\\opengl_examples\\fish_eyes1.jpg");
         glBindTexture(GL_TEXTURE_2D, tex);
         
         //This captures the escape key.

@@ -52,10 +52,10 @@ Font::Font(const char* fontPath) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         Character character = {
-            texture,
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            static_cast<unsigned int>(face->glyph->advance.x)
+            .TextureID = texture,
+            .Size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            .Bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            .Advance = static_cast<unsigned int>(face->glyph->advance.x)
         };
         Characters.insert(std::pair<char, Character>(c, character));
     }

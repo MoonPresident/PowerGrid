@@ -81,7 +81,7 @@ void WorldData::getCursorPosition() {
  * @return 
  */
 //Normalise because the frame treats a rectangle as a square for angles (45 degree corners).
-auto WorldData::getBearingToCursor(float location[]) -> float {
+auto WorldData::getBearingToCursor(std::array<float, 2> location) -> float {
     float x_span = cursor_position[1] + location[1] * x_scale;
     float y_span = cursor_position[0] - location[0] * y_scale;
     
@@ -91,14 +91,14 @@ auto WorldData::getBearingToCursor(float location[]) -> float {
 
 
 
-auto WorldData::getBearing2D(float source[], float target[]) -> float {
+auto WorldData::getBearing2D(std::array<float, 2> source, std::array<float, 2> target) -> float {
     float x_span = 0 - (target[1] - source[1]) * x_scale;
     float y_span = (target[0] - source[0]) * y_scale;
     
     return (float) atan(x_span / y_span) + (y_span < 0) * std::numbers::pi;
 };
 
-void WorldData::setScale(float source[]) {
+void WorldData::setScale(std::array<float, 2> source) {
     for(int i = 0; i < 4; i++) scale[i] = source[i];
 };
 

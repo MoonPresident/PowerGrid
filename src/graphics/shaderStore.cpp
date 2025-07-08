@@ -22,8 +22,7 @@ ShaderStore::ShaderStore () {
 }
 
 //Todo: place these boilerplace debug functions somewhere sensible
-void debugShaderCreation(GLuint shader) {
-
+void debugShaderCreation([[maybe_unused]] GLuint shader) {
     #if defined debug_all || defined debug_shaders
     
     GLint success = 0;
@@ -38,8 +37,7 @@ void debugShaderCreation(GLuint shader) {
     #endif
 }
 
-void debugProgramCreation(GLuint program) {
- 
+void debugProgramCreation([[maybe_unused]] GLuint program) {
     #if defined debug_all || defined debug_shaders
  
     GLint success;
@@ -75,9 +73,6 @@ void ShaderStore::addShader(std::string shaderFilename, GLenum shaderType) {
         glShaderSource(shader, 1, &shaderSource, nullptr);
         glCompileShader(shader);
         
-        
-        
-        
         shaders.push_back(shader);
     }
 }
@@ -100,7 +95,7 @@ void ShaderStore::attachAll(GLuint program) {
 
 //Delete shaders
 void ShaderStore::deleteAll() {
-    std::for_each(std::begin(shaders), std::end(shaders), glDeleteShader);
+    std::ranges::for_each(shaders, glDeleteShader);
     shaders.clear();
 }
 
