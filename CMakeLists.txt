@@ -66,19 +66,41 @@ target_include_directories(
         ${PROJECT_SOURCE_DIR}/src/gui
         ${PROJECT_SOURCE_DIR}/src/inputs
         ${PROJECT_SOURCE_DIR}/src/graphics
-        ${FREETYPE_PATH}/include/freetype2
-        ${FREETYPE_PATH}/include/freetype2/freetype
         ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include/GLFW
-        ${FREETYPE_DIRECTORY}/include
-        ${FREETYPE_DIRECTORY}/include/freetype
-        ${FREETYPE_INCLUDE_DIRS}
         ${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug/
         ${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include
         ${PROJECT_SOURCE_DIR}/Dependencies/glm/glm
         ${PROJECT_SOURCE_DIR}/Dependencies/stb
         ${FREETYPE_INCLUDE_DIRS}
 )
-
+target_sources(${PROJECT_NAME} PUBLIC "src/my_debug.cpp")
 
 #https://www.foonathan.net/2018/10/cmake-warnings/
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+
+
+## BREAKIN
+add_executable(Breakin "src/breakin.cpp")
+target_sources(Breakin PUBLIC "src/my_debug.cpp")
+
+target_link_libraries(Breakin PUBLIC glfw OpenGL::GL GLAD)
+
+#include header files.
+target_include_directories(
+    Breakin PUBLIC
+        ${PROJECT_BINARY_DIR}
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/src/helpers
+        ${PROJECT_SOURCE_DIR}/src/games
+        ${PROJECT_SOURCE_DIR}/src/components
+        ${PROJECT_SOURCE_DIR}/src/models
+        ${PROJECT_SOURCE_DIR}/src/gui
+        ${PROJECT_SOURCE_DIR}/src/inputs
+        ${PROJECT_SOURCE_DIR}/src/graphics
+        ${PROJECT_SOURCE_DIR}/Dependencies/glfw/include/GLFW
+        ${PROJECT_BINARY_DIR}/dep-builds/glfw/src/Debug/
+        ${PROJECT_SOURCE_DIR}/Dependencies/GLAD/include
+        ${PROJECT_SOURCE_DIR}/Dependencies/glm/glm
+        ${PROJECT_SOURCE_DIR}/Dependencies/stb
+        ${FREETYPE_INCLUDE_DIRS}
+)
